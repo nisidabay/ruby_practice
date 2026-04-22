@@ -1,0 +1,10 @@
+#!/usr/bin/env ruby
+# frozen_string_literal: true
+
+# Executable wrapper for the todo application
+# This script adds the lib directory to the load path and runs the main application
+
+require_relative '../todo'
+
+# The main application is already executed when loaded
+# This wrapper allows the app to be run as: bin/todo [command] [args]
