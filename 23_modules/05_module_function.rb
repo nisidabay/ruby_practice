@@ -54,5 +54,10 @@ puts obj.calculate(10, 5)  # Works (internal call)
 #   end
 # end
 #
+# class MathOperations
+#   include Calculator
+# end
+#
 # Calculator.add(10, 5)     # Works
+# obj = MathOperations.new
 # obj.add(10, 5)            # Also works (public)

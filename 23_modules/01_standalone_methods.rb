@@ -26,8 +26,8 @@ puts Calculator.subtract(10, 5)
 puts Calculator.multiply(10, 5)
 
 # This could also be done like this:
-# If you want the same methods available on the module BUT also want to
-# include them in classes (as private helpers), use module_function:
+# If you want methods available on the module AND as private methods when
+# included in a class, use module_function:
 #
 # module Calculator
 #   def add(a, b)
@@ -36,5 +36,10 @@ puts Calculator.multiply(10, 5)
 #   module_function :add
 # end
 #
+# class MathHelper
+#   include Calculator
+# end
+#
 # Calculator.add(10, 5)     # Works (public on module)
-# obj.add(10, 5)            # Fails (private in classes)
+# helper = MathHelper.new
+# helper.add(10, 5)         # Works (private instance method)

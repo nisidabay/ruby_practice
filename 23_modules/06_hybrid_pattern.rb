@@ -50,5 +50,10 @@ puts MathOperations.new.calculate(10, 5)  # Works (internal)
 #   end
 # end
 #
+# class MathOperations
+#   extend Calculator
+#   include Calculator
+# end
+#
 # MathOperations.add(10, 5)      # Works (public)
 # MathOperations.new.add(10, 5)  # Works (public)

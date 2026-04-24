@@ -51,5 +51,10 @@ puts AnotherClass.subtract(10, 5)
 #   module_function :add
 # end
 #
+# class MathOperations
+#   include Calculator
+# end
+#
 # Calculator.add(10, 5)       # Works (public on module)
+# obj = MathOperations.new
 # obj.add(10, 5)              # Fails (private in classes)
