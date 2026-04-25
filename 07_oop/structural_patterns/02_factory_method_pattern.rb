@@ -82,17 +82,48 @@ word_app = WordApplication.new
 doc2 = word_app.new_document
 word_app.save_document(doc2)
 
-# This could also be done like this:
+# Alternative: Parameterized factory method for simple cases
 # For simple cases, use a parameterized factory method:
-#
-# class DocumentFactory
-#   def self.create(type)
-#     case type
-#     when "pdf" then PDFDocument.new
-#     when "word" then WordDocument.new
-#     end
-#   end
-# end
-#
-# doc = DocumentFactory.create("pdf")
-# doc.open
+
+class SimpleDocumentFactory
+  def self.create(type)
+    case type
+    when "pdf"
+      puts "  [Factory] Creating PDFDocument"
+      PDFDocument.new
+    when "word"
+      puts "  [Factory] Creating WordDocument"
+      WordDocument.new
+    when "excel"
+      puts "  [Factory] Creating ExcelDocument"
+      ExcelDocument.new
+    else
+      raise ArgumentError, "Unknown document type: #{type}"
+    end
+  end
+end
+
+class ExcelDocument < Document
+  def open
+    puts "  [Excel] Opening Excel spreadsheet..."
+  end
+
+  def save
+    puts "  [Excel] Saving Excel spreadsheet..."
+  end
+
+  def close
+    puts "  [Excel] Closing Excel spreadsheet..."
+  end
+end
+
+puts "\n--- Parameterized Factory ---"
+
+doc1 = SimpleDocumentFactory.create("pdf")
+doc1.open
+
+doc2 = SimpleDocumentFactory.create("word")
+doc2.open
+
+doc3 = SimpleDocumentFactory.create("excel")
+doc3.open

@@ -67,16 +67,44 @@ player.play("movie.vlc")   # Via adapter
 player.play("video.mp4")   # Via adapter
 player.play("file.xyz")    # Still unsupported
 
-# This could also be done like this:
+# Alternative: Direct method implementation for simple cases
 # For simple cases, add methods directly to the existing class:
-#
-# class AudioPlayer
-#   def play(file_name)
-#     case file_name
-#     when /\.mp3$/ then puts "Playing MP3: #{file_name}"
-#     when /\.vlc$/ then puts "Playing VLC: #{file_name}"
-#     when /\.mp4$/ then puts "Playing MP4: #{file_name}"
-#     else puts "Unsupported: #{file_name}"
-#     end
-#   end
-# end
+
+class SimpleAudioPlayer
+  def play(file_name)
+    case file_name
+    when /\.mp3$/
+      puts "Playing MP3: #{file_name}"
+    when /\.vlc$/
+      play_vlc(file_name)
+    when /\.mp4$/
+      play_mp4(file_name)
+    when /\.avi$/
+      play_avi(file_name)
+    else
+      puts "Unsupported format: #{file_name}"
+    end
+  end
+
+  private
+
+  def play_vlc(file_name)
+    puts "Playing VLC: #{file_name}"
+  end
+
+  def play_mp4(file_name)
+    puts "Playing MP4: #{file_name}"
+  end
+
+  def play_avi(file_name)
+    puts "Playing AVI: #{file_name}"
+  end
+end
+
+puts "\n--- Simple Audio Player ---"
+player = SimpleAudioPlayer.new
+player.play("song.mp3")
+player.play("movie.vlc")
+player.play("video.mp4")
+player.play("clip.avi")
+player.play("file.xyz")

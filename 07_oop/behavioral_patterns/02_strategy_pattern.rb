@@ -71,11 +71,48 @@ cart.checkout
 cart.set_payment(CryptoPayment.new)
 cart.checkout
 
-# This could also be done like this:
+# Alternative: Lambda-based strategies for simple cases
 # If your strategies are simple, use lambdas instead of full classes:
-#
-# credit_card = ->(amount) { puts "💳 Card: $#{amount}" }
-# paypal = ->(amount) { puts "🅿️ PayPal: $#{amount}" }
-#
-# cart.set_payment(credit_card)
-# cart.checkout
+
+class SimpleShoppingCart
+  def initialize
+    @items = []
+    @payment_proc = nil
+  end
+
+  def add_item(name, price)
+    @items << { name: name, price: price }
+  end
+
+  def total
+    @items.sum { |item| item[:price] }
+  end
+
+  def set_payment(&block)
+    @payment_proc = block
+  end
+
+  def checkout
+    return puts "Error: No payment method set" unless @payment_proc
+
+    puts "--- Checkout ---"
+    puts "Total: $#{total}"
+    @payment_proc.call(total)
+  end
+end
+
+puts "\n--- Lambda-based Strategy Pattern ---"
+
+cart = SimpleShoppingCart.new
+cart.add_item("Keyboard", 75)
+cart.add_item("Monitor", 250)
+
+# Set payment strategies as blocks at runtime
+cart.set_payment { |amount| puts "💳 Card: $#{amount} - Approved!" }
+cart.checkout
+
+cart.set_payment { |amount| puts "🅿️ PayPal: $#{amount} - Processing..." }
+cart.checkout
+
+cart.set_payment { |amount| puts "₿ Crypto: $#{amount} - Mining transaction..." }
+cart.checkout

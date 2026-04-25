@@ -103,16 +103,55 @@ app = Application.new(factory)
 app.render
 app.interact
 
-# This could also be done like this:
+# Alternative: Parameterized factory for simple cases
 # For simple cases, use a parameterized factory:
-#
-# class UIFactory
-#   def self.create_component(type, os)
-#     case [type, os]
-#     when [:button, "windows"] then WindowsButton.new
-#     when [:button, "mac"] then MacButton.new
-#     when [:checkbox, "windows"] then WindowsCheckbox.new
-#     when [:checkbox, "mac"] then MacCheckbox.new
-#     end
-#   end
-# end
+
+class SimpleUIFactory
+  def self.create_component(type, os)
+    case [type, os]
+    when [:button, "windows"]
+      puts "  [Factory] Creating WindowsButton"
+      WindowsButton.new
+    when [:button, "mac"]
+      puts "  [Factory] Creating MacButton"
+      MacButton.new
+    when [:checkbox, "windows"]
+      puts "  [Factory] Creating WindowsCheckbox"
+      WindowsCheckbox.new
+    when [:checkbox, "mac"]
+      puts "  [Factory] Creating MacCheckbox"
+      MacCheckbox.new
+    when [:menu, "windows"]
+      puts "  [Factory] Creating WindowsMenu"
+      WindowsMenu.new
+    when [:menu, "mac"]
+      puts "  [Factory] Creating MacMenu"
+      MacMenu.new
+    else
+      raise ArgumentError, "Unknown component: #{type} for #{os}"
+    end
+  end
+end
+
+class WindowsMenu
+  def render
+    puts "  [WindowsMenu] Rendering Windows-style menu"
+  end
+end
+
+class MacMenu
+  def render
+    puts "  [MacMenu] Rendering Mac-style menu"
+  end
+end
+
+puts "\n--- Parameterized Abstract Factory ---"
+
+button = SimpleUIFactory.create_component(:button, "windows")
+button.render
+
+checkbox = SimpleUIFactory.create_component(:checkbox, "mac")
+checkbox.render
+
+menu = SimpleUIFactory.create_component(:menu, "windows")
+menu.render

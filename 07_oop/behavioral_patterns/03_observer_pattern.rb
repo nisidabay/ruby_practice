@@ -90,9 +90,46 @@ station.measurements_changed(36, 45)  # Triggers temp alert
 station.detach(stats)
 station.measurements_changed(30, 50)  # Stats won't update
 
-# This could also be done like this:
+# Alternative: Block-based observers for simple cases
 # For simple cases, use blocks instead of full observer classes:
-#
-# station = WeatherStation.new
-# station.attach { |s| puts "Temp: #{s.temperature}°C" }
-# station.attach { |s| puts "Humidity: #{s.humidity}%" }
+
+class SimpleWeatherStation
+  def initialize
+    @observers = []
+    @temperature = 0
+    @humidity = 0
+  end
+
+  def attach(&block)
+    @observers << block
+  end
+
+  def measurements_changed(temp, humidity)
+    @temperature = temp
+    @humidity = humidity
+    puts "\n[WeatherStation] Updated: #{@temperature}°C, #{@humidity}% humidity"
+    notify_observers
+  end
+
+  private
+
+  def notify_observers
+    @observers.each { |observer| observer.call(self) }
+  end
+
+  public
+
+  attr_reader :temperature, :humidity
+end
+
+puts "\n--- Block-based Observer Pattern ---"
+
+station = SimpleWeatherStation.new
+
+# Attach observers as blocks - no class definitions needed!
+station.attach { |s| puts ">>> 🌡️  Temp: #{s.temperature}°C" }
+station.attach { |s| puts ">>> 💧 Humidity: #{s.humidity}%" }
+station.attach { |s| puts ">>> ⚠️  ALERT!" if s.temperature > 30 }
+
+station.measurements_changed(25, 60)
+station.measurements_changed(32, 45)  # Triggers alert

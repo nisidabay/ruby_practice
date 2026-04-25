@@ -39,19 +39,32 @@ logger2.log("User logged in")
 
 puts "\nTotal logs: #{logger1.logs.length}"
 
-# This could also be done like this:
+# Alternative: Module-based singleton for configuration
 # For configuration, use a module with module-level variables:
-#
-# module Config
-#   def self.[](key)
-#     @settings[key]
-#   end
-#
-#   def self.[]=(key, value)
-#     @settings ||= {}
-#     @settings[key] = value
-#   end
-# end
-#
-# Config[:debug] = true
-# puts Config[:debug]
+
+module Config
+  @settings = {}
+
+  def self.[](key)
+    @settings[key]
+  end
+
+  def self.[]=(key, value)
+    @settings[key] = value
+  end
+
+  def self.all
+    @settings.dup
+  end
+end
+
+puts "\n--- Module-based Singleton ---"
+
+Config[:debug] = true
+Config[:log_level] = "verbose"
+Config[:max_connections] = 100
+
+puts "Debug mode: #{Config[:debug]}"
+puts "Log level: #{Config[:log_level]}"
+puts "Max connections: #{Config[:max_connections]}"
+puts "\nAll settings: #{Config.all.inspect}"

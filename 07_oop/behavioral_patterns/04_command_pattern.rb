@@ -90,21 +90,45 @@ puts "\n--- Redo Operations ---"
 history.redo  # Restores "World"
 history.redo  # Restores "!"
 
-# This could also be done like this:
+# Alternative: Memento pattern for simple undo (store state snapshots)
 # For simple undo, store previous state instead of command objects:
-#
-# class TextEditor
-#   def initialize
-#     @text = ""
-#     @previous_state = nil
-#   end
-#
-#   def write(text)
-#     @previous_state = @text
-#     @text += text
-#   end
-#
-#   def undo
-#     @text = @previous_state
-#   end
-# end
+
+class SimpleTextEditor
+  def initialize
+    @text = ""
+    @history = []
+  end
+
+  def write(text)
+    @history << @text.dup  # Save state before change
+    @text += text
+    puts "  [Text: \"#{@text}\"]"
+  end
+
+  def delete_last
+    @history << @text.dup
+    @text = @text[0...-1]
+    puts "  [Text: \"#{@text}\"]"
+  end
+
+  def undo
+    return puts "  [Nothing to undo]" if @history.empty?
+
+    @text = @history.pop
+    puts "  [Undone! Text: \"#{@text}\"]"
+  end
+
+  attr_reader :text
+end
+
+puts "\n--- Memento-style Undo ---"
+editor = SimpleTextEditor.new
+
+editor.write("Hello ")
+editor.write("World")
+editor.write("!")
+
+puts "\n--- Undo Operations ---"
+editor.undo
+editor.undo
+editor.undo

@@ -49,20 +49,42 @@ puts "\n3. Log + Email + SMS:"
 super_notifier = LogDecorator.new(SMSDecorator.new(BasicNotifier.new))
 super_notifier.send("Hello!")
 
-# This could also be done like this:
+# Alternative: Composition with explicit method calls for simple extensions
 # For simple extensions, use composition with explicit method calls:
-#
-# class Notifier
-#   def send_email(msg)
-#     puts "Email: #{msg}"
-#   end
-#
-#   def send_sms(msg)
-#     puts "SMS: #{msg}"
-#   end
-#
-#   def send_both(msg)
-#     send_email(msg)
-#     send_sms(msg)
-#   end
-# end
+
+class Notifier
+  def send_email(msg)
+    puts "Email: #{msg}"
+  end
+
+  def send_sms(msg)
+    puts "SMS: #{msg}"
+  end
+
+  def send_facebook(msg)
+    puts "Facebook: #{msg}"
+  end
+
+  def send_both(msg)
+    send_email(msg)
+    send_sms(msg)
+  end
+
+  def send_all(msg)
+    send_email(msg)
+    send_sms(msg)
+    send_facebook(msg)
+  end
+end
+
+puts "\n--- Composition-based Notification ---"
+
+notifier = Notifier.new
+puts "1. Email only:"
+notifier.send_email("Hello!")
+
+puts "\n2. Email + SMS:"
+notifier.send_both("Hello!")
+
+puts "\n3. All channels:"
+notifier.send_all("Hello!")
