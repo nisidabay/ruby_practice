@@ -2,11 +2,16 @@
 
 require 'json'
 
-# Problem: You want to define the skeleton of an algorithm but let subclasses customize specific steps.
+# What it tries to solve: It stops you from repeating yourself when you have a
+# step-by-step process where only some of the steps change.
+#
 # Example: A report builder that always follows: fetch data → format → export, but each format differs.
 #
-# Solution: Use a template method that calls abstract methods for the customizable steps.
-# Visibility: Template method is public, customization points are protected/abstract.
+# Solution: Use a template method that calls protected methods for the
+# customizable steps.
+
+# Visibility: Template method is public, customization points are protected.
+#
 # Trade-offs:
 # ⚠️ Can lead to deep inheritance hierarchies if overused
 # ⚠️ Subclasses may be constrained by the template structure
@@ -102,19 +107,11 @@ end
 puts "\n--- Block-based Template Pattern ---"
 
 # Define behaviors as lambdas
-# user_data = -> { ["Alice", "Bob", "Charlie"] }
-# json_format = ->(data) { data.to_json }
-# xml_format = ->(data) { "<data>#{data.map { |n| "<item>#{n}</item>" }.join}</data>" }
-# print_export = ->(formatted) { puts "🖨️  Printed: #{formatted}" }
-# No arguments needed for this one
 user_data = -> { %w[Alice Bob Charlie] }
-
-# The argument 'data' moves inside the vertical bars | |
 json_format = ->(data) { data.to_json }
-
 xml_format = ->(data) { "<data>#{data.map { |n| "<item>#{n}</item>" }.join}</data>" }
-
 print_export = ->(formatted) { puts "🖨️  Printed: #{formatted}" }
+
 # Build different reports by composing behaviors
 json_report = FlexibleReportBuilder.new(user_data)
 json_report.build_report(format: json_format, export: print_export)
