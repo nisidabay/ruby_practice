@@ -1,0 +1,135 @@
+••• Vim -  Power of letter g
+g;    go to previous change
+
+••• Vim -  Power of letter g
+Split the current window horizontally
+g,    go to previous change opposite direction
+
+••• Vim -  Power of letter g
+ge    go to Back to the end of word
+
+••• Vim -  Power of letter g
+gE    go to Back to the end of WORD
+
+••• Vim -  Power of letter g
+g$    go to End of virtual line
+
+••• Vim -  Power of letter g
+g0    Start of virtual line
+
+••• Vim -  Power of letter g
+gqq   Format the current line
+
+••• Vim -  Power of letter g
+gq    Format lines
+
+••• Vim -  Power of letter g
+gJ    Join all words without space in visualmode
+
+••• Vim -  Power of letter g
+g&    Return a substitute command in all the document
+
+••• Vim -  Power of letter g
+gg>G  Indent all file
+
+••• Vim -  Power of letter g
+gg=G  Dedent all file
+
+••• Vim -  Power of letter g
+gn    Jump to the next match from the last search
+
+••• Vim -  Power of letter g
+cgn   Change next match
+
+••• Vim -  Power of letter g
+g?{motion} Rot13 encode {motion} text
+
+••• Vim -  Power of letter g
+g??   Rot13 encode current line
+
+••• Vim -  Power of letter g
+ga    Show character encoding
+
+••• Vim -  Power of letter g
+gwip  Reflow paragraph
+
+••• Vim -  Power of letter g
+gp    Put the clipboard after the cursor
+
+••• Vim -  Power of letter g
+gP    Put the clipboard before the cursor
+
+••• Vim -  Power of letter g
+:g/TODO/p Print all lines containing "TODO"                             
+
+••• Vim -  Power of letter g
+:g/^$/d   Delete all empty lines                                        
+
+••• Vim -  Power of letter g
+:g/error/normal I// Comment out all lines containing "error"                      
+
+••• Vim -  Power of letter g
+:g/pattern/t$ Copy (duplicate) matching lines to end of file                
+
+••• Vim -  Power of letter g
+:g/pattern/m$ Move matching lines to end of file                            
+
+••• Vim -  Power of letter g
+:g/^/m0  Reverse the order of all lines in a file                      
+
+••• Vim -  Power of letter g
+:g/DEBUG/s/true/false/g  Replace all "true" with "false" on lines containing "DEBUG"   
+
+••• Vim -  Power of letter g
+:g!/^#/normal gqq Format all lines that don't start with #                      
+
+••• Vim -  Power of letter g
+ :v/important/d Delete all lines not containing "important"                   
+
+••• Vim -  Power of letter g
+:g/BEGIN/,/END/d Delete all blocks of text between BEGIN and END               
+
+••• Vim -  Power of letter g
+:g/pattern/normal @q  Run macro q on all lines matching pattern                     
+
+••• Vim -  Power of letter g
+:g/^\d\+\./normal A. Add a period at the end of all numbered lines                 
+
+••• Vim -  Power of letter g
+:g/pattern/z#.5 Show 5 lines of context around each match                 
+
+••• Vim -  Power of letter g
+:g/function/normal 2j  Position cursor 2 lines below each match                  
+
+••• Vim -  Power of letter g
+:g/pattern/normal "Ayy Append matching lines to register A                       
+
+••• Vim -  Power of letter g
+:g/^\s*$/,/\S/-j Join all blocks of blank lines into a single blank line   
+
+••• Vim -  Power of letter g
+:g/start/,/end/s/old/new/g  Replace text in all blocks between "start" and "end"      
+
+••• Vim -  Power of letter g
+:g/^\s*$/d  Delete all blank lines (including those with whitespace)  
+
+••• Vim -  Power of letter g
+:g/\v^(<pattern1>\<pattern2>)/d   Delete lines starting with either pattern1 or pattern2    
+
+••• Vim -  Power of letter g
+:g/\<TODO\>/normal I[x]  Add checkbox to all TODO items                            
+
+••• Vim -  Power of letter g
+:g/\d\{3}-\d\{3}-\d\{4\}/normal gUiw   Uppercase all phone numbers                               
+
+••• Vim -  Power of letter g
+:g/^\(.*\)$\n\1$/d Delete duplicate adjacent lines                           
+
+••• Vim -  Power of letter g
+:g/^/exe "s/^/".strftime("%Y-%m-%d ")  Prepend current date to all lines                         
+
+••• Vim -  Power of letter g
+:g/pattern/exe "normal! zf/end/e"  Create folds for all sections from pattern to "end"       
+
+••• Vim -  Power of letter g
+:g/^#include/exe "normal! \"ayy"   Yank all include statements into register a               

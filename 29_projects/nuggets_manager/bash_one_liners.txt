@@ -1,0 +1,156 @@
+
+••• Bash - Fill a file with random data
+# This script appends 1KB of random data to file.txt five times.
+for i in {1..5}; do
+    head -c 1024 /dev/urandom >> file.txt
+done
+
+••• Bash - Append a sequence of numbers to a file
+# Appends numbers 1 to 5 to file.txt, one per line.
+for i in $(seq 1 5); do
+    echo "$i" >> file.txt
+done
+
+••• Bash - Arithmetic evaluation
+# Prints odd numbers from 1 to 13 using arithmetic evaluation.
+num=1
+while [[ $num -le 20 ]]; do
+    if (( num % 2 == 0 )); then
+        num=$((num + 1))
+        continue
+    fi
+    if (( num >= 15 )); then
+        break
+    fi
+    echo $num
+    num=$((num + 1))
+done
+
+••• Bash - Usage of trap
+# Cleans up .txt files if the script is interrupted or killed.
+function cleanup() {
+    echo
+    echo "Script killed."
+    echo "Cleaning files ..."
+    find . -maxdepth 1 -type f -name "*.txt" -delete
+    exit 0
+}
+
+# Trap termination signals and call cleanup.
+trap cleanup SIGTERM
+trap cleanup SIGINT
+
+PROGRAM=$(basename "$0")
+echo "[$PROGRAM] PID: $$"
+
+# Creates dummy text files and writes dummy content.
+for i in $(seq 1 10); do
+    echo "Creating file $i.txt"
+    touch "$i.txt"
+    echo "Dummy text" >> "$i.txt"
+    sleep 2
+done
+
+••• Bash - Create a status indicator
+# Simple loading indicator using a spinner.
+while true; do
+    printf "\r< Loading..."
+    sleep 0.5
+    printf "\r> Loading..."
+    sleep 0.5
+done
+
+••• Bash - Spinner for background process
+# Displays a spinner while a background process runs.
+sleep 5 &
+pid=$!
+
+frames="/ | \ -"
+
+while kill -0 "$pid" 2>/dev/null; do
+    for frame in $frames; do
+        printf "\r$frame Loading..."
+        sleep 0.5
+    done
+done
+printf "\n"
+
+••• Bash - Loop through command results
+# Lists all files and directories in the current directory.
+for r in "$PWD"/*; do
+    echo "$r"
+done
+
+••• Bash - Use the output of a function
+# Calls a function and prints its result.
+function hello() {
+    echo "Hello"
+}
+echo "This is the result of the function: $(hello)"
+
+••• Bash - Capture yes/no inputs
+# Captures a yes or no response from the user.
+read -p "Continue? [y/n]: " -n 1 -r
+echo
+if [[ $REPLY =~ ^[Yy]$ ]]; then
+    echo "ok"
+elif [[ $REPLY =~ ^[Nn]$ ]]; then
+    echo "Too bad"
+else
+    echo "Sorry, what?"
+fi
+
+••• Bash - Quick rename a file
+# Renames file.txt to file.txt.bak
+mv /project/file.txt{,.bak}
+
+••• Bash - Error handling in mkdir function
+# Creates a directory with optional permissions and group ownership.
+set -euo pipefail
+
+function _mkdir() {
+    local directory=${1:-"/tmp"}
+    local permission=${2:-0775}
+
+    if [[ $# -eq 0 ]]; then
+        echo "$0: [directory] [octal permissions]"
+        return
+    fi
+
+    if [[ ! -d "$directory" ]]; then
+        mkdir -m "$permission" -p "$directory"
+        chgrp -R users "$directory"
+    fi
+}
+_mkdir "$@"
+
+••• Bash - Find like ls
+# Lists file permissions and other metadata for nohup.txt.
+find . -name nohup.txt -printf "%m %n %u %g %t %p\n"
+
+••• Bash - Delete files from a file
+# Deletes files listed in todelete.txt with confirmation.
+cat todelete.txt | xargs -p -I % sh -c 'ls %; rm %'
+
+••• Bash - Add extension to files in directory
+# Adds ".py" extension to all files in the directory.
+for i in *; do
+    mv "$i" "$i.py"
+done
+
+••• Bash - Random selection from array
+# Randomly selects a motivational quote for the user.
+read -p "Enter your name: " Name
+
+adjectives=("It's a wonderful day" "No one is gonna spoil it" "It's an awesome day"
+"Better at home" "I wish you were here" "Friday is coming" 
+"It's the loneliest day of my life")
+
+random_quote=$(( RANDOM % ${#adjectives[@]} ))
+
+printf "Hi %s. Today %s\n" "$Name" "${adjectives[$random_quote]}"
+
+••• Bash - Monitor file for a string
+# Monitors a file for a specific string and notifies when found.
+( tail -f -n0 "$FILE_TO_MONITOR" & ) | grep -q "$STRING_TO_FIND"
+echo "String '$STRING_TO_FIND' found in $FILE_TO_MONITOR"

@@ -32,23 +32,3 @@ dog = Dog.new
 dog.name = 'Pepe'
 dog.age = 2
 dog.report
-
-# These will raise errors:
-# dog.name = ''     # Raises: Name can't be blank!
-# dog.age = -1      # Raises: An age of -1 isn't valid
-
-# This could also be done like this:
-# If you want to allow nil values or have different validation rules,
-# use attr_accessor and override both getter and setter:
-#
-# class Dog
-#   attr_accessor :name
-#
-#   def age
-#     @age
-#   end
-#
-#   def age=(value)
-#     @age = value if value && value > 0
-#   end
-# end

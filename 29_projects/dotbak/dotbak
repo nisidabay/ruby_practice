@@ -1,0 +1,306 @@
+#!/usr/bin/env ruby
+# frozen_string_literal: true
+
+require 'optparse'
+require 'fileutils'
+require 'yaml'
+require 'json'
+require 'time'
+
+class Dotbak
+  DATA_DIR = File.expand_path('~/.dotbak')
+  REPO_DIR = File.join(DATA_DIR, 'repo')
+  CONFIG_FILE = File.join(DATA_DIR, 'config.yml')
+  TRACKED_FILE = File.join(DATA_DIR, 'tracked.json')
+
+  def initialize(options = {})
+    @data_dir = DATA_DIR
+    @repo_dir = REPO_DIR
+    @config_file = CONFIG_FILE
+    @tracked_file = TRACKED_FILE
+    @remote = options[:remote]
+    @message = options[:message] || "Backup at #{Time.now.strftime('%Y-%m-%d %H:%M')}"
+    @dry_run = options[:dry_run] || false
+    @config = load_config
+    @tracked = load_tracked
+  end
+
+  def run(args)
+    command = args.shift || 'status'
+
+    case command
+    when 'init' then init_repo(args)
+    when 'add' then add_file(args)
+    when 'remove', 'rm' then remove_file(args)
+    when 'backup', 'sync', 'b' then backup
+    when 'restore', 'r' then restore(args)
+    when 'diff' then diff_file(args)
+    when 'status', 'st' then status
+    when 'list', 'ls' then list_tracked
+    when 'commit' then git_commit(args)
+    when 'push' then git_push(args)
+    when 'pull' then git_pull(args)
+    when 'log' then show_log(args)
+    else
+      puts "Unknown command: #{command}"
+      puts "Use 'dotbak --help' for usage"
+    end
+  end
+
+  private
+
+  def load_config
+    return {} unless File.exist?(@config_file)
+    YAML.safe_load(File.read(@config_file), permitted_classes: [Time])
+  rescue
+    {}
+  end
+
+  def save_config
+    File.write(@config_file, YAML.dump(@config))
+  end
+
+  def load_tracked
+    return [] unless File.exist?(@tracked_file)
+    JSON.parse(File.read(@tracked_file))
+  rescue
+    []
+  end
+
+  def save_tracked
+    File.write(@tracked_file, JSON.pretty_generate(@tracked))
+  end
+
+  def init_repo(args)
+    remote = args[0] || @remote
+
+    FileUtils.mkdir_p(@repo_dir)
+
+    Dir.chdir(@repo_dir) do
+      unless File.exist?('.git')
+        system('git init')
+        system('git config user.email "dotbak@localhost"')
+        system('git config user.name "dotbak"')
+      end
+
+      if remote
+        system("git remote add origin #{remote}") || system("git remote set-url origin #{remote}")
+        @config['remote'] = remote
+        save_config
+      end
+    end
+
+    puts "\e[32mInitialized dotbak at #{@repo_dir}\e[0m"
+  end
+
+  def add_file(args)
+    return puts "Usage: dotbak add <file>" if args.empty?
+
+    init_repo([]) unless File.exist?(File.join(@repo_dir, '.git'))
+
+    args.each do |file|
+      original = File.expand_path(file)
+
+      unless File.exist?(original)
+        puts "\e[31mNot found: #{original}\e[0m"
+        next
+      end
+
+      # Store relative path from home
+      relative = original.sub(File.expand_path('~') + '/', 'home/')
+      tracked_path = File.join(@repo_dir, relative)
+      tracked_dir = File.dirname(tracked_path)
+
+      FileUtils.mkdir_p(tracked_dir)
+      FileUtils.cp(original, tracked_path)
+
+      # Add to tracked list
+      entry = { 'path' => original, 'added_at' => Time.now.iso8601 }
+      @tracked.reject! { |t| t['path'] == original }
+      @tracked << entry
+      save_tracked
+
+      puts "\e[32mAdded: #{original}\e[0m"
+    end
+  end
+
+  def remove_file(args)
+    return puts "Usage: dotbak remove <file>" if args.empty?
+
+    args.each do |file|
+      original = File.expand_path(file)
+
+      @tracked.reject! { |t| t['path'] == original }
+
+      relative = original.sub(File.expand_path('~') + '/', 'home/')
+      tracked_path = File.join(@repo_dir, relative)
+
+      if File.exist?(tracked_path)
+        FileUtils.rm(tracked_path)
+        # Remove empty parent directories
+        parent = File.dirname(tracked_path)
+        while parent != @repo_dir
+          Dir.rmdir(parent) rescue break
+          parent = File.dirname(parent)
+        end
+      end
+
+      puts "\e[32mRemoved: #{original}\e[0m"
+    end
+
+    save_tracked
+  end
+
+  def backup
+    return puts "dotbak not initialized. Run: dotbak init" unless File.exist?(File.join(@repo_dir, '.git'))
+
+    Dir.chdir(@repo_dir) do
+      synced = 0
+
+      @tracked.each do |entry|
+        original = entry['path']
+        next unless File.exist?(original)
+
+        relative = original.sub(File.expand_path('~') + '/', 'home/')
+        tracked_path = File.join(@repo_dir, relative)
+        tracked_dir = File.dirname(tracked_path)
+
+        FileUtils.mkdir_p(tracked_dir)
+
+        content_changed = !File.exist?(tracked_path) || !FileUtils.compare_file(original, tracked_path)
+
+        if content_changed
+          FileUtils.cp(original, tracked_path)
+          system("git add '#{relative}'")
+          synced += 1
+          puts "\e[32mSynced: #{File.basename(original)}\e[0m"
+        end
+      end
+
+      if synced > 0
+        system("git commit -m '#{@message}'")
+        puts "\e[32mCommitted #{synced} changes\e[0m"
+      else
+        puts "No changes to sync"
+      end
+    end
+  end
+
+  def restore(args)
+    return puts "dotbak not initialized. Run: dotbak init" unless File.exist?(File.join(@repo_dir, '.git'))
+
+    file = args[0]
+    commit = args[1] || 'HEAD'
+
+    Dir.chdir(@repo_dir) do
+      if file
+        entry = @tracked.find { |t| t['path'] == File.expand_path(file) }
+        return puts "\e[31mFile not tracked: #{file}\e[0m" unless entry
+
+        relative = entry['path'].sub(File.expand_path('~') + '/', 'home/')
+        content = `git show #{commit}:#{relative} 2>/dev/null`
+
+        if $?.success?
+          File.write(entry['path'], content)
+          puts "\e[32mRestored: #{entry['path']}\e[0m"
+        else
+          puts "\e[31mFailed to restore: #{relative}\e[0m"
+        end
+      else
+        # Restore all tracked files
+        @tracked.each do |entry|
+          original = entry['path']
+          relative = original.sub(File.expand_path('~') + '/', 'home/')
+          tracked_path = File.join(@repo_dir, relative)
+
+          if File.exist?(tracked_path)
+            FileUtils.mkdir_p(File.dirname(original))
+            FileUtils.cp(tracked_path, original)
+            puts "\e[32mRestored: #{original}\e[0m"
+          end
+        end
+      end
+    end
+  end
+
+  def diff_file(args)
+    file = args[0]
+    return puts "Usage: dotbak diff <file>" unless file
+
+    entry = @tracked.find { |t| t['path'] == File.expand_path(file) }
+    return puts "\e[31mFile not tracked: #{file}\e[0m" unless entry
+
+    original = File.expand_path(file)
+    relative = original.sub(File.expand_path('~') + '/', 'home/')
+    tracked_path = File.join(@repo_dir, relative)
+
+    unless File.exist?(tracked_path)
+      puts "No backup exists"
+      return
+    end
+
+    puts `diff #{Shellwords.escape(original)} #{Shellwords.escape(tracked_path)}`
+  end
+
+  def status
+    puts "\e[1mTracked files:\e[0m"
+    @tracked.each do |entry|
+      original = entry['path']
+      relative = original.sub(File.expand_path('~') + '/', 'home/')
+      tracked_path = File.join(@repo_dir, relative)
+
+      status = if !File.exist?(original)
+                 "\e[33m[DELETED]\e[0m"
+               elsif !File.exist?(tracked_path)
+                 "\e[31m[NO BACKUP]\e[0m"
+               elsif FileUtils.compare_file(original, tracked_path)
+                 "\e[32m[SYNCED]\e[0m"
+               else
+                 "\e[33m[CHANGED]\e[0m"
+               end
+
+      puts "  #{File.basename(original)} #{status}"
+    end
+
+    puts "\n\e[90m#{@tracked.size} files tracked\e[0m"
+  end
+
+  def list_tracked
+    @tracked.each do |entry|
+      puts entry['path']
+    end
+  end
+
+  def git_commit(args)
+    message = args.join(' ') || @message
+    Dir.chdir(@repo_dir) do
+      system("git commit -m '#{message}'")
+    end
+  end
+
+  def git_push(args)
+    Dir.chdir(@repo_dir) do
+      system('git push origin master') || system('git push origin main') || system('git push -u origin master')
+    end
+  end
+
+  def git_pull(args)
+    Dir.chdir(@repo_dir) do
+      system('git pull origin master') || system('git pull origin main')
+    end
+  end
+
+  def show_log(args)
+    limit = args[0]&.to_i || 10
+    Dir.chdir(@repo_dir) do
+      system("git log --oneline -n #{limit}")
+    end
+  end
+end
+
+OptionParser.new do |opts|
+  opts.banner = "Usage: dotbak <command> [options]"
+  puts opts if ARGV.include?('-h') || ARGV.include?('--help')
+end.parse!
+
+Dotbak.new(ARGV).run(ARGV)

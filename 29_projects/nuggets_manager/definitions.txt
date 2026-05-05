@@ -1,0 +1,23 @@
+••• Hashable
+Being hashable means that your objects must have a value that never changes
+during their lifetime. This is a requirement because these objects will work
+as dictionary keys. In Python, immutable objects are also hashable.
+
+••• Monkey patching
+In Python the term monkey patch refers to dynamic (or runtime) modifications
+of a class or module. We can change the behaviour of code at run time.
+
+class Mainclass:
+
+    def func(self):
+        print("func() is being called")
+
+def monkey_f(self):
+    print("monkey_f() is being called")
+
+
+if __name__ == "__main__":
+
+    Mainclass.func = monkey_f
+    obj = Mainclass()
+    obj.func()

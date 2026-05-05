@@ -1,0 +1,81 @@
+••• Python shutil - Copy the file to a new location
+import shutil
+shutil.copy('test.txt', 'test_copy.txt')
+
+••• Python shutil - Copy the file and preserve metadata
+import shutil
+shutil.copy2('test.txt', 'test_copy_with_metadata.txt')
+
+••• Python shutil - Copy only the contents of the file
+import shutil
+shutil.copyfile('test.txt', 'test_copyfile.txt')
+
+••• Python shutil - Move the file to a new directory
+import shutil
+shutil.move('test.txt', 'new_directory/test.txt')
+
+••• Python shutil - Delete the directory and its contents
+import shutil
+shutil.rmtree('old_directory')
+
+••• Python shutil - Create a zip archive of a directory
+import shutil
+shutil.make_archive('directory_backup', 'zip', 'directory_to_backup')
+
+••• Python shutil - Unpack a zip archive
+import shutil
+shutil.unpack_archive('directory_backup.zip', 'extracted_files')
+
+••• Python shutil - Copy an entire directory tree
+import shutil
+shutil.copytree('source_directory', 'destination_directory')
+
+••• Python shutil - Copy symbolic links
+import shutil
+shutil.copy('source_symlink', 'destination_symlink', follow_symlinks=False)
+
+••• Python shutil - Copy file permissions (mode) from one file to another
+import shutil
+shutil.copymode('source_file', 'destination_file')
+
+••• Python shutil - Copy file ownership (UID and GID) from one file to another
+import shutil
+shutil.copystat('source_file', 'destination_file')
+
+••• Python shutil - Copy file permissions and ownership together
+import shutil
+shutil.copy2('source_file', 'destination_file')  
+
+••• Python shutil - Get disk usage statistics for a given path
+import shutil
+usage = shutil.disk_usage('/')
+print(f"Total: {usage.total}, Used: {usage.used}, Free: {usage.free}")
+
+••• Python shutil - Check if a file system supports symbolic links
+import shutil
+supports_symlinks = shutil.supports_symlinks
+print(f"Symbolic links supported: {supports_symlinks}")
+
+••• Python shutil - Check if a file system supports hard links
+import shutil
+supports_hardlinks = shutil.supports_hardlinks
+print(f"Hard links supported: {supports_hardlinks}")
+
+••• Python shutil - Check if a file system supports file copying via os.sendfile
+import shutil
+supports_sendfile = shutil.supports_sendfile
+print(f"os.sendfile supported: {supports_sendfile}")
+
+••• Python shutil - Register a custom unpack format for archives
+import shutil
+shutil.register_unpack_format('custom_format', ['.custom'], shutil.unpack_archive)
+
+••• Python shutil - Get a list of supported archive formats for packing/unpacking
+import shutil
+supported_formats = shutil.get_archive_formats()
+print("Supported archive formats:", supported_formats)
+
+••• Python shutil - Get a list of supported unpack formats
+import shutil
+supported_unpack_formats = shutil.get_unpack_formats()
+print("Supported unpack formats:", supported_unpack_formats)

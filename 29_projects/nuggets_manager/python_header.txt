@@ -1,0 +1,8 @@
+••• Python - Script header 
+
+#!/usr/bin/python3
+# Author: Carlos Lacaci Moya
+# Description: 
+# Date: 
+# Dependencies: 
+############################################################################### 

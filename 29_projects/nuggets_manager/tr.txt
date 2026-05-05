@@ -1,0 +1,105 @@
+••• Linux - tr -  Replace all characters from the standard input 
+
+echo 'linuxize' | tr 'lin' 'red'
+>>> output: reduxeze
+
+••• Linux - tr -  Using character ranges
+
+echo 'linuxize' | tr 'lmno' 'wxyz'
+>>> output: wiyusize
+
+echo 'linuxize' | tr 'l-n' 'w-z'
+>>> output: wiyusize
+
+••• Linux - tr -  -c (--complement) option replaces all characters that are not in SET1
+
+echo 'linuxize' | tr -c 'li' 'xy'
+>>> output: liyyyiyyy
+
+••• Linux - tr -  -d (--delete) option tells tr to delete characters specified in set1. 
+
+Remove L, i and z characters
+echo 'Linuxize' | tr -d 'Liz'
+>> output: nuxe
+
+••• Linux - tr -  -s (--squeeze-repeats) option replaces a sequence of repeated occurrences
+
+echo "GNU     \    Linux" | tr -s ' '
+>>> output: GNU \ Linux
+
+When SET2 is used the sequence of the character specified in SET1 is replaced 
+with SET2.
+
+echo "GNU     \    Linux" | tr -s ' ' '_'
+>>> output: GNU_\_Linux
+
+••• Linux - tr -  -t (--truncate-set1) option truncate SET1 to the length of SET2
+
+If SET1 is larger than SET2 tr will reuse the last character of SET2.
+
+echo 'Linux ize' | tr -t 'nux' '12'
+>>> output: Li122 ize
+
+••• Linux - tr -  Replaces all chars except i with 0 and squeezes the repeated 0 characters
+
+echo 'Linux ize' | tr -cs 'i' '0'
+>>> output: 0i0i0
+
+• Convert lower case to upper case  
+
+Converting lower case to upper case is one of the typical use cases 
+of the tr command. [:lower:] matches all lower case characters and [:upper:] 
+matches all uppercase characters.
+
+echo 'Linuxize' | tr '[:lower:]' '[:upper:]'
+>>> output: LINUXIZE
+
+Instead of character classes, you can also use ranges
+echo 'Linuxize' | tr 'a-z' 'A-Z'
+
+>>> output: LINUXIZE
+
+••• Linux - tr -  Remove all non-numeric characters  
+
+echo "my phone is 123-456-7890" | tr -cd [:digit:]
+>>> output
+1234567890
+
+[:digit:] stands for all digit characters, and by using the -c option, the 
+command removes all non-digit characters
+
+••• Linux - tr -  Stript out non-printable characters from a file 
+
+tr -cd "[:print:]" < filename
+
+••• Linux - tr -  Put each word in a new line  
+
+To put each word in a new line, we need to match all non-alphanumerical 
+characters and replace them with a new line:
+
+echo 'GNU Linux is an operating system' | tr -cs '[:alnum:]' '\n'
+>>> output:
+GNU
+Linux
+is
+an
+operating
+system
+
+••• Linux - tr -  Remove blank lines  
+
+To delete the blank lines simply squeeze the repetitive newline characters
+
+tr -s '\n' < file.txt > new_file.txt
+
+••• Linux - tr -  Print $PATH directories on a separate line  
+
+echo $PATH | tr  ':' '\n'
+>>> outut:
+/usr/local/sbin
+/usr/local/bin
+/usr/sbin
+/usr/bin
+/sbin
+/bin
+

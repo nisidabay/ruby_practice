@@ -1,0 +1,73 @@
+••• - BeautifulSoup - Way to get links
+import requests
+from bs4 import BeautifulSoup
+
+html = requests.get("http://en.wikipedia.org/wiki/Kevin_Bacon")
+soup = BeautifulSoup(html.text, "lxml")
+for link in soup.find_all('a'):
+    print(link.get('href'))
+
+••• - BeautifulSoup - Way to get links
+import requests
+from bs4 import BeautifulSoup
+
+html = requests.get("http://en.wikipedia.org/wiki/Kevin_Bacon")
+soup = BeautifulSoup(html.text, "lxml")
+for link in soup.find_all('a', href=True):
+    print(link['href'])
+
+••• - BeautifulSoup - Way to get links
+import requests
+from bs4 import BeautifulSoup
+
+html = requests.get("http://en.wikipedia.org/wiki/Kevin_Bacon")
+soup = BeautifulSoup(html.text, "lxml")
+
+for link in soup.findAll("a"):
+
+	if 'href' in link.attrs:
+		print(link.attrs['href'])
+
+••• - BeautifulSoup - Save links from a page
+import requests
+from bs4 import BeautifulSoup
+
+headers = {
+    "user-agent":
+    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko)Chrome/80.0.3987.149 Safari/537.36",
+}
+
+website = "https://subslikescript.com/movie/Titanic-120338"
+request_result = requests.get(website, headers=headers)
+
+print("Oops") if request_result.status_code != 200 else print("Ok")
+
+website_content = request_result.text
+soup = BeautifulSoup(website_content, "lxml")
+
+article = soup.find("article", class_="main-article")
+title = article.find("h1").get_text()
+transcript = article.find("div", class_="full-script").get_text(strip=True,
+                                                                separator=" ")
+
+with open(f"{title}.txt", "a") as file:
+    file.write(title)
+    file.write("\n\n")
+    file.write(transcript)
+
+••• - BeautifulSoup - Webscrapping skeleton
+import requests
+from bs4 import BeautifulSoup
+
+headers = {
+    "user-agent":
+    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko)Chrome/80.0.3987.149 Safari/537.36",
+}
+
+website = "https://subslikescript.com/movie/Titanic-120338"
+request_result = requests.get(website, headers=headers)
+
+print("Oops") if request_result.status_code != 200 else print("Ok")
+
+website_content = request_result.text
+soup = BeautifulSoup(website_content, "lxml")

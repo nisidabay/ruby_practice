@@ -1,0 +1,102 @@
+••• Linux -  cut: Print the first field out of a CSV file
+
+$ cut -d: -f1 passwd.bak 
+
+>>> output:
+root
+daemon
+
+••• Linux -  cut: Print the first field out of CSV output from another command
+
+$ head -1 /etc/passwd | cut -d: -f1 
+
+>>> output:
+root
+
+••• Linux -  cut: Print the first, second, and seventh field out of a CSV file
+
+To change the field simply change the numbers after `-f` separated by a comma.
+
+$ cut -d: -f1,2,7 passwd.bak 
+
+>>> output:
+root:x:/bin/bash
+
+••• Linux -  cut: Print the third field based on Spaces
+
+$ cut -d  -f3 /etc/motd 
+
+>>> output:
+Ubuntu
+
+••• Linux -  cut: Print the fourth field and everything after that from a command
+
+This command is pretty handy if you wanted to make a script out of the past few 
+commands you ran.
+
+$ history | cut -d" "  -f 4- 
+
+>>> output:
+  ping google.com
+
+••• Linux -  cut: Print up to the 4th field
+
+$ cut -d" "  -f-4 /etc/motd 
+  Welcome to Ubuntu 12.04
+
+••• Linux -  cut: Print all fields between 5 and 8
+
+$ cut -d: -f5-8 passwd 
+
+>>> output:
+  root:/root:/bin/bash
+
+••• Linux -  cut: Output with a different delimiter. Convert : to ,
+
+$ cut --output-delimiter=, -d: -f1- passwd 
+>>> output:
+  root,x,0,0,root,/root,/bin/bash
+
+••• Linux -  cut: Convert space to ,
+
+$ ps -elf | cut --output-delimiter=, -d" " -f1-
+
+>>> output:
+ F,S,UID,,,,,,,,PID,,PPID,,C,PRI,,NI,ADDR,SZ,WCHAN,,STIME,TTY,,,,,,,,,,TIME,CMD
+ 4,S,root,,,,,,,,,1,,,,,0,,0,,80,,,0,-,,6083,poll_s,19:07,?,,,,,,,,00:00:12,/sbin/init
+
+••• Linux -  cut: Output only lines that have a delimiter :
+
+$ cut -s -d: -f1-4 /etc/passwd
+
+>>> output:
+root:x:0:0
+daemon:x:1:1
+bin:x:2:2
+sys:x:3:3
+sync:x:4:65534
+
+••• Linux -  cut: Bytes. Print bytes 1 through 45
+
+$ cut -b1-45 /etc/motd
+
+>>> output:
+Welcome to Ubuntu 12.04 LTS (GNU/Linux 3.2.0-
+
+••• Linux -  cut: Print everything but bytes 10 through 45
+
+$ cut --complement -b10-45 /etc/motd
+>>> output:
+Welcome t29-generic x86_64)
+
+••• Linux -  cut: Print characters 1 through 25
+
+$ cut -c1-25 /etc/motd
+>>> output:
+Welcome to Ubuntu 12.04 L
+
+••• Linux -  cut: Print everything but characters 10 through 25
+
+$ cut --complement -c10-25 /etc/motd
+>>> output:
+Welcome tTS (GNU/Linux 3.2.0-29-generic x86_64)

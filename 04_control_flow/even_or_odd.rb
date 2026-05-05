@@ -1,10 +1,7 @@
 #!/usr/bin/env ruby
 # frozen_string_literal: true
-#
-# Even or odd
-# This file contains Ruby code for even or odd.
 
-# Check if a number is even or odd
+# even_or_odd.rb — ternary with .even?
 
 def transform_number(value)
   value.even? ? value + 2 : value - 3

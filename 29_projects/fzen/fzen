@@ -1,0 +1,201 @@
+#!/usr/bin/env ruby
+# frozen_string_literal: true
+
+require 'optparse'
+require 'find'
+require 'io/console'
+
+class Fzen
+  IGNORED_DIRS = %w[.git .svn node_modules __pycache__ .bundle vendor].freeze
+  IGNORED_FILES = %w[.DS_Store Thumbs.db].freeze
+
+  def initialize(options = {})
+    @directory = File.expand_path(options[:directory] || Dir.pwd)
+    @action = options[:action] || 'open'
+    @type = options[:type]
+    @show_hidden = options[:hidden] || false
+    @preview = options[:preview] != false
+    @files = []
+    @selected_index = 0
+    @query = ''
+    @running = true
+  end
+
+  def run
+    load_files
+    return puts "No files found in #{@directory}" if @files.empty?
+
+    if $stdout.tty?
+      interactive_mode
+    else
+      list_files
+    end
+  end
+
+  private
+
+  def load_files
+    @files = []
+    Find.find(@directory) do |path|
+      Find.prune if ignore_dir?(path)
+
+      next if File.directory?(path)
+      next if hidden_file?(path) && !@show_hidden
+      next if ignored_file?(path)
+      next if @type && !path.end_with?(".#{@type}")
+
+      @files << path.sub("#{@directory}/", '')
+    end
+  rescue Errno::PermissionDenied
+    Find.prune
+  end
+
+  def ignore_dir?(path)
+    basename = File.basename(path)
+    IGNORED_DIRS.include?(basename)
+  end
+
+  def hidden_file?(path)
+    File.basename(path).start_with?('.')
+  end
+
+  def ignored_file?(path)
+    IGNORED_FILES.include?(File.basename(path))
+  end
+
+  def list_files
+    @files.each { |f| puts f }
+  end
+
+  def interactive_mode
+    setup_terminal
+    render
+
+    while @running
+      handle_input
+      render
+    end
+  ensure
+    restore_terminal
+  end
+
+  def setup_terminal
+    system('stty raw -echo')
+    @original_cursor = `tput civis 2>/dev/null`
+    print @original_cursor if @original_cursor
+  end
+
+  def restore_terminal
+    system('stty cooked echo')
+    print `tput cnorm 2>/dev/null`
+    print "\e[2J\e[H"
+  end
+
+  def handle_input
+    char = $stdin.getch
+
+    case char
+    when "\e"
+      handle_escape_sequence
+    when "\r", "\n"
+      execute_action
+    when "\u0003", 'q'
+      @running = false
+    when "\e[A", 'k'
+      @selected_index = [0, @selected_index - 1].max
+    when "\e[B", 'j'
+      @selected_index = [@filtered.size - 1, @selected_index + 1].min
+    else
+      if char.ord == 127 || char == "\b"
+        @query = @query[0...-1]
+      elsif char =~ /[[:print:]]/
+        @query += char
+      end
+    end
+  end
+
+  def handle_escape_sequence
+    next_char = $stdin.getch
+    return unless next_char == '['
+
+    code = $stdin.getch
+    case code
+    when 'A' then @selected_index = [0, @selected_index - 1].max
+    when 'B' then @selected_index = [@filtered.size - 1, @selected_index + 1].min
+    end
+  end
+
+  def filtered
+    @filtered ||= @files.select do |file|
+      @query.empty? || fuzzy_match(@query.downcase, file.downcase)
+    end
+  end
+
+  def fuzzy_match(query, target)
+    query.chars.all? do |char|
+      target.include?(char) || target.sub!(char, '')
+    end
+  end
+
+  def render
+    return unless @running
+
+    print "\e[2J\e[H"
+
+    puts "\e[1m\e[36mFzen\e[0m - #{@directory}"
+    puts "Query: #{@query}\e[0m"
+    puts "-" * 60
+
+    filtered.each_with_index do |file, idx|
+      if idx == @selected_index
+        print "\e[1m\e[32m> #{file}\e[0m"
+      else
+        print "  #{file}"
+      end
+      puts
+    end
+
+    print "\n\e[2m[Enter] select [Esc/q] quit [j/k] navigate\e[0m"
+  end
+
+  def execute_action
+    selected = filtered[@selected_index]
+    return unless selected
+
+    full_path = File.join(@directory, selected)
+
+    case @action
+    when 'open', 'o'
+      editor = ENV['EDITOR'] || ENV['VISUAL'] || 'nano'
+      system("#{editor} #{Shellwords.escape(full_path)}")
+    when 'delete', 'd'
+      print "\e[2J\e[HDelete #{selected}? [y/N]: "
+      if $stdin.getch.downcase == 'y'
+        File.delete(full_path)
+        puts "\nDeleted: #{selected}"
+      end
+      sleep 0.5
+    when 'copy', 'c'
+      puts selected
+    when 'path', 'p'
+      puts full_path
+    end
+
+    @running = false
+  end
+end
+
+options = { directory: Dir.pwd }
+OptionParser.new do |opts|
+  opts.banner = "Usage: fzen [options] [directory]"
+
+  opts.on('-a', '--action ACTION', 'Action: open, delete, copy, path') { |v| options[:action] = v }
+  opts.on('-t', '--type EXT', 'Filter by file extension') { |v| options[:type] = v }
+  opts.on('-H', '--hidden', 'Show hidden files') { options[:hidden] = true }
+  opts.on('--no-preview', 'Disable preview') { options[:preview] = false }
+  opts.on('-h', '--help', 'Show help') { puts opts; exit }
+end.parse!
+
+options[:directory] = ARGV[0] if ARGV[0]
+
+Fzen.new(options).run

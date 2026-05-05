@@ -1,4 +1,5 @@
 #!/usr/bin/env ruby
+# frozen_string_literal: true
 
 # Problem: You want to add class methods to a class (not instance methods).
 # Example: MathOperations.add(5, 3) should work, but MathOperations.new.add should not.
@@ -28,14 +29,3 @@ end
 puts MathOperations.add(10, 5)
 puts MathOperations.subtract(10, 5)
 puts MathOperations.multiply(10, 5)
-
-# This could also be done like this:
-# Define methods with self. directly in the class:
-#
-# class MathOperations
-#   def self.add(a, b)
-#     a + b
-#   end
-# end
-#
-# MathOperations.add(10, 5)   # Works

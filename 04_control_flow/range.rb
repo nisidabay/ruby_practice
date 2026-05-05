@@ -1,17 +1,10 @@
 #!/usr/bin/env ruby
 # frozen_string_literal: true
-#
-# Range
-# This file contains Ruby code for range.
 
-# Example of ranges
-my_range = 1..10
-puts
+# range.rb — inclusive (..) and exclusive (...) ranges
 
-# Convert to array
-p my_range.to_a
-puts
+p (1..10).to_a   # => [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+p (1...10).to_a  # => [1, 2, 3, 4, 5, 6, 7, 8, 9]
 
-my_range = 'a'...'e'
-p my_range.to_a
-puts
+p ('a'..'e').to_a   # => ["a", "b", "c", "d", "e"]
+p ('a'...'e').to_a  # => ["a", "b", "c", "d"]

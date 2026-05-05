@@ -1,0 +1,737 @@
+••• Python short scripts -  Check internet connection
+
+import socket
+
+IPaddress=socket.gethostbyname(socket.gethostname())
+if IPaddress=="127.0.0.1":
+    print("No internet, your localhost is "+ IPaddress)
+else:
+    print("Connected, with the IP address: "+ IPaddress )
+
+••• Python short scripts -  Count the frequency of words in a text 
+
+from collections import defaultdict
+
+
+def word_count(text):
+    """ Count the frequency of words in a text """
+
+    freq = defaultdict(int)
+
+    for word in text.lower().split():
+        freq[word] += 1
+
+        freq_sorted = sorted(freq.items(), key=lambda x: x[1], reverse=True)
+
+    return freq_sorted
+
+if __name__ == "__main__":
+    print(word_count("This is this a test test message"))
+
+••• Python short scripts -  Counting items
+
+from collections import defaultdict
+
+dep = [("Books", 12345),
+("Books", 2134),
+("Books", 200),
+("Courses", 232323),
+("Courses", 4555)]
+
+dd = defaultdict(int)
+for sells, prices in dep:
+        `dd[sells] += prices`
+
+for k,v in dd.items():
+        print(f"Total spent on {k} ${v:,.2f}")
+        
+
+••• Python short scripts -  Counting employees by department removing duplicates
+
+from collections import defaultdict
+
+dep = [("Sales", "John Doe"),
+("Sales", "Martin Smith"),
+("Sales", "Martin Smith"),
+("Sales", "Martin Smith"),
+("Accounting", "Jane Doe"),
+("Accounting", "Jane Doe"),
+("Marketing", "Elizabeth Smith"),
+("Marketing", "Elizabeth Smith"),
+("Marketing", "Adam Doe")]
+
+dd = defaultdict(set)
+for department, employee in dep:
+        dd[department].add(employee)
+
+for d, e in dd.items():
+        print(f"{d} has {e}")
+
+••• Python short scripts -  Merge two dictionaries
+
+x = {'a': 1, 'b': 2}
+y = {'b': 3, 'c': 4}
+
+>>> z = {**x,y}
+
+••• Python short scripts -  Different ways to test multiple flags at once in Python
+
+x, y, z = 0, 1, 0
+
+if x == 1 or y == 1 or z == 1:
+    print('passed')
+
+if 1 in (x, y, z):
+    print('passed')
+
+These only test for truthiness:
+if x or y or z:
+    print('passed')
+
+if any((x, y, z)):
+    print('passed')
+
+••• Python short scripts -  Ordering employees by department
+
+from collections import defaultdict
+
+dep = [("Sales", "John Doe"),
+("Sales", "Martin Smith"),
+("Accounting", "Jane Doe"),
+("Marketing", "Elizabeth Smith"),
+("Marketing", "Adam Doe")]
+
+dd = defaultdict(list)
+for department, employee in dep:
+        dd[department].append(employee)
+
+for k in dd.items():
+        print(f"{k}")
+
+••• Python short scripts -  How to sort a Python dict by value
+
+xs = {'a': 4, 'b': 3, 'c': 2, 'd': 1}
+sorted(xs.items(), key=lambda x: x[1])
+
+>>> [('d', 1), ('c', 2), ('b', 3), ('a', 4)]
+
+••• Python short scripts -  How to sort a Python dict by value
+
+from operator import itemgetter
+
+xs = {'a': 4, 'b': 3, 'c': 2, 'd': 1}
+sorted(xs.items(), key=itemgetter(1))
+
+>>> [('d', 1), ('c', 2), ('b', 3), ('a', 4)]
+
+
+••• Python short scripts -  Check if a program is installed
+
+def _check_pip() -> bool:
+""" Check if python3-pip is installed """
+
+    pip = subprocess.run(['which', 'pip'],
+    subprocess.PIPE,
+    universal_newlines=True)
+
+    return True if pip.returncode == 0 else False
+
+
+••• Python short scripts -  Sort without affecting the original
+
+names = ['joe', 'jean', 'marcel', 'eric']
+print(sorted(names))
+print(names)
+
+>>> ['eric', 'jean', 'joe', 'marcel']
+>>> ['joe', 'jean', 'marcel', 'eric']
+
+••• Python short scripts -  Sort affecting the original
+
+names = ['joe', 'jean', 'marcel', 'eric']
+names.sort()
+print(names)
+
+>>> ['joe', 'jean', 'marcel', 'eric']
+>>> ['eric', 'jean', 'joe', 'marcel']
+
+••• Python short scripts -  Sort by the last letter of the name
+
+names = ['joe', 'jean', 'marcel', 'eric']
+names.sort(key = lambda name: name[-1])
+print(names)
+
+>>>  ['eric', 'joe', 'marcel', 'jean']
+
+••• Python short scripts -  Sort by the first letter of the name
+names = ['joe', 'jean', 'marcel', 'eric']
+names.sort(key = lambda name: name[0])
+print(names)
+    
+>>>  ['eric', 'jean', 'joe', 'marcel']
+
+••• Python short scripts -  Using map. Applies a function to each element of the list
+
+names = ['joe', 'jean', 'marcel', 'eric']
+capitalized = list(map(lambda name: name.capitalize(), names))
+print(capitalized)
+
+>>> ['Joe', 'Jean', 'Marcel', 'Eric']
+
+••• Python short scripts -  Using filter. Tests a condition like IF
+
+names = ['joe', 'jean', 'marcel', 'eric']
+names_starting_j = list(filter(lambda name: name.startswith('j'), names))
+
+print(names_starting_j)
+
+>>>  ['joe', 'jean']
+
+••• Python short scripts -  Using list comprehension
+
+names_with_J = [ x.capitalize()  for x in names if x.startswith('j')]
+print (names_with_J)
+
+>>>  ['Joe', 'Jean']
+
+••• Python short scripts -  Fibonacci sequence
+
+def fibo(n:int):
+    a = b = 1
+    for i in range(n):
+        yield a
+        a, b = b, a + b
+
+for num in fibo(100):
+    print(num)
+
+••• Python short scripts -  Fibonacci sequence
+
+def fibonacci(n):
+    if n == 0:
+        return 0
+    elif n == 1:
+        return 1
+    else:
+return fibonacci(n-1) + fibonacci(n-2)
+
+••• Python short scripts -  Sendig signals
+
+import signal
+import sys
+
+def ctrl_c(signum, frame):
+    """Abort the execution of the program"""
+    print("[!] Ctrl-C pressed. Aborting ...")
+    sys.exit(1)
+
+signal.signal(signal.SIGINT, ctrl_c)
+
+••• Python short scripts -  Emulate switch/case
+
+def dispatch_if(operator: str, x: int, y: int) -> int:
+    """Simulate switch/case statements"""
+
+    if operator == "add":
+        return x + y
+    elif operator == "sub":
+        return x - y
+    elif operator == "mul":
+        return x * y
+    elif operator == "div":
+        return x / y
+    else:
+        return None
+
+
+def dispatch_dict(operator: str, x: int, y: int) -> int:
+    """Simulate switch/case statements"""
+
+    return {
+        "add": lambda: x + y,
+        "sub": lambda: x - y,
+        "mul": lambda: x * y,
+        "div": lambda: x / y,
+    }.get(operator, lambda: None)()
+
+print(dispatch_if("add", 23, 43))
+print(dispatch_dict("add", 23, 43))
+
+
+••• Python short scripts -  Sort a dictionary by different fields
+
+from operator import itemgetter
+
+products = [
+    {
+        'id': 1,
+        'name': 'Mouse',
+        'price': 35
+    },
+    {
+        'id': 5,
+        'name': 'Keyboard',
+        'price': 70
+    },
+    {
+        'id': 3,
+        'name': 'Headphones',
+        'price': 25
+    },
+    {
+        'id': 2,
+        'name': 'Monitor',
+        'price': 455
+    },
+    {
+        'id': 4,
+        'name': 'Tablet',
+        'price': 299
+    },
+]
+
+by_id = sorted(products, key=itemgetter('id'))
+print(by_id)
+by_price = sorted(products, key=itemgetter('price'))
+print(by_price)
+
+
+••• Python short scripts -  Sort objects by a field
+
+from operator import attrgetter
+from dataclasses import dataclass
+
+@dataclass
+class User:
+    user_id: int = 0
+    name: str = ""
+
+    def __repr__(self):
+        return f"User({self.user_id} - {self.name})"
+
+
+users = [
+    User(7, "Dani"),
+    User(3, "Clara"),
+    User(1, "Sergio"),
+    User(4, "Carlos"),
+    User(2, "Alicia")
+]
+
+print(sorted(users, key=attrgetter('user_id')))
+
+
+••• Python short scripts -  Group objects by a field
+
+from operator import itemgetter
+from itertools import groupby
+
+products = [
+    {
+        'id': 1,
+        'name': 'Mouse',
+        'price': 35,
+        'date': '2022/04/01'
+    },
+    {
+        'id': 5,
+        'name': 'Keyboard',
+        'price': 7,
+        'date': '2022/04/01'
+    },
+    {
+        'id': 3,
+        'name': 'Headphones',
+        'price': 25,
+        'date': '2022/04/02'
+    },
+    {
+        'id': 2,
+        'name': 'Monitor',
+        'price': 455,
+        'date': '2022/04/02'
+    },
+    {
+        'id': 4,
+        'name': 'Tablet',
+        'price': 299,
+        'date': '2022/04/03'
+    },
+]
+
+products.sort(key=itemgetter('date'))
+
+for date, items in groupby(products, key=itemgetter('date')):
+    print(date)
+    for item in items:
+        print(item)
+
+••• Python short scripts -  Measuring execution of time with a context manager
+
+from time import perf_counter
+class Timer:
+    def __enter__(self):
+        self.start = perf_counter()
+        ...
+        self.end = perf_counter()
+        return lambda: self.end - self.start
+
+    def __exit__(self, *args):
+        self.end = perf_counter
+
+with Timer() as timer:
+    # Time-consuming code goes here...
+    sleep(0.5)
+
+••• Python short scripts -  Traversing directories
+
+import os
+
+with os.scandir(".") as entries:
+    for entry in entries:
+        print(entry.name, ->, entry.stat().st_size, "bytes")
+
+••• Python short scripts -  Performing high-precision calculations
+
+from decimal import Decimal, localcontext
+
+with localcontext() as ctx:
+    ctx.prec = 42
+    Decimal("1") / Decimal("12")
+
+••• Python short scripts -  Redirect output to a file with print
+
+with open("hello.txt", "a") as _file:
+    print("Hello world", file=_file)
+
+••• Python short scripts -  Filter strings by length
+
+from itertools import filterfalse
+
+def first_try(text: str, min_length: int) -> int:
+
+    words = text.split(" ")
+    return len([word for word in words if len(word) > min_length])
+
+
+def second_try(text: str, min_length: int) -> int:
+
+    words = text.split(" ")
+    return len(list(filterfalse(lambda x: len(x) < min_length, words)))
+
+if __name__ == "__main__":
+    print(
+        first_try(
+            "This_is a string that has many long words", 5))
+    print(
+        second_try(
+            "This is a string that has many long words", 5))
+
+
+••• Python short scripts -  Count number of words in a sentence
+
+sentence = "I Would like to know how many words I typed?"
+words = len(sentence.split())
+print(words)
+
+# Using re
+import re
+
+sentence = "I Would like to know how many words I typed?"
+words = len(re.findall(r'\w+', sentence))
+print(words)
+
+••• Python short scripts -  Python version
+
+import platform
+print(platform.python_version())
+
+••• Python short scripts -  Generate a random password
+
+import random as r
+from string import ascii_lowercase, ascii_uppercase, digits
+
+p = ascii_lowercase + ascii_uppercase + digits + "%^*(-_=+)"
+print(''.join([p[r.randint(0, len(p) - 1)] for _ in range(10)]))
+
+••• Python short scripts -  Reverse an array using slicing
+
+array = [1, 2, 3, 4, 5, 6]
+print(array[::-1])
+
+#  Using inbuilt reversed() Method
+print((list(reversed(array))))
+
+••• Python short scripts -  Swap two variables
+
+a = 5
+b = 10
+a, b = b, a
+print(f"a is {a} and b is {b}")
+
+••• Python short scripts -  FizzBuzz one-liner
+
+If line number is divisible by 3 print Fizz, by 5 print Buzz
+[
+    print("Fizz" * (i % 3 == 0) + "Buzz" * (i % 5 == 0) or i)
+    for i in range(1, 21)
+]
+
+••• Python short scripts -  Check if a string is palindrome
+
+str1 = "MUO"
+str2 = "mom"
+
+print("Yes") if str1 == str1[::-1] else print("No")
+print("Yes") if str2 == str2[::-1] else print("No")
+
+••• Python short scripts -  Factorial
+
+num1 = 5
+num2 = 0
+
+factorial = lambda num: 1 if num <= 1 else num * factorial(num - 1)
+print(f"factorial of {num1} = {factorial(num1)}")
+print(f"factorial of {num2} = {factorial(num2)}")
+
+# Using a function
+def factorial(n):
+  result = 1
+  for i in range(1, n+1):
+    result *= i
+  return result
+
+••• Python short scripts -  pydoc3 <name>
+
+Show documentation of a keyword, topic, function, module or package.
+
+••• Python short scripts -  pydoc3 -K <keyword>
+
+Search for a keyword in the synopsis lines of all available modules.
+
+••• Python short scripts -  pydoc3 -n localhost
+
+Start an http Server with the given hostname. Default: localhost.
+
+••• Python short scripts -  pydoc3 -p <port>
+
+Start an http Server on the given port on the local machine.
+
+••• Python short scripts -  pydoc3 -b
+
+Start an http Server on an arbitrary unused port and open a web browser to
+interactively browse documentation.
+This option can be used in combination with -n and/or -p.
+
+••• Python short scripts -  pydoc3 -w <name>
+
+Write out the HTML documentation for a module to a file in the current
+directory. If <name> contains a '/' it is treated as a filename; if it names
+a directory, documentation is written for all the contents.
+
+Example: pydoc3 -w collections.namedtuple
+
+••• Python short scripts - Check if an executable file exists
+
+import os
+
+filename = '/path/to/executable'
+if os.path.isfile(filename) and os.access(filename, os.X_OK):
+    print('Executable found')
+else:
+    print('Executable not found')
+
+••• Python short scripts - Subprocess.call
+
+import subprocess
+
+# Run the "ls" command and print the output
+subprocess.call(["ls"])
+
+# Run the "ls -l" command and print the output
+subprocess.call(["ls", "-l"])
+
+# Run the "ls" command and redirect the output to a file
+with open("output.txt", "w") as f:
+    subprocess.call(["ls"], stdout=f)
+
+# Run the "ls" command, redirect the output to a file, and print the exit status
+with open("output.txt", "w") as f:
+    return_code = subprocess.call(["ls"], stdout=f)
+    print(f"Return code: {return_code}")
+
+••• Python short scripts - Check if an executable file exists
+
+import subprocess
+
+# Check if the "ls" command is installed
+try:
+    result = subprocess.run(["ls"], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+except FileNotFoundError:
+    print("Command not found")
+else:
+    print("Command found")
+
+••• Python short scripts - Check if an executable file exits
+
+import subprocess
+
+# Check if the "ls" command is installed
+result = subprocess.run(["which", "ls"], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+if result.returncode == 0:
+    print("Command found")
+else:
+    print("Command not found")
+
+••• Python short scripts - Run command in a subshell
+
+import subprocess
+
+# Run the "ls" command in a subshell
+subprocess.call("ls", shell=True)
+
+# Run the "ls -l" command in a subshell
+subprocess.call("ls -l", shell=True)
+
+# Run the "ls" command directly (no subshell)
+subprocess.call(["ls"])
+
+# Run the "ls -l" command directly (no subshell)
+subprocess.call(["ls", "-l"])
+
+••• Python short scripts - Get output from a command
+
+import subprocess
+
+
+# Run the "ls -l" command and print the output
+
+process = subprocess.Popen(["ls", "-l"], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+output, error = process.communicate()
+print(output.decode())
+
+# Run the "ls" command and send input to it
+
+process = subprocess.Popen(["ls"], stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+output, error = process.communicate(input=b"test\n")
+print(output.decode())
+
+# Run the "ls" command with a timeout
+
+process = subprocess.Popen(["ls"], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+output, error = process.communicate(timeout=1)
+print(output.decode())
+
+••• Python short scripts - Wait for a process to complete
+
+import subprocess
+
+# Run the "ls -l" command and wait for it to complete
+
+process = subprocess.Popen(["ls", "-l"])
+return_code = process.wait()
+print(f"Return code: {return_code}")
+
+# Run the "ls" command with a timeout
+
+process = subprocess.Popen(["ls"])
+return_code = process.wait(timeout=1)
+print(f"Return code: {return_code}")
+
+••• Python short scripts - Send a signal to a process
+
+import os
+import signal
+
+# Send the SIGINT signal (CTRL+C) to the process with PID 12345
+os.kill(12345, signal.SIGINT)
+
+••• Python short scripts - Tabulate data
+
+    import json
+    import tabulate
+
+    json_data = json.dumps(frequency)
+    # Print the table
+    data = json.loads(json_data)
+    print(
+        tabulate.tabulate(
+            data.items(), headers=["Letter", "Frequency"], tablefmt="fancy_grid"
+        )
+    )
+
+••• Python short scripts - Tabulate data
+
+import json
+from tabulate import tabulate
+
+# Some JSON data
+json_data = '[{"name": "John Smith", "age": 35, "city": "New York"},{"name": "David Smith", "age": 22, "city": "Las Vegas"}]'
+
+# Convert the JSON string into a Python object
+data = json.loads(json_data)
+
+# Print the table
+print(tabulate(data, headers="keys", tablefmt="fancy_grid"))
+
+••• Python short scripts -  Simulate wc command
+
+import pathlib
+import sys
+
+for filename in sys.argv[1:]:
+    path = pathlib.Path(filename)
+    # lines, words, length
+    counts = (
+        (text := path.read_text()).count("\n"),
+        len(text.split()),
+        len(text),
+    )
+print(*counts, path)
+
+••• Python short scripts -  Binary search
+def binary_search(target: int, array: list):
+    if not array:
+        return False
+
+    sorted_array = sorted(array)
+    low, high = 0, len(sorted_array) - 1
+
+    while low <= high:
+        mid = (low + high) // 2
+        current = sorted_array[mid]
+        if current == target:
+            return True
+        if target > current:
+        # -->
+            low = mid + 1
+        else:
+        # <--
+            high = mid - 1
+    return False
+
+
+array = [111, 2, 3, 40, 5, 6, 7, 88, 9, 10]
+print(binary_search(111, array))
+
+••• Python short scripts -  Count names in list of lists
+
+def count_names(names: list[list[str]], target: str) -> int:
+    if not names:
+        return 0
+    return sum(target == name for sublist in names for name in sublist)
+
+
+names = [["Nicolas", "Carlos"], ["Diana", "Maria"], ["Sergio",
+                                                     "Natalia"]]
+
+print(count_names(names, "Maria"))
+print(count_names(names, "Carlos"))
+print(count_names(names, "Pepe"))
+
+••• Python short scripts -  Remove duplicates keeping the order
+def remove_duplicates(nums: list[int]) -> list[int]:
+    return list(dict.fromkeys(nums))
+
+
+

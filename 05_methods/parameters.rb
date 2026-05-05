@@ -1,16 +1,11 @@
 #!/usr/bin/env ruby
-# Parameters
-# This file contains Ruby code for parameters.
-
 # frozen_string_literal: true
-#!/usr/bin/ruby
 
-# variable number of parameters
+# parameters.rb — splat operator for variadic methods
+
 def sampledata(*data)
-  p "The number of parameters is #{data.length}"
-  for i in 0..data.length - 1
-    p "The parameter is #{data[i]}"
-  end
+  puts "The number of parameters is #{data.length}"
+  data.each_with_index { |d, i| puts "Parameter [#{i}] = #{d}" }
 end
 
 sampledata('Carlos', 57, 'M')

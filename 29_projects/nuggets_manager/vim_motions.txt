@@ -1,0 +1,20 @@
+••• Vim - go to start of next method definition
+]m
+
+••• Vim - go to end of next (or current) method definition
+]M
+
+••• Vim - go to start of previous method definition
+[m
+
+••• Vim - go to end of previous method definition
+[M
+
+••• Vim - go to start of next module or class definition.
+]]
+
+••• Vim - go to start of previous module or class definition.
+[[
+
+••• Vim - jump between matching keyword pairs
+%

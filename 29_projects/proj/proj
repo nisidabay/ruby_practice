@@ -1,0 +1,323 @@
+#!/usr/bin/env ruby
+# frozen_string_literal: true
+
+require 'optparse'
+require 'json'
+require 'fileutils'
+require 'find'
+
+class Proj
+  DATA_DIR = File.expand_path('~/.config/proj')
+  DATA_FILE = File.join(DATA_DIR, 'projects.json')
+
+  def initialize(options = {})
+    @data_dir = DATA_DIR
+    @data_file = DATA_FILE
+    @sort = options[:sort] || 'recent'
+    @format = options[:format] || 'path'
+    FileUtils.mkdir_p(@data_dir)
+    @projects = load_projects
+  end
+
+  def run(args)
+    command = args.shift
+
+    case command
+    when 'add' then add_project(args)
+    when 'remove', 'rm' then remove_project(args)
+    when 'scan' then scan_directory(args)
+    when 'list', 'ls' then list_projects(args)
+    when nil, '' then find_project(args)
+    when 'path' then show_path(args)
+    when 'edit' then edit_project(args)
+    when 'run' then run_in_project(args)
+    when 'refresh' then refresh_all(args)
+    when 'clean' then clean_deleted(args)
+    when 'info' then show_info(args)
+    else find_project([command] + args)
+    end
+  end
+
+  private
+
+  def load_projects
+    return {} unless File.exist?(@data_file)
+    JSON.parse(File.read(@data_file))
+  rescue JSON::ParserError
+    {}
+  end
+
+  def save_projects
+    File.write(@data_file, JSON.pretty_generate(@projects))
+  end
+
+  def add_project(args)
+    return puts "Usage: proj add <path>" if args.empty?
+
+    path = File.expand_path(args[0])
+    return puts "\e[31mPath not found: #{path}\e[0m" unless File.directory?(path)
+
+    name = File.basename(path)
+    git_root = find_git_root(path)
+    language = detect_language(path)
+
+    @projects[name] = {
+      'path' => path,
+      'name' => name,
+      'git_root' => git_root,
+      'language' => language,
+      'added_at' => Time.now.iso8601,
+      'last_accessed' => Time.now.iso8601,
+      'access_count' => 0
+    }
+
+    save_projects
+    puts "\e[32mAdded: #{name} -> #{path}\e[0m"
+  end
+
+  def remove_project(args)
+    return puts "Usage: proj remove <name>" if args.empty?
+
+    name = args[0]
+    if @projects.delete(name)
+      save_projects
+      puts "\e[32mRemoved: #{name}\e[0m"
+    else
+      puts "\e[31mProject not found: #{name}\e[0m"
+    end
+  end
+
+  def scan_directory(args)
+    base = args[0] || Dir.pwd
+    depth = args.find { |a| a.match?(/^--depth=/) }&.split('=')&.last&.to_i || 3
+
+    base = File.expand_path(base)
+    return puts "\e[31mDirectory not found: #{base}\e[0m" unless File.directory?(base)
+
+    puts "Scanning #{base} (depth: #{depth})..."
+
+    added = 0
+    Find.find(base) do |path|
+      Find.prune if path.split('/').size > base.split('/').size + depth
+
+      if File.directory?(path) && File.exist?(File.join(path, '.git'))
+        name = File.basename(path)
+        unless @projects.key?(name)
+          @projects[name] = {
+            'path' => path,
+            'name' => name,
+            'git_root' => path,
+            'language' => detect_language(path),
+            'added_at' => Time.now.iso8601,
+            'last_accessed' => Time.now.iso8601,
+            'access_count' => 0
+          }
+          added += 1
+          puts "  \e[32m+\e[0m #{name}"
+        end
+      end
+    end
+
+    save_projects
+    puts "\e[32mAdded #{added} projects\e[0m"
+  end
+
+  def list_projects(args)
+    filter = args[0]
+    language = args.find { |a| a.start_with?('--lang=') }&.split('=')&.last
+
+    projects = @projects.values
+
+    # Filter by language
+    projects = projects.select { |p| p['language'] == language } if language
+
+    # Filter by name
+    projects = projects.select { |p| p['name']&.downcase&.include?(filter&.downcase) } if filter
+
+    # Sort
+    projects = sort_projects(projects)
+
+    if projects.empty?
+      puts "No projects found"
+      return
+    end
+
+    projects.each do |proj|
+      name = proj['name']
+      lang = proj['language'] ? "\e[36m[#{proj['language']}]\e[0m" : ""
+      accessed = Time.parse(proj['last_accessed'])
+      days = ((Time.now - accessed) / 86400).to_i
+      time_str = days == 0 ? "today" : (days == 1 ? "yesterday" : "#{days}d ago")
+
+      if @format == 'json'
+        puts JSON.generate(proj)
+      else
+        puts "#{name} #{lang} \e[90m#{time_str}\e[0m"
+      end
+    end
+
+    puts "\n\e[90m#{projects.size} projects\e[0m"
+  end
+
+  def find_project(args)
+    query = args[0]
+    return list_projects([]) unless query
+
+    # Fuzzy match project name
+    matches = @projects.keys.select { |name| name.downcase.include?(query.downcase) }
+
+    if matches.empty?
+      # Try fuzzy character matching
+      matches = @projects.keys.select do |name|
+        query.downcase.chars.all? { |c| name.downcase.include?(c) }
+      end
+    end
+
+    if matches.empty?
+      puts "\e[31mNo project found: #{query}\e[0m"
+      return
+    end
+
+    if matches.size == 1
+      project = @projects[matches.first]
+      output_project(project)
+    else
+      # Multiple matches - show list
+      matches.each { |name| puts name }
+    end
+  end
+
+  def output_project(project)
+    project['last_accessed'] = Time.now.iso8601
+    project['access_count'] = (project['access_count'] || 0) + 1
+    save_projects
+
+    case @format
+    when 'json'
+      puts JSON.generate(project)
+    when 'path'
+      puts project['path']
+    when 'full'
+      puts "#{project['name']} -> #{project['path']}"
+      puts "Language: #{project['language']}" if project['language']
+      puts "Git: #{project['git_root']}" if project['git_root']
+    else
+      puts project['path']
+    end
+  end
+
+  def show_path(args)
+    name = args[0]
+    return unless name && @projects[name]
+
+    puts @projects[name]['path']
+  end
+
+  def edit_project(args)
+    name = args[0]
+    return puts "Usage: proj edit <name>" unless name
+
+    project = @projects[name]
+    return puts "\e[31mProject not found: #{name}\e[0m" unless project
+
+    editor = ENV['EDITOR'] || ENV['VISUAL'] || 'nano'
+    system("#{editor} #{Shellwords.escape(project['path'])}")
+  end
+
+  def run_in_project(args)
+    name = args.shift
+    cmd = args.join(' ')
+
+    return puts "Usage: proj run <name> <command>" unless name && cmd
+
+    project = @projects[name]
+    return puts "\e[31mProject not found: #{name}\e[0m" unless project
+
+    Dir.chdir(project['path']) do
+      system(cmd)
+    end
+  end
+
+  def refresh_all(args)
+    @projects.each_value do |proj|
+      if File.directory?(proj['path'])
+        proj['git_root'] = find_git_root(proj['path'])
+        proj['language'] = detect_language(proj['path'])
+      else
+        proj['deleted'] = true
+      end
+    end
+
+    save_projects
+    puts "\e[32mRefreshed #{@projects.size} projects\e[0m"
+  end
+
+  def clean_deleted(args)
+    before = @projects.size
+    @projects.reject! { |_, p| p['deleted'] || !File.directory?(p['path']) }
+    save_projects
+    puts "\e[32mRemoved #{before - @projects.size} deleted projects\e[0m"
+  end
+
+  def show_info(args)
+    name = args[0]
+    return puts "Usage: proj info <name>" unless name
+
+    project = @projects[name]
+    return puts "\e[31mProject not found: #{name}\e[0m" unless project
+
+    puts "\e[1m#{project['name']}\e[0m"
+    puts "Path: #{project['path']}"
+    puts "Language: #{project['language'] || 'unknown'}"
+    puts "Git root: #{project['git_root'] || 'none'}"
+    puts "Added: #{Time.parse(project['added_at']).strftime('%Y-%m-%d')}"
+    puts "Last accessed: #{Time.parse(project['last_accessed']).strftime('%Y-%m-%d %H:%M')}"
+    puts "Access count: #{project['access_count'] || 0}"
+  end
+
+  def sort_projects(projects)
+    case @sort
+    when 'recent'
+      projects.sort_by { |p| Time.parse(p['last_accessed']) }.reverse
+    when 'name'
+      projects.sort_by { |p| p['name'].downcase }
+    when 'count'
+      projects.sort_by { |p| -(p['access_count'] || 0) }
+    else
+      projects
+    end
+  end
+
+  def find_git_root(path)
+    git_dir = File.join(path, '.git')
+    return path if File.directory?(git_dir)
+
+    parent = File.dirname(path)
+    return nil if parent == path
+
+    find_git_root(parent)
+  end
+
+  def detect_language(path)
+    return 'ruby' if File.exist?(File.join(path, 'Gemfile')) || Dir[File.join(path, '*.rb')].any?
+    return 'javascript' if File.exist?(File.join(path, 'package.json')) && !File.exist?(File.join(path, 'tsconfig.json'))
+    return 'typescript' if File.exist?(File.join(path, 'tsconfig.json'))
+    return 'python' if File.exist?(File.join(path, 'requirements.txt')) || File.exist?(File.join(path, 'pyproject.toml'))
+    return 'rust' if File.exist?(File.join(path, 'Cargo.toml'))
+    return 'go' if File.exist?(File.join(path, 'go.mod'))
+    return 'elixir' if File.exist?(File.join(path, 'mix.exs'))
+    return 'c' if Dir[File.join(path, '*.{c,h}')].any?
+    return 'cpp' if Dir[File.join(path, '*.{cpp,hpp,cc}')].any?
+
+    nil
+  end
+end
+
+OptionParser.new do |opts|
+  opts.banner = "Usage: proj <command> [options]"
+  opts.on('-s', '--sort SORT', 'Sort by: recent, name, count') { |v| options[:sort] = v }
+  opts.on('-f', '--format FORMAT', 'Output format: path, json, full') { |v| options[:format] = v }
+  puts opts if ARGV.include?('-h') || ARGV.include?('--help')
+end.parse!
+
+Proj.new(ARGV).run(ARGV)

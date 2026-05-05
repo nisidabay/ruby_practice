@@ -1,7 +1,9 @@
 #!/usr/bin/env ruby
+# frozen_string_literal: true
 
 # Problem: You want to create a custom collection that works with
 # map, select, find, reject, and other enumeration methods.
+# Example: MyArray.new([1, 2, 3]).select { |x| x > 1 } should just work.
 #
 # Solution: Include Enumerable and implement #each.
 # Result: Get 40+ methods for free!
@@ -22,24 +24,7 @@ end
 # Now we get all Enumerable methods for free!
 collection = MyArray.new([1, 2, 4])
 
-puts collection.map { |x| x * 2 }.to_a.inspect      # [2, 4, 8]
-puts collection.select { |x| x > 1 }.to_a.inspect   # [2, 4]
-puts collection.find { |x| x == 2 }                 # 2
-puts collection.all? { |x| x > 0 }                  # true
-
-# This could also be done like this:
-# Manually define each method (don't do this!):
-#
-# class MyArray
-#   def map
-#     # ... implement map
-#   end
-#
-#   def select
-#     # ... implement select
-#   end
-#
-#   # 40+ more methods...
-# end
-#
-# Include Enumerable = implement #each once, get everything else free!
+puts collection.map { |x| x * 2 }.to_a.inspect # [2, 4, 8]
+puts collection.select { |x| x > 1 }.to_a.inspect # [2, 4]
+puts(collection.find { |x| x == 2 }) # 2
+puts(collection.all?(&:positive?)) # true

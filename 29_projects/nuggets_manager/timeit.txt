@@ -1,0 +1,89 @@
+••• Python - timeit - execute timeit with a UDEF (User-Defined Code)
+import timeit
+
+mycode2 = """
+employees = {
+        "Alice": 100000,
+        "Bob": 99817,
+        "Carol": 122908,
+        "Frank": 88123,
+        "Eve": 93121
+        }
+
+top_earners = [(k, v) for k, v in employees.items() if v >= 100000]
+"""
+print(timeit.timeit(stmt=mycode2, number=1000))
+
+
+••• Python - timeit - execute timeit one time
+import timeit
+
+# Measure the time it takes to execute ord('A') 10,000 times
+tiempo = timeit.timeit("ord('A')", number=10000)
+
+print(tiempo)  # Example output: 0.0003773149999999994
+
+
+••• Python - timeit - execute timeit with statistics
+import timeit
+
+# Measure execution time of ord('A') multiple times for more accurate statistics
+tiempos = timeit.repeat("ord('A')", number=10000, repeat=10)
+
+print(tiempos)  # Example output: [0.000369023, 0.000363778, ...]
+
+
+••• Python - timeit - compare list comprehension vs. for loop
+import timeit
+
+# List comprehension
+list_comp = "[x**2 for x in range(1000)]"
+
+# For loop
+for_loop = """
+result = []
+for x in range(1000):
+    result.append(x**2)
+"""
+
+# Compare execution times
+time_comp = timeit.timeit(stmt=list_comp, number=10000)
+time_loop = timeit.timeit(stmt=for_loop, number=10000)
+
+print(f"List comprehension: {time_comp}")
+print(f"For loop: {time_loop}")
+
+
+••• Python - timeit - measure function performance
+import timeit
+
+def factorial(n):
+    return 1 if n == 0 else n * factorial(n - 1)
+
+# Measure execution time of the factorial function
+execution_time = timeit.timeit("factorial(10)", globals=globals(), number=10000)
+
+print(execution_time)
+
+
+••• Python - timeit - using lambda functions
+import timeit
+
+# Measure the time to sum numbers using a lambda and map
+execution_time = timeit.timeit("sum(map(lambda x: x * 2, range(1000)))", number=10000)
+
+print(execution_time)
+
+
+••• Python - timeit - timing with setup code
+import timeit
+
+# Using setup to initialize data before timing
+execution_time = timeit.timeit(
+    stmt="sorted(data)",
+    setup="import random; data = [random.randint(0, 1000) for _ in range(1000)]",
+    number=1000
+)
+
+print(execution_time)
+

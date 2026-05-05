@@ -1,0 +1,68 @@
+••• Python - Closures - Keep and return the value between function calls
+
+from typing import Callable
+
+
+def mean() -> Callable:
+    sample = []
+
+    def _mean(number: int) -> float:
+        sample.append(number)
+        return sum(sample) / len(sample)
+
+    return _mean
+
+
+if __name__ == "__main__":
+    current_mean = mean()
+    print(current_mean(20))
+    print(current_mean(25))
+    print(current_mean(30))
+
+    print(current_mean.__code__.co_freevars)
+
+
+••• Python Nested Closures 
+
+def incrementer(n):
+
+    def inner(start):
+        current = start
+
+        def inc():
+            nonlocal current
+            current += n
+            return current
+
+        return inc
+
+    return inner
+
+
+if __name__ == "__main__":
+    fn = incrementer(2)
+    inc = fn(5)
+    print(inc())
+    print(inc())
+    print(inc())
+
+
+••• Python - Closures
+
+def inc(n):
+    added = n
+
+    def add(start):
+        nonlocal added
+        added += start
+
+        return added
+
+    return add
+
+
+if __name__ == "__main__":
+    incrementer = inc(5)
+    print(incrementer(100))
+    print(incrementer(100))
+    print(incrementer(100))

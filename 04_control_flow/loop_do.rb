@@ -1,22 +1,14 @@
 #!/usr/bin/env ruby
-# Object-Oriented Programming Examples
-# This file demonstrates Ruby OOP concepts including classes and modules.
-# Shows inheritance, polymorphism, and encapsulation.
-
 # frozen_string_literal: true
 
-# !/usr/bin/ruby
+# loop_do.rb — infinite loop with break
 
 loop do
   print "Enter the magic word to 'exit' the loop: "
   input = gets&.chomp
-  break if input.nil?
+  break if input.nil? || input.include?('exit')
 
-  if input.include?('exit')
-    puts "You entered the magic word: #{input}"
-    puts 'Leaving loop'
-    break
-  else
-    puts "You're still trapped"
-  end
+  puts "You're still trapped"
 end
+
+puts 'Leaving loop'

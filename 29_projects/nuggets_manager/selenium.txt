@@ -1,0 +1,11 @@
+••• Python - Selenium basic skeleton
+
+import os
+from selenium import webdriver
+
+website = "https://www.adamchoi.co.uk/teamgoals/detailed"
+
+driver = webdriver.Firefox()
+driver.get(website)
+
+

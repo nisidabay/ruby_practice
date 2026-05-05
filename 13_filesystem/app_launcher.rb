@@ -1,10 +1,8 @@
 #!/usr/bin/env ruby
 # frozen_string_literal: true
-#
-# App launcher
-# This file contains Ruby code for app launcher.
 
-# Find and launch applications in Desktop entries
+# app_launcher.rb — find and launch applications from .desktop entries via fzf
+
 require 'open3'
 
 INCLUDE_TERMINAL_APPS = true
@@ -13,7 +11,6 @@ DIRS = ['/usr/share/applications', File.expand_path('~/.local/share/applications
 
 app_list = []
 
-# Helper to read .desktop files line-by-line
 def parse_desktop(filepath)
   data = { 'Name' => '', 'Exec' => '', 'Terminal' => 'false' }
   File.readlines(filepath).each do |line|
@@ -28,10 +25,9 @@ def parse_desktop(filepath)
   data
 end
 
-# 1. Collect Standard Apps
+# Standard Apps
 DIRS.each do |dir|
   next unless Dir.exist?(dir)
-
   Dir.glob(File.join(dir, '**/*.desktop')).each do |file|
     app = parse_desktop(file)
     next if app['Name'].empty? || app['Exec'].empty?
@@ -44,10 +40,9 @@ DIRS.each do |dir|
   end
 end
 
-# 2. Collect Flatpaks
+# Flatpaks
 if system('command -v flatpak > /dev/null 2>&1')
   flatpak_out, = Open3.capture2('flatpak list --app --columns=application,name')
-
   flatpak_out.each_line do |line|
     id, name = line.strip.split("\t")
     next if id.nil? || id.empty?
@@ -56,7 +51,6 @@ if system('command -v flatpak > /dev/null 2>&1')
       '/var/lib/flatpak/exports/share/applications',
       File.expand_path('~/.local/share/flatpak/exports/share/applications'),
     ]
-
     fp_dirs.each do |d|
       path = File.join(d, "#{id}.desktop")
       next unless File.exist?(path)
@@ -70,7 +64,7 @@ end
 
 exit if app_list.empty?
 
-# 3. UI Selection
+# UI via fzf
 fzf_cmd = [
   'fzf', '--style', 'full', '--delimiter', '|', '--with-nth', '1,2',
   '--height', '40%', '--layout', 'reverse', '--border',
@@ -84,10 +78,9 @@ Open3.popen2(*fzf_cmd) do |stdin, stdout, _wait_thr|
   selected = stdout.read.strip
 end
 
-# 4. Launch
 unless selected.nil? || selected.empty?
   cmd = selected.split('|')[1].strip
-  # Run the program and detach it so it stays open when the script finishes
   pid = Process.spawn(cmd, %i[out err] => '/dev/null')
   Process.detach(pid)
 end
+

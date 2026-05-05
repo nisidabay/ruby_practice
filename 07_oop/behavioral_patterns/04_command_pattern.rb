@@ -1,27 +1,14 @@
 #!/usr/bin/env ruby
+# frozen_string_literal: true
 
-# Problem: You want to support undo/redo operations or queue requests as objects.
-# Example: A text editor where every action (write, delete, paste) can be undone and redone.
-#
-# Solution: Encapsulate each request as a command object with execute and undo methods.
-# Visibility: Commands are standalone objects, invoker manages execution history.
+# command_pattern.rb — encapsulate actions as objects for undo/redo
 
 class TextEditor
+  attr_accessor :text
+
   def initialize
     @text = ""
   end
-
-  def write(text)
-    @text += text
-    puts "  [Text: \"#{@text}\"]"
-  end
-
-  def delete_last
-    @text = @text[0...-1]
-    puts "  [Text: \"#{@text}\"]"
-  end
-
-  attr_reader :text
 end
 
 class WriteCommand
@@ -31,14 +18,13 @@ class WriteCommand
   end
 
   def execute
-    @editor.write(@text)
+    @editor.text += @text
+    puts "  [Text: \"#{@editor.text}\"]"
   end
 
   def undo
-    # Remove the exact text we added
-    current = @editor.text
-    if current.end_with?(@text)
-      @editor.instance_variable_set(:@text, current[0...-@text.length])
+    if @editor.text.end_with?(@text)
+      @editor.text = @editor.text[0...-@text.length]
       puts "  [Undid write: removed \"#{@text}\"]"
     end
   end
@@ -57,78 +43,33 @@ class CommandHistory
   end
 
   def undo
-    return puts "  [Nothing to undo]" if @history.empty?
-
-    command = @history.pop
-    @redo_stack << command
-    command.undo
+    return puts("  [Nothing to undo]") if @history.empty?
+    cmd = @history.pop
+    @redo_stack << cmd
+    cmd.undo
   end
 
   def redo
-    return puts "  [Nothing to redo]" if @redo_stack.empty?
-
-    command = @redo_stack.pop
-    @history << command
-    command.execute
+    return puts("  [Nothing to redo]") if @redo_stack.empty?
+    cmd = @redo_stack.pop
+    @history << cmd
+    cmd.execute
   end
 end
 
-# Usage: Create editor and history, then execute commands
 editor = TextEditor.new
 history = CommandHistory.new
 
-puts "--- Editing Session ---"
+puts "--- Editing ---"
 history.execute(WriteCommand.new(editor, "Hello "))
 history.execute(WriteCommand.new(editor, "World"))
 history.execute(WriteCommand.new(editor, "!"))
 
-puts "\n--- Undo Operations ---"
-history.undo  # Removes "!"
-history.undo  # Removes "World"
+puts "\n--- Undo ---"
+history.undo
+history.undo
 
-puts "\n--- Redo Operations ---"
-history.redo  # Restores "World"
-history.redo  # Restores "!"
+puts "\n--- Redo ---"
+history.redo
+history.redo
 
-# Alternative: Memento pattern for simple undo (store state snapshots)
-# For simple undo, store previous state instead of command objects:
-
-class SimpleTextEditor
-  def initialize
-    @text = ""
-    @history = []
-  end
-
-  def write(text)
-    @history << @text.dup  # Save state before change
-    @text += text
-    puts "  [Text: \"#{@text}\"]"
-  end
-
-  def delete_last
-    @history << @text.dup
-    @text = @text[0...-1]
-    puts "  [Text: \"#{@text}\"]"
-  end
-
-  def undo
-    return puts "  [Nothing to undo]" if @history.empty?
-
-    @text = @history.pop
-    puts "  [Undone! Text: \"#{@text}\"]"
-  end
-
-  attr_reader :text
-end
-
-puts "\n--- Memento-style Undo ---"
-editor = SimpleTextEditor.new
-
-editor.write("Hello ")
-editor.write("World")
-editor.write("!")
-
-puts "\n--- Undo Operations ---"
-editor.undo
-editor.undo
-editor.undo

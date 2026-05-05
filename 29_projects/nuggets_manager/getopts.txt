@@ -1,0 +1,67 @@
+••• Bash - Getopts
+#!/usr/bin/env bash
+
+# Initialize option counter
+opt_counter=0
+
+# Function to display help
+show_help() {
+  echo "Usage: $0 -d <host_folder> -f <files>"
+  echo "Options:"
+  echo "  -h              Display this help message"
+  echo "  -d <directory>  Specify the host folder"
+  echo "  -f <files>      Specify the files to transfer"
+  exit 1
+}
+
+# Colors for error messages
+red='\033[0;31m'
+reset='\033[0m'
+
+# Processing options
+while getopts ":hd:f:" option; do
+  case $option in
+    d)
+      host_folder=$OPTARG
+      ((opt_counter+=1))
+      ;;
+    f)
+      files=$OPTARG
+      ((opt_counter+=1))
+      ;;
+    h) 
+      show_help
+      ;;
+    \?)
+      echo -e "${red}[-] Invalid option: -$OPTARG${reset}"
+      show_help
+      ;;
+    :)
+      echo -e "${red}[-] Missing value for the argument: -$OPTARG${reset}"
+      show_help
+      ;;
+  esac
+done
+
+# Shift off the options and optional --
+shift $((OPTIND - 1))
+
+# Check if the required options were not provided
+if [ "$opt_counter" -eq 0 ] || [ "$opt_counter" -ne 2 ]; then
+    show_help
+else
+    check_program_dependencies
+    transfer_files
+fi
+
+# Placeholder functions for dependencies check and file transfer
+check_program_dependencies() {
+  echo "Checking program dependencies..."
+  # Add actual dependency check logic here
+}
+
+transfer_files() {
+  echo "Transferring files from $host_folder..."
+  # Add file transfer logic here
+}
+

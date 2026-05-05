@@ -1,108 +1,94 @@
 #!/usr/bin/env ruby
 # frozen_string_literal: true
-# Array Operations
-# This file demonstrates various array operations and methods.
-# Shows enumeration, transformation, and filtering operations.
 
+# arrays.rb — Array reference
 
-# Ruby Array Operations
+# Creation
+a = []                      # empty
+a = Array.new(3)            # [nil, nil, nil]
+a = Array.new(3, 'x')       # ["x", "x", "x"]
+a = Array.new(3) { |i| i**2 } # [0, 1, 4]
+a = [1, 2, 3, 4, 5]        # literal
+a = Array(0..4)             # [0, 1, 2, 3, 4] from range
 
-# Create an empty array
-empty_array = []
-puts "Empty array: #{empty_array.inspect}"
+# Access
+p [10,20,30].at(1)          # => 20
+p [10,20,30,40,50].values_at(0, 2, 4)  # => [10, 30, 50]
+p [10,20,30].slice(1, 2)    # => [20, 30]
+p [[1,2],[3,[4,5]]].dig(1, 1, 0)       # => 4
+p [1,2,3,4,5].first(3)      # => [1, 2, 3]
+p [1,2,3,4,5].last(2)       # => [4, 5]
 
-# Create an array with a specified size (filled with nil by default)
-sized_array = Array.new(20)
-puts "Array with size 20: #{sized_array.inspect}"
+# Add/Remove
+a = [1, 2, 3]
+a << 4                       # [1, 2, 3, 4]
+a.push(5)                    # [1, 2, 3, 4, 5]
+p a.pop                      # => 5
+a.unshift(0)                 # [0, 1, 2, 3, 4]
+p a.shift                    # => 0
+a.insert(1, 'x')             # [1, 'x', 2, 3, 4]
+a.delete('x')                # [1, 2, 3, 4]
+a.delete_if { |e| e.even? }  # [1, 3]
 
-# Get the size of the array
-puts "Size of the array: #{sized_array.size}"
-puts "Length of the array: #{sized_array.length}"
+# Iteration
+[1, 2, 3].each { |e| puts e }
+(1..4).each_slice(2) { |s| p s }  # [1,2] then [3,4]
+(1..3).each_cons(2) { |s| p s }   # [1,2] then [2,3]
 
-# Assign a default value to all elements during creation
-default_array = Array.new(4, 'Nil')
-puts "Array with default 'Nil' values: #{default_array.inspect}"
+# Transformation
+p [1, 2, 3].map { |e| e * 2 }     # => [2, 4, 6]
+p [1, 2, 3].select(&:even?)       # => [2]
+p [1, 2, 3].reject(&:even?)       # => [1, 3]
 
-# Assign values to an array using a block (indices raised to the power of 2)
-squared_array = Array.new(10) { |index| index**2 }
-puts "Array with squares of indices: #{squared_array.inspect}"
+# Search
+p [1..10].find { |n| n > 5 }      # => 6
+p [1,3,5,7].bsearch { |n| n >= 5 } # => 5
 
-# Create an array using a literal
-number_array = [1, 2, 3, 4, 5]
-puts "Array using a literal: #{number_array.inspect}"
+# Flatten, Compact, Uniq
+p [1, [2, [3]]].flatten           # => [1, 2, 3]
+p [1, nil, 2].compact             # => [1, 2]
+p [1, 2, 2, 3].uniq               # => [1, 2, 3]
 
-# Create an array from a range
-range_array = Array(0..9)
-puts "Array from range 0..9: #{range_array.inspect}"
+# Set-like ops
+a, b = [1, 2, 3], [3, 4, 5]
+p a + b             # => [1, 2, 3, 3, 4, 5] (concat)
+p a - b             # => [1, 2] (difference)
+p a.intersection(b) # => [3]
+p a.union(b)        # => [1, 2, 3, 4, 5]
 
-# Access elements by index
-sample_array = Array(0..11)
-puts "Array from range 0..11: #{sample_array.inspect}"
-puts "Element at index 2: #{sample_array.at(2)}" # Safely access element at index 2
-puts "Element at index 3: #{sample_array.at(3)}" # Safely access element at index 3
+# Count & Check
+p [1, 2, 3].count               # => 3
+p [1, 2, 2].count(2)            # => 2
+p [1, 2, 3].count(&:even?)      # => 1
+p [].empty?                      # => true
+p [1, 2, 3].include?(2)         # => true
 
-# Array modification examples
-mutable_array = sample_array.dup
-mutable_array << 'word'
-puts "Array after adding 'word': #{mutable_array.inspect}"
+# Sorting
+p [3, 1, 2].sort                 # => [1, 2, 3]
+p %w[pear apple].sort_by(&:length) # => ["pear", "apple"]
 
-mutable_array.push('letter')
-puts "Array after pushing 'letter': #{mutable_array.inspect}"
+# Min/Max/Sum
+p [5, 2, 8, 1].min               # => 1
+p [5, 2, 8, 1].max               # => 8
+p [5, 2, 8, 1].minmax            # => [1, 8]
+p [1, 2, 3].sum                  # => 6
 
-puts "Popped element: #{mutable_array.pop}"
+# Combo & Perm & Zip & Transpose
+p [1, 2, 3].combination(2).to_a  # => [[1,2],[1,3],[2,3]]
+p [1, 2, 3].permutation(2).to_a  # => all ordered pairs
+p %w[a b].zip([1, 2])            # => [["a",1],["b",2]]
+p [[1,2],[3,4],[5,6]].transpose  # => [[1,3,5],[2,4,6]]
 
-# String operations with arrays
-names = %w[carlos alicia sergio clara dani]
-puts "Joined names: #{names.join('-')}"
+# Sampling & Shuffling
+p [1, 2, 3].sample               # random element
+p [1, 2, 3].shuffle              # random order
+p [1, 2, 3].rotate(1)            # => [2, 3, 1]
+p [1, 2, 3].reverse              # => [3, 2, 1]
 
-# String splitting examples
-puts "Splitting on non-word characters: #{'This is a test'.split(/\W+/).inspect}"
+# Fill
+p [0,0,0,0,0].fill(7)            # => [7, 7, 7, 7, 7]
+p [0,0,0,0,0].fill(9, 2, 2)      # => [0, 0, 9, 9, 0]
 
-puts "Splitting on periods: #{'Short sentence. Another. No more.'.split('.').inspect}"
-
-puts "Splitting on spaces: #{'Words with lots of spaces'.split(/\s+/).inspect}"
-
-# Array iteration examples
-test_array = [1, 'test', 2, 3, 4]
-test_array.each { |element| puts "Element: #{element}" }
-
-# Array transformation examples (map and collect are aliases)
-# This methods are the same
-numbers = [1, 2, 3]
-puts "Doubled elements: #{numbers.map { |element| element * 2 }.inspect}"
-puts "Triple elements: #{numbers.collect { |element| element * 3 }.inspect}"
-
-# Create and iterate over an array with initialized values
-numbers = Array.new(10) { |index| index * 2 }
-numbers.each do |number|
-  puts "Number: #{number}"
-end
-
-# Array concatenation
-x = [1, 2, 3]
-y = %w[a b c]
-z = x + y
-p z
-
-# Array subtraction and difference
-x = [1, 2, 3, 4, 5]
-y = [1, 2, 3]
-z = x - y
-p z
-
-# Checking for an empty array
-w = []
-p 'w is empty' if w.empty?
-
-# Checking an array for a certain item
-x = [1, 3, 4]
-p x.include?('x')
-p x.include?(3)
-
-# Array filtering with select (returns elements that match condition)
-numbers = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
-p "Even numbers: #{numbers.select(&:even?).inspect}"
-p "Odd numbers: #{numbers.reject(&:even?).inspect}"
-
-# Find first element matching condition
-p "First number > 5: #{numbers.find { |n| n > 5 }}"
+# Chunk
+data = [1,1,2,2,1,1]
+data.chunk { |n| n }.each { |val, items| p [val, items] }

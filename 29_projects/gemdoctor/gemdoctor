@@ -1,0 +1,283 @@
+#!/usr/bin/env ruby
+# frozen_string_literal: true
+
+require 'optparse'
+require 'json'
+require 'yaml'
+
+class Gemdoctor
+  def initialize(options = {})
+    @severity = options[:severity] || 'all'
+    @json_output = options[:json] || false
+    @dry_run = options[:dry_run] || false
+    @bundle = options[:bundle] != false
+  end
+
+  def run(args)
+    command = args.shift || 'audit'
+
+    case command
+    when 'audit' then audit_gems(args)
+    when 'outdated', 'out' then outdated_gems(args)
+    when 'unused' then unused_gems(args)
+    when 'update', 'up' then update_gems(args)
+    when 'clean' then clean_gems(args)
+    when 'list', 'ls' then list_gems(args)
+    when 'check' then check_vulnerabilities(args)
+    else
+      puts "Unknown command: #{command}"
+      puts "Use 'gemdoctor --help' for usage"
+    end
+  end
+
+  private
+
+  def audit_gems(args)
+    puts "\e[1m\e[36mAuditing gems...\e[0m\n"
+
+    vulnerabilities = check_vulnerabilities(args)
+    outdated = get_outdated
+
+    puts "\n\e[1mVulnerabilities:\e[0m"
+    if vulnerabilities.empty?
+      puts "\e[32mNo vulnerabilities found\e[0m"
+    else
+      vulnerabilities.each do |vuln|
+      severity = vuln['severity'] || 'unknown'
+      color = severity == 'critical' ? 31 : (severity == 'high' ? 33 : 34)
+      puts "  \e[#{color}m#{vuln['gem']} #{vuln['version']}: #{vuln['advisory']}\e[0m"
+      puts "    #{vuln['description']}" if vuln['description']
+    end
+    end
+
+    puts "\n\e[1mOutdated gems:\e[0m"
+    if outdated.empty?
+      puts "\e[32mAll gems up to date\e[0m"
+    else
+      outdated.first(10).each do |gem|
+        puts "  \e[33m#{gem['name']}\e[0m #{gem['installed']} -> #{gem['latest']}"
+      end
+      puts "  \e[90m... and #{outdated.size - 10} more\e[0m" if outdated.size > 10
+    end
+
+    puts "\n\e[90mRun 'gemdoctor update' to update gems\e[0m"
+    vulnerabilities.any?
+  end
+
+  def check_vulnerabilities(args)
+    return [] unless @bundle
+
+    # Try bundler-audit first
+    result = `bundle audit check 2>&1`
+    return parse_bundler_audit(result) if $?.success?
+
+    # Fall back to checking known vulnerabilities
+    []
+  rescue => e
+    puts "\e[31mError checking vulnerabilities: #{e.message}\e[0m"
+    []
+  end
+
+  def parse_bundler_audit(result)
+    vulnerabilities = []
+
+    result.lines.each do |line|
+      if line.match(/^Name: (.+)$/)
+        @current_gem = $1.strip
+      elsif line.match(/^Version: (.+)$/)
+        @current_version = $1.strip
+      elsif line.match(/Advisory: (.+)$/)
+        vulnerabilities << {
+          'gem' => @current_gem,
+          'version' => @current_version,
+          'advisory' => $1.strip,
+          'severity' => 'critical'
+        }
+      end
+    end
+
+    vulnerabilities
+  end
+
+  def get_outdated
+    return [] unless File.exist?('Gemfile.lock')
+
+    result = `bundle outdated --parseable 2>/dev/null`
+    return [] unless $?.success?
+
+    result.lines.map do |line|
+      match = line.match(/^(\S+) \(newest (\S+), installed (\S+)/)
+      next nil unless match
+
+      {
+        'name' => match[1],
+        'installed' => match[3],
+        'latest' => match[2]
+      }
+    end.compact
+  rescue
+    []
+  end
+
+  def outdated_gems(args)
+    outdated = get_outdated
+
+    if outdated.empty?
+      puts "\e[32mAll gems up to date\e[0m"
+      return
+    end
+
+    if @json_output
+      puts JSON.pretty_generate(outdated)
+      return
+    end
+
+    puts "\e[1mOutdated gems:\e[0m"
+    outdated.each do |gem|
+      puts "#{gem['name'].ljust(30)} #{gem['installed'].ljust(15)} -> #{gem['latest']}"
+    end
+
+    puts "\n\e[90mRun 'bundle update' to update\e[0m"
+  end
+
+  def unused_gems(args)
+    return puts "No Gemfile found" unless File.exist?('Gemfile')
+
+    gemfile = File.read('Gemfile')
+
+    # Get gems from Gemfile
+    gemfile_gems = gemfile.scan(/gem ['"]([^'"]+)['"]/).flatten
+
+    # Try to find require statements in code
+    used_gems = Dir.glob('**/*.rb').flat_map do |file|
+      content = File.read(file) rescue next
+      content.scan(/^require ['"]([^'"]+)['"]/).flatten
+    end.uniq
+
+    # Map require names to gems (approximate)
+    potential_unused = gemfile_gems.select do |gem|
+      require_name = gem.downcase.gsub(/[-_]/, '')
+      !used_gems.any? { |req| req.downcase.gsub(/[-_]/, '') == require_name }
+    end
+
+    if potential_unused.empty?
+      puts "\e[32mNo unused gems detected\e[0m"
+    else
+      puts "\e[1mPotentially unused gems:\e[0m"
+      potential_unused.each { |gem| puts "  #{gem}" }
+      puts "\n\e[90mNote: This is heuristic-based. Verify before removing.\e[0m"
+    end
+  end
+
+  def update_gems(args)
+    return puts "No Gemfile found" unless File.exist?('Gemfile')
+
+    outdated = get_outdated
+
+    if outdated.empty?
+      puts "\e[32mAll gems up to date\e[0m"
+      return
+    end
+
+    level = args[0] || 'patch'
+
+    case level
+    when 'major'
+      puts "\e[33mUpdating all gems to latest versions...\e[0m"
+      system('bundle update') unless @dry_run
+    when 'minor'
+      puts "\e[33mUpdating minor versions...\e[0m"
+      outdated.each do |gem|
+        next if gem['installed'].split('.')[0] != gem['latest'].split('.')[0]
+        system("bundle update #{gem['name']}") unless @dry_run
+      end
+    when 'patch'
+      puts "\e[33mUpdating patch versions...\e[0m"
+      outdated.each do |gem|
+        installed = gem['installed'].split('.')
+        latest = gem['latest'].split('.')
+        next unless installed[0] == latest[0] && installed[1] == latest[1]
+
+        if @dry_run
+          puts "Would update: #{gem['name']}"
+        else
+          system("bundle update #{gem['name']} --patch")
+        end
+      end
+    end
+
+    puts "\e[32mDone\e[0m" unless @dry_run
+  end
+
+  def clean_gems(args)
+    keep = (args[0] || 2).to_i
+
+    puts "\e[1mGems with multiple versions:\e[0m"
+
+    gems = `gem list --local`.lines.map do |line|
+      match = line.match(/^(\S+) \((.+)\)$/)
+      next nil unless match
+
+      versions = match[2].split(', ')
+      { name: match[1], versions: versions } if versions.size > keep
+    end.compact
+
+    gems.each do |gem|
+      puts "#{gem[:name]}: #{gem[:versions].join(', ')}"
+      to_remove = gem[:versions][0..-keep-1]
+      to_remove.each do |version|
+        if @dry_run
+          puts "  Would remove: #{gem[:name]}-#{version}"
+        else
+          system("gem uninstall #{gem[:name]} --version #{version} -I")
+        end
+      end
+    end
+
+    puts "\e[90mKept last #{keep} versions\e[0m"
+  end
+
+  def list_gems(args)
+    only = args[0]
+
+    gems = `gem list --local`.lines.map do |line|
+      match = line.match(/^(\S+) \((.+)\)$/)
+      next nil unless match
+
+      {
+        name: match[1],
+        versions: match[2].split(', ')
+      }
+    end.compact
+
+    case only
+    when 'outdated'
+      outdated = get_outdated.map { |g| g['name'] }
+      gems = gems.select { |g| outdated.include?(g[:name]) }
+    when 'security'
+      # Show gems with security issues (would need bundler-audit)
+    end
+
+    if @json_output
+      puts JSON.pretty_generate(gems)
+    else
+      gems.each do |gem|
+        versions = gem[:versions].join(', ')
+        outdated_info = get_outdated.find { |g| g['name'] == gem[:name] }
+        status = outdated_info ? " \e[33m(-> #{outdated_info['latest']})\e[0m" : ""
+        puts "#{gem[:name].ljust(30)} #{versions}#{status}"
+      end
+    end
+  end
+end
+
+OptionParser.new do |opts|
+  opts.banner = "Usage: gemdoctor <command> [options]"
+  opts.on('-s', '--severity LEVEL', 'Minimum severity: critical, high, medium, all') { |v| options[:severity] = v }
+  opts.on('-j', '--json', 'JSON output') { options[:json] = true }
+  opts.on('-d', '--dry-run', 'Preview changes') { options[:dry_run] = true }
+  opts.on('--no-bundle', 'Skip bundler checks') { options[:bundle] = false }
+  opts.on('-h', '--help', 'Show help') { puts opts; exit }
+end.parse!
+
+Gemdoctor.new(ARGV).run(ARGV)

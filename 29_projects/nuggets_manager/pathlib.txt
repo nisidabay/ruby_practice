@@ -1,0 +1,281 @@
+••• Python - pathlib -  pathlib anatomy
+PosixPath('/home/nisidabay/projects/blog/config.tar.gz')
+
+root = '/'
+anchor = '/'
+parent = '/home/nisidabay/projects/blog'
+name = ' config.tar.gz'
+stem ='config.tar'
+suffix = '.gz'
+suffixes = ['.tar', '.gz']
+
+••• Python - pathlib -  Convert a path to string
+from pathlib import Path
+
+path = Path("/home/nisidabay/projects")
+str(path)
+>>> '/home/nisidabay/projects'
+
+••• Python - pathlib -  Convert a path to PosixPath
+from pathlib import Path
+
+path = Path("/home/nisidabay/projects")
+rpr(path)
+>>> "PosixPath('/home/nisidabay/projects')"
+
+••• Python - pathlib -  Join a path by adding other parts
+from pathlib import Path
+
+1. Pass all the parts to the construtor
+Path(".", "projects", "python","source")
+
+2. Using the / operator to join another path objects
+Path(".","projects", "python") / Path("source")
+
+3. Using the joinpath method
+Path(".", "projects", "python").joinpath("source")
+
+••• Python - pathlib -  Getting the current working directory
+from pathlib import Path
+
+Path.cwd()
+
+••• Python - pathlib -  Getting the home directory
+from pathlib import Path
+
+Path.home()
+
+••• Python - pathlib -  Expand the initial path component
+from pathlib import Path
+
+path = Path("~/Desktop")
+path.expanduser()
+
+••• Python - pathlib -  Expanded path to short version
+from pathlib import Path
+
+path = Path("~/Desktop").expanduser()
+print(path.relative_to(Path.home()))
+
+••• Python - pathlib -  Creating directories
+from pathlib import Path
+
+Path.mkdir()
+
+••• Python - pathlib -  Create a directory if not exists
+if exists won't override it
+
+from pathlib import Path
+
+Path.mkdir(exist_ok=True)
+
+••• Python - pathlib -  Check the contents of a dir
+from pathlib import Path
+
+list(Path.cwd().iterdir())
+
+••• Python - pathlib -  Using isdir to list only the directories
+from pathlib import Path
+
+[ file for file in Path.iterdir() if file.is_dir() ]
+
+••• Python - pathlib -  Getting a list of all subdirectories recursively
+from pathlib import Path
+
+path = Path.home()
+
+[ file for file in path.glob("./*") if file.is_dir() ]
+
+or
+[ file for file in path.rglob("*") if file.is_dir() ]
+
+••• Python - pathlib -  Getting a list of all files
+from pathlib import Path
+
+path = Path.home()
+
+[ file for file in path.iterdir() if file.is_file() ]
+
+
+••• Python - pathlib -  Getting a list of all files recursively
+from pathlib import Path
+
+path = Path.home()
+
+[ file for file in path.rglob("*") if file.is_file() ]
+
+••• Python - pathlib -  Recursively list all files with a given extension or pattern
+from pathlib import Path
+
+path = Path.home()
+
+[ file for file in path.rglob("*") if file.is_file() and file.match(".py") ]
+
+or
+
+[ file for file in path.rglob("*") if file.match(".py") or
+file.match("*.jpeg") or file.match("*.png") ]
+
+••• Python - pathlib -  Change directories with pathlib
+pathlib has no built-in method to change directories
+
+from pathlib import Path
+from os import chdir
+
+Path.cwd() -> '/home/nisidabay'
+
+target_dir = '/Downloads'
+chdir.(target_dir)
+
+••• Python - pathlib -  Delete empty directories
+from pathlib import Path
+
+path = Path("empty_dir")
+path.rmdir()
+
+••• Python - pathlib -  Remove a directory along with its contents
+from pathlib import Path
+
+def remove_all(root: Path):
+    for path in root.iterdir():
+        if path.is_file():
+            print(f'Deleting the file: {path}')
+            path.unlink()
+        else:
+            remove_all(path)
+        print(f'Deleting the empty dir: {root}')
+        root.rmdir()
+
+path = Path('/home/nisidabay/Downloads')
+remove_all(path)
+
+••• Python - pathlib -  Remove a directory along with its contents
+from pathlib import Path
+import shutil
+
+path = Path('/home/nisidabay/Downloads')
+shutil.rmtree(path)
+
+••• Python - pathlib -  Create an empty file
+from pathlib import Path
+
+Path("my_file.txt").touch()
+
+••• Python - pathlib -  Create empty file in a non existing folder
+from pathlib import Path
+
+folder=Path("/home/nisidabay/temp_folder")
+
+folder.mkdir(parents=True, exist_ok=True)
+folder.joinpath("log.txt").touch()
+
+••• Python - pathlib -  How to get the filename from path
+from pathlib import Path
+
+picture=Path("/home/nisidabay/picture.png")
+picture.name
+>>> "picture.png"
+
+••• Python - pathlib -  How to get the filename without extension
+from pathlib import Path
+
+picture=Path("/home/nisidabay/picture.png")
+picture.stem
+>>> "picture"
+
+••• Python - pathlib -  How to get the file extension from a filename
+from pathlib import Path
+
+picture=Path("/home/nisidabay/picture.png")
+picture.suffix
+>>> ".png"
+
+••• Python - pathlib -  Open a file for reading
+from pathlib import Path
+
+p = Path("mytext.txt")
+f = p.open()
+lines = f.readlines()
+f.close()
+
+"with a context manager
+with p.open() as f:
+    lines = f.readlines()
+
+
+••• Python - pathlib -  Read text with pathlib
+from pathlib import Path
+
+p = Path("mytext.txt")
+content = p.read_text()
+
+••• Python - pathlib -  Read JSON file with pathlib
+import json
+from pathlib import Path
+
+response = Path('myfile.json')
+with response.open() as f:
+    resp = json.load(f)
+
+••• Python - pathlib -  Read binary file with pathlib
+from pathlib import Path
+
+picture = Path("pict.png")
+f = picture.open()
+image_bytes = f.read()
+f.close()
+
+"with a context manager
+with picture.open('rb') as f:
+    image_bytes = f.read()
+
+"with read_bytes method
+picture.read_bytes()
+
+••• Python - pathlib -  Writing to a file
+import pathlib
+file_path = pathlib.Path("hello.txt")
+with file_path.open("w") as file:
+    file.write("Hello,Wordl!")
+
+••• Python - pathlib -  Writing to a file and log errors
+import pathlib
+import logging
+
+file_path = pathlib.Path("hello.txt")
+try:
+    with file_path.open(mode="w") as file:
+        file.write("Hello, Wordl!")
+except OSError as error:
+    logging.error("Writing to file %s failed due to: %s", file_path, error)
+
+••• Python - pathlib -  Get the script path
+from pathlib import Path
+path_to_file = Path(__file__).parent.absolute()
+
+••• Python - pathlib -  Count file name extension
+from pathlib import Path
+from collections import Counter
+
+Counter(p.suffix for p in Path.cwd().iterdir())
+
+••• Python - pathlib -  Count specific file extensions
+from pathlib import Path
+from collections import Counter
+
+Counter(p.suffix for p in Path.cwd().glob(*p*))
+
+••• Python - pathlib -  Implement a dir tree
+
+from pathlib import Path
+
+def tree(directory) -> None:
+    print(f"+ {directory}")
+    for path in sorted(directory.rglob("*")):
+        depth = len(path.relative_to(directory).parts)
+        spacer = "   " * depth
+        print(f"{spacer}+ {path.name}")
+
+
+if __name__ == "__main__":
+    tree(Path.cwd())

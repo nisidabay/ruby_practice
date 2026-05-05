@@ -1,0 +1,297 @@
+••• Argparse - Create the parser and set the name of the program
+
+my_parser = argparse.ArgumentParser(prog='myls',
+                                    description='List the content of a folder')
+
+••• Argparse - Displaying a custom program usage help
+
+my_parser = argparse.ArgumentParser(prog='myls',
+                                    usage='%(prog)s [options] path',
+                                    description='List the content of a folder')
+
+••• Argparse - Displaying text before and after the arguments help
+
+my_parser = argparse.ArgumentParser(description='List the content of a folder',
+                                    epilog='Enjoy the program! :)')
+
+••• Argparse - Customizing the allowed prefix chars instead of [-]
+
+my_parser = argparse.ArgumentParser(description='List the content of a folder',
+                                    epilog='Enjoy the program! :)',
+                                    prefix_chars='/')
+
+••• Argparse - Allowing or Disallowing Abbreviations
+
+One of the features that the Python argparse library provides out of the box 
+is the ability to handle abbreviations. 
+
+my_parser = argparse.ArgumentParser()
+my_parser.add_argument('--input', action='store', type=int, required=True)
+my_parser.add_argument('--id', action='store', type=int)
+
+args = my_parser.parse_args()
+
+To disable abbreviations:
+
+my_parser = argparse.ArgumentParser(allow_abbrev=False)
+my_parser.add_argument('--input', action='store', type=int, required=True)
+
+args = my_parser.parse_args()
+
+••• Argparse - Disable Auto Help
+
+my_parser = argparse.ArgumentParser(description='List the content of a folder',
+                                    add_help=False)
+
+args = my_parser.parse_args()
+
+••• Argparse - Setting the Name or Flags of the Arguments
+
+There are basically two different types of arguments that you can add to your 
+command line interface:
+
+Positional arguments
+Optional arguments
+
+Positional arguments are the ones your command needs to operate.
+Optional arguments start with - or --, while positional arguments don’t.
+
+To add an optional argument, you just need to call .add_argument() again and 
+name the new argument with a starting -.
+
+my_parser = argparse.ArgumentParser(description='List the content of a folder')
+
+my_parser.add_argument('Path',
+                       metavar='path',
+                       type=str,
+                       help='the path to list')
+my_parser.add_argument('-l',
+                       '--long',
+                       action='store_true',
+                       help='enable the long listing format')
+args = my_parser.parse_args()
+
+••• Argparse - Setting the Action to Be Taken for an Argument
+
+There are several actions that are already defined and ready to be used. 
+
+store 
+------
+stores the input value to the Namespace object. (This is the default action.)
+
+store_const 
+------------
+stores a constant value when the corresponding optional arguments are specified.
+
+store_true 
+-----------
+stores the Boolean value True when the corresponding optional argument is 
+specified and stores a False elsewhere.
+
+store_false 
+------------
+stores the Boolean value False when the corresponding optional argument is 
+specified and stores True elsewhere.
+
+append 
+-------
+stores a list, appending a value to the list each time the option is provided.
+
+append_const 
+-------------
+stores a list appending a constant value to the list each time the option is 
+provided.
+
+count 
+------
+stores an int that is equal to the times the option has been provided.
+
+help 
+-----
+shows a help text and exits.
+
+version 
+--------
+shows the version of the program and exits.
+
+••• Argparse - Setting the Number of Values That Should Be Consumed by the Option
+
+The parser, by default, assumes that you’ll consume a single parameter for each 
+argument, but you can modify this default behavior by specifying a different 
+number of values with the nargs keyword.
+
+You can specify the number of arguments: 
+
+my_parser = argparse.ArgumentParser()
+my_parser.add_argument('--input', action='store', type=int, nargs=3)
+
+args = my_parser.parse_args()
+
+print(args.input)
+Now, the program accepts three values for the --input parameter:
+
+$ python nargs_example.py --input 42
+usage: nargs_example.py [-h] [--input INPUT INPUT INPUT]
+nargs_example.py: error: argument --input: expected 3 arguments
+
+••• Argparse - nargs keyword arguments
+
+?: a single value, which can be optional
+*: a flexible number of values, which will be gathered into a list
++: like *, but requiring at least one value
+
+argparse.REMAINDER: all the values that are remaining in the command line
+
+••• Argparse - Setting a Default Value if the Argument Is Missing
+
+my_parser = argparse.ArgumentParser()
+my_parser.add_argument('-a', action='store', default='42')
+
+args = my_parser.parse_args()
+
+print(vars(args))
+
+••• Argparse - Setting the Type of the Argument
+
+By default, all the input argument values are treated as if they were strings. 
+You can change this behaviour with the type keyword:
+
+my_parser = argparse.ArgumentParser()
+my_parser.add_argument('-a', action='store', type=int)
+
+args = my_parser.parse_args()
+
+print(vars(args))
+Specifying the int value for the argument.
+
+••• Argparse - Setting a Domain of Allowed Values for a Specific Argument
+
+my_parser = argparse.ArgumentParser()
+my_parser.add_argument('-a', action='store', choices=['head', 'tail'])
+
+args = my_parser.parse_args()
+
+Note
+====
+Please note that if you are accepting numeric values, then you can even use 
+range() to specify a range of accepted values:
+
+
+my_parser = argparse.ArgumentParser()
+my_parser.add_argument('-a', action='store', type=int, choices=range(1, 5))
+
+args = my_parser.parse_args()
+
+print(vars(args))
+
+••• Argparse - Setting Whether the Argument Is Required
+
+my_parser = argparse.ArgumentParser()
+my_parser.add_argument('-a',
+                       action='store',
+                       choices=['head', 'tail'],
+                       required=True)
+
+args = my_parser.parse_args()
+
+print(vars(args))
+
+••• Argparse - Showing a Brief Description of What an Argument Does
+
+You can add help text to your arguments.
+
+my_parser = argparse.ArgumentParser()
+my_parser.add_argument('-a',
+                       action='store',
+                       choices=['head', 'tail'],
+                       help='set the user choice to head or tail')
+
+args = my_parser.parse_args()
+
+print(vars(args))
+
+••• Argparse - Defining Mutually Exclusive Groups
+
+my_parser = argparse.ArgumentParser()
+my_group = my_parser.add_mutually_exclusive_group(required=True)
+
+my_group.add_argument('-v', '--verbose', action='store_true')
+my_group.add_argument('-s', '--silent', action='store_true')
+
+args = my_parser.parse_args()
+
+print(vars(args))
+
+••• Argparse - Setting the Argument Name in Usage Messages
+
+If an argument accepts an input value, it can be useful to give this value a 
+name that the parser can use to generate the help message, and this can be done 
+by using the metavar keyword. 
+
+my_parser = argparse.ArgumentParser()
+my_parser.add_argument('-v',
+                       '--verbosity',
+                       action='store',
+                       type=int,
+                       metavar='LEVEL')
+
+args = my_parser.parse_args()
+
+print(vars(args))
+
+Now, if you run your program with the -h flag, the help text assigns the name 
+LEVEL to the value of the -v flag:
+
+$ python metavar_example.py -h
+usage: metavar_example.py [-h] [-v LEVEL]
+
+optional arguments:
+  -h, --help            show this help message and exit
+  -v LEVEL, --verbosity LEVEL
+
+Please note that, in the help message, the value accepted for the -v flag is now
+named LEVEL.
+
+••• Argparse - Setting the Name of the Attribute to Be Added to the Object Once Parsed
+
+If an option uses dashes (as is fairly common), they will be converted to 
+underscores in the property name:
+
+my_parser = argparse.ArgumentParser()
+my_parser.add_argument('-v',
+                       '--verbosity-level',
+                       action='store',
+                       type=int)
+
+args = my_parser.parse_args()
+print(args.verbosity_level)
+
+However, it’s possible to specify the name of this property just by using the 
+keyword dest when you’re adding an argument to the parser:
+
+my_parser = argparse.ArgumentParser()
+my_parser.add_argument('-v',
+                       '--verbosity',
+                       action='store',
+                       type=int,
+                       dest='my_verbosity_level')
+
+args = my_parser.parse_args()
+
+print(vars(args))
+
+••• Argparse - Create a dummy timer
+
+from argparse import ArgumentParser
+from time import sleep
+"""Dummy timer to play with subprocess module"""
+
+parser = ArgumentParser()
+parser.add_argument("time", type=int, help="Time in seconds")
+args = parser.parse_args()
+print(f"Starting timer of {args.time} seconds")
+for _ in range(args.time):
+    print(".", end="", flush=True)
+    sleep(1)
+print("Done!")
+

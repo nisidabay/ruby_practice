@@ -1,0 +1,22 @@
+#!/usr/bin/env ruby
+# frozen_string_literal: true
+
+# Progress - Track what files you've modified
+#
+# Usage:
+#   ./progress today          # Files modified today
+#   ./progress yesterday      # Files modified yesterday
+#   ./progress week           # Files modified in last 7 days
+#   ./progress --from 2024-04-01 --to 2024-04-25
+#   ./progress --format json  # JSON output (no pager)
+#
+# This is a learning project demonstrating:
+#   - Ruby classes and methods
+#   - File system operations (Dir.glob, File.mtime)
+#   - Date/time handling
+#   - Command-line argument parsing (OptionParser)
+#   - Output formatting and pagination
+#
+require_relative "cli"
+
+CLI.run(ARGV)

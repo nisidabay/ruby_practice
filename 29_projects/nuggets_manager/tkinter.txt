@@ -1,0 +1,338 @@
+••• Python - tkinter - Prevent maximizing in DWM
+root.geometry("400x400")
+root.resizable(False, False)  # Prevent maximizing
+root.wm_attributes("-type", "normal")
+
+••• Python - tkinter - See the themes available in ttk
+import tkinter
+from tkinter import ttk
+
+root = tkinter.Tk()
+style = ttk.Style(root)
+print(style.theme_names())
+root.mainloop()
+
+••• Python - tkinter - Use different theme on ttk
+import tkinter
+from tkinter import ttk
+
+root = tkinter.Tk()
+style = ttk.Style(root)
+style.theme_use("clam")  Example theme, replace with your desired theme
+root.mainloop()
+
+••• Python - tkinter - Set a ttkbootstrap theme
+import tkinter as tk
+import ttkbootstrap as ttk
+
+root =tk.Tk()
+style = ttk.Style(root)
+style.theme_use("darkly")
+root.mainloop()
+
+••• Python - tkinter - See the style of a widget
+import tkinter
+from tkinter import ttk
+
+root = tkinter.Tk()
+style = ttk.Style(root)
+label = ttk.Label(root, text="I'm a Label")
+label.pack()
+print(label["style"])  Might print an empty string for default
+print(label.winfo_class()) Will print 'TLabel'
+root.mainloop()
+
+••• Python - tkinter - See the layout of a ttk.widget
+import tkinter
+from tkinter import ttk
+
+root = tkinter.Tk()
+style = ttk.Style(root)
+print(style.layout("TLabel"))
+Will return a list of elements and a dictionary of layout options
+root.mainloop()
+
+••• Python - tkinter - See the element options of a ttk.widget
+import tkinter
+from tkinter import ttk
+
+root = tkinter.Tk()
+style = ttk.Style(root)
+print(style.element_options("Label.border"))
+Will print the options of that element
+root.mainloop()
+
+••• Python - tkinter - Lookup for a specific property of a style
+import tkinter
+from tkinter import ttk
+
+root = tkinter.Tk()
+style = ttk.Style(root)
+print(style.lookup("TLabel", "font"))
+root.mainloop()
+
+••• Python - tkinter - Configure an element option of a style
+import tkinter
+from tkinter import ttk
+
+root = tkinter.Tk()
+style = ttk.Style(root)
+style.configure("TLabel", relief="sunken")
+label = ttk.Label(root, text="Sunken Label", style="TLabel")
+label.pack()
+root.mainloop()
+
+••• Python - tkinter - Interactively change the behavior of a widget
+import tkinter
+from tkinter import ttk
+
+class MyFrame(ttk.Frame):
+    def __init__(self, master):
+        super().__init__(master)
+        self.style_database = ttk.Style(self)
+        self.style_database.map("my_fancy.TButton",
+                               background=[("pressed", "cyan"),
+                                           ("active", "green"),
+                                           ("focus", "blue")],
+                               highlightcolor=[("hover", "yellow"),
+                                               ("!hover", "red")],
+                               relief=[("pressed", "groove"),
+                                       ("!pressed", "ridge")])
+
+        self.button1 = ttk.Button(self,
+                                   text="Press to disable Button1",
+                                   command=self.toggle_button,
+                                   style="my_fancy.TButton")
+        self.button1.grid(column=0, row=0)
+        self.button_enabled = True
+
+    def toggle_button(self):
+        self.button_enabled = not self.button_enabled
+        if self.button_enabled:
+            self.button1.config(text="Press to disable Button1", state=tkinter.NORMAL)
+        else:
+            self.button1.config(text="Button 1 Disabled", state=tkinter.DISABLED)
+
+root = tkinter.Tk()
+frame = MyFrame(root)
+frame.pack()
+root.mainloop()
+
+••• Python - tkinter - Delete contents of an Entry widget on focus
+import tkinter
+from tkinter import ttk
+
+root = tkinter.Tk()
+widgets_frame = ttk.Frame(root)
+widgets_frame.pack()
+
+name_entry = ttk.Entry(widgets_frame, width=20)
+name_entry.insert(0, "Name")
+name_entry.bind("<FocusIn>", lambda e: name_entry.delete('0', tkinter.END))
+name_entry.grid(row=0, column=0, sticky="ew")
+
+root.mainloop()
+
+••• Python - tkinter - Create a simple Label
+import tkinter
+from tkinter import ttk
+
+root = tkinter.Tk()
+label = ttk.Label(root, text="Hello, Tkinter!")
+label.pack()
+root.mainloop()
+
+••• Python - tkinter - Create a simple Button
+import tkinter
+from tkinter import ttk
+
+root = tkinter.Tk()
+button = ttk.Button(root, text="Click Me!")
+button.pack()
+root.mainloop()
+
+••• Python - tkinter - Get text from an Entry widget
+import tkinter
+from tkinter import ttk
+
+def get_text():
+    print("Entered text:", entry.get())
+
+root = tkinter.Tk()
+entry = ttk.Entry(root)
+entry.pack()
+button = ttk.Button(root, text="Get Text", command=get_text)
+button.pack()
+root.mainloop()
+
+••• Python - tkinter - Change Label text dynamically
+import tkinter
+from tkinter import ttk
+
+def update_label():
+    label.config(text="Label updated!")
+
+root = tkinter.Tk()
+label = ttk.Label(root, text="Initial Label")
+label.pack()
+update_button = ttk.Button(root, text="Update Label", command=update_label)
+update_button.pack()
+root.mainloop()
+
+••• Python - tkinter - Use Grid geometry manager
+import tkinter
+from tkinter import ttk
+
+root = tkinter.Tk()
+ttk.Label(root, text="First Name:").grid(row=0, column=0, sticky="w")
+ttk.Entry(root).grid(row=0, column=1, sticky="ew")
+ttk.Label(root, text="Last Name:").grid(row=1, column=0, sticky="w")
+ttk.Entry(root).grid(row=1, column=1, sticky="ew")
+ttk.Button(root, text="Submit").grid(row=2, column=0, columnspan=2)
+root.grid_columnconfigure(1, weight=1) Make the second column expand
+root.mainloop()
+
+••• Python - tkinter - Use Pack geometry manager
+import tkinter
+from tkinter import ttk
+
+root = tkinter.Tk()
+ttk.Label(root, text="Header", background="lightblue").pack(fill="x")
+ttk.Label(root, text="Content", background="lightgreen").pack(pady=10)
+ttk.Button(root, text="Footer", background="lightcoral").pack(side="bottom", fill="x")
+root.mainloop()
+
+••• Python - tkinter - Use Place geometry manager (less common)
+import tkinter
+from tkinter import ttk
+
+root = tkinter.Tk()
+ttk.Label(root, text="Label at (50, 50)").place(x=50, y=50)
+ttk.Button(root, text="Button at (100, 100)").place(x=100, y=100)
+root.mainloop()
+
+••• Python - tkinter - Create a Checkbutton
+import tkinter
+from tkinter import ttk
+
+root = tkinter.Tk()
+check_var = tkinter.IntVar()
+check = ttk.Checkbutton(root, text="Agree to terms", variable=check_var)
+check.pack()
+root.mainloop()
+
+••• Python - tkinter - Create a Radiobutton
+import tkinter
+from tkinter import ttk
+
+root = tkinter.Tk()
+radio_var = tkinter.StringVar()
+radio1 = ttk.Radiobutton(root, text="Option 1", variable=radio_var, value="option1")
+radio2 = ttk.Radiobutton(root, text="Option 2", variable=radio_var, value="option2")
+radio1.pack()
+radio2.pack()
+root.mainloop()
+
+••• Python - tkinter - Create a Combobox (Dropdown)
+import tkinter
+from tkinter import ttk
+
+root = tkinter.Tk()
+options = ["Option A", "Option B", "Option C"]
+combo = ttk.Combobox(root, values=options, state="readonly")
+combo.pack()
+root.mainloop()
+
+••• Python - tkinter - Create a simple Menu
+import tkinter
+from tkinter import ttk
+
+root = tkinter.Tk()
+menubar = tkinter.Menu(root)
+file_menu = tkinter.Menu(menubar, tearoff=0)
+file_menu.add_command(label="New")
+file_menu.add_command(label="Open")
+file_menu.add_separator()
+file_menu.add_command(label="Exit", command=root.quit)
+menubar.add_cascade(label="File", menu=file_menu)
+root.config(menu=menubar)
+root.mainloop()
+
+••• Python - tkinter - Create a Text widget with scrollbar
+import tkinter
+from tkinter import ttk
+
+root = tkinter.Tk()
+text_area = tkinter.Text(root, width=40, height=10)
+scrollbar = ttk.Scrollbar(root, orient="vertical", command=text_area.yview)
+text_area.configure(yscrollcommand=scrollbar.set)
+text_area.grid(row=0, column=0, sticky="nsew")
+scrollbar.grid(row=0, column=1, sticky="ns")
+root.grid_columnconfigure(0, weight=1)
+root.grid_rowconfigure(0, weight=1)
+root.mainloop()
+
+••• Python - tkinter - Open a simple Message Box
+import tkinter
+from tkinter import messagebox
+
+root = tkinter.Tk()
+messagebox.showinfo("Info", "This is an information message.")
+root.mainloop()
+
+••• Python - tkinter - Open a File Dialog for opening a file
+import tkinter
+from tkinter import filedialog
+
+root = tkinter.Tk()
+def open_file():
+    file_path = filedialog.askopenfilename()
+    if file_path:
+        print("Selected file:", file_path)
+
+open_button = ttk.Button(root, text="Open File", command=open_file)
+open_button.pack()
+root.mainloop()
+
+••• Python - tkinter - Open a File Dialog for saving a file
+import tkinter
+from tkinter import filedialog
+
+root = tkinter.Tk()
+def save_file():
+    file_path = filedialog.asksaveasfilename()
+    if file_path:
+        print("Save file as:", file_path)
+
+save_button = ttk.Button(root, text="Save File", command=save_file)
+save_button.pack()
+root.mainloop()
+
+••• Python - tkinter - Update widgets with config
+
+Label.config(text="New text")
+or
+Label["text"] = "New text"
+
+••• Python - tkinter - Center widgets with grid
+The pack() geometry manager can be used to center widgets automatically by
+using options like expand=True and fill=tk.BOTH. 
+
+However, when using the grid() geometry manager, you need to manually configure
+the rows and columns to ensure that widgets are centered. 
+
+This is typically done using grid_rowconfigure and grid_columnconfigure to set
+the weight of rows and columns, allowing them to expand and center the widgets
+within the grid.
+
+# Configure the grid to center the widgets
+self.root.grid_rowconfigure(0, weight=1)
+self.root.grid_columnconfigure(0, weight=1)
+
+••• Python - tkinter - Pack and Grid
+They use different logic to lay out widgets. For this reason they cannot be 
+combined inside the same parent widget. Once one widget is inserted using pack
+or grid, all other widgets must use the same geometry manager. You can however
+pack widgets into one frame, grid widgets into another, then pack/grid both of
+those Frame widgets into the same parent widget.
+

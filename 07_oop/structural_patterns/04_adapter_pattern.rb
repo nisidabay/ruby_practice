@@ -1,17 +1,14 @@
 #!/usr/bin/env ruby
+# frozen_string_literal: true
 
-# Problem: You need to make incompatible interfaces work together.
-# Example: An audio player that only plays MP3 needs to support VLC and MP4 formats via a third-party library.
-#
-# Solution: Create an adapter that wraps the incompatible interface and converts it to what the client expects.
-# Visibility: Adapter implements the target interface, client doesn't know it's using an adapted class.
+# adapter_pattern.rb — make incompatible interfaces work together
 
 class AudioPlayer
   def play(file_name)
     if file_name.end_with?(".mp3")
       puts "Playing MP3: #{file_name}"
     else
-      puts "Unsupported format: #{file_name}"
+      puts "Unsupported: #{file_name}"
     end
   end
 end
@@ -28,18 +25,14 @@ end
 
 class MediaAdapter
   def initialize(file_type)
-    @advanced_player = AdvancedMediaPlayer.new
+    @player = AdvancedMediaPlayer.new
     @file_type = file_type
   end
 
   def play(file_name)
     case @file_type
-    when "vlc"
-      @advanced_player.play_vlc(file_name)
-    when "mp4"
-      @advanced_player.play_mp4(file_name)
-    else
-      puts "Unknown format: #{@file_type}"
+    when "vlc" then @player.play_vlc(file_name)
+    when "mp4" then @player.play_mp4(file_name)
     end
   end
 end
@@ -49,62 +42,18 @@ class UniversalPlayer < AudioPlayer
     if file_name.end_with?(".mp3")
       super
     elsif file_name.end_with?(".vlc")
-      adapter = MediaAdapter.new("vlc")
-      adapter.play(file_name)
+      MediaAdapter.new("vlc").play(file_name)
     elsif file_name.end_with?(".mp4")
-      adapter = MediaAdapter.new("mp4")
-      adapter.play(file_name)
+      MediaAdapter.new("mp4").play(file_name)
     else
       puts "Unknown format: #{file_name}"
     end
   end
 end
 
-# Usage: Create player that supports multiple formats via adapter
 player = UniversalPlayer.new
-player.play("song.mp3")    # Native support
-player.play("movie.vlc")   # Via adapter
-player.play("video.mp4")   # Via adapter
-player.play("file.xyz")    # Still unsupported
-
-# Alternative: Direct method implementation for simple cases
-# For simple cases, add methods directly to the existing class:
-
-class SimpleAudioPlayer
-  def play(file_name)
-    case file_name
-    when /\.mp3$/
-      puts "Playing MP3: #{file_name}"
-    when /\.vlc$/
-      play_vlc(file_name)
-    when /\.mp4$/
-      play_mp4(file_name)
-    when /\.avi$/
-      play_avi(file_name)
-    else
-      puts "Unsupported format: #{file_name}"
-    end
-  end
-
-  private
-
-  def play_vlc(file_name)
-    puts "Playing VLC: #{file_name}"
-  end
-
-  def play_mp4(file_name)
-    puts "Playing MP4: #{file_name}"
-  end
-
-  def play_avi(file_name)
-    puts "Playing AVI: #{file_name}"
-  end
-end
-
-puts "\n--- Simple Audio Player ---"
-player = SimpleAudioPlayer.new
 player.play("song.mp3")
 player.play("movie.vlc")
 player.play("video.mp4")
-player.play("clip.avi")
 player.play("file.xyz")
+

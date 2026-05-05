@@ -1,0 +1,330 @@
+#!/usr/bin/env ruby
+# frozen_string_literal: true
+
+require 'optparse'
+require 'json'
+require 'fileutils'
+require 'parallel'
+
+class Gitbatch
+  CONFIG_FILE = File.expand_path('~/.config/gitbatch/repos.json')
+
+  def initialize(options = {})
+    @config_file = CONFIG_FILE
+    @parallel = options[:parallel] || 4
+    @filter = options[:filter]
+    @dir = options[:dir] || Dir.pwd
+    @repos = load_repos
+    @threads = options[:threads] || @parallel
+  end
+
+  def run(args)
+    command = args.shift || 'status'
+
+    case command
+    when 'status', 'st' then batch_status
+    when 'pull' then batch_pull
+    when 'push' then batch_push
+    when 'fetch' then batch_fetch
+    when 'commit' then batch_commit(args)
+    when 'add' then add_repos(args)
+    when 'remove', 'rm' then remove_repos(args)
+    when 'list', 'ls' then list_repos
+    when 'scan' then scan_repos(args)
+    when 'clean' then clean_invalid
+    when 'info' then show_info(args)
+    else
+      batch_command(command, args)
+    end
+  end
+
+  private
+
+  def load_repos
+    return [] unless File.exist?(@config_file)
+    JSON.parse(File.read(@config_file))
+  rescue JSON::ParserError
+    []
+  end
+
+  def save_repos
+    FileUtils.mkdir_p(File.dirname(@config_file))
+    File.write(@config_file, JSON.pretty_generate(@repos))
+  end
+
+  def find_git_repos(base = nil)
+    base ||= @dir
+    base = File.expand_path(base)
+    return [] unless File.directory?(base)
+
+    repos = []
+
+    Dir.glob(File.join(base, '*')).each do |dir|
+      next unless File.directory?(File.join(dir, '.git'))
+      repos << dir
+    end
+
+    repos
+  end
+
+  def detect_repos
+    return @repos if @repos.any?
+
+    # Auto-detect from common directories
+    dirs = %w[~/projects ~/code ~/repos ~/work ~/src].map { |d| File.expand_path(d) }
+    dirs << @dir
+
+    dirs.flat_map do |dir|
+      next [] unless File.directory?(dir)
+      Dir.glob(File.join(dir, '*')).select { |d| File.directory?(File.join(d, '.git')) }
+    end.uniq
+  end
+
+  def get_repo_info(path)
+    Dir.chdir(path) do
+      name = File.basename(path)
+      branch = `git rev-parse --abbrev-ref HEAD 2>/dev/null`.strip
+      status = git_status
+      behind = `git rev-list --count HEAD..@{u} 2>/dev/null`.strip.to_i rescue 0
+      ahead = `git rev-list --count @{u}..HEAD 2>/dev/null`.strip.to_i rescue 0
+      dirty = !status.strip.empty?
+
+      {
+        name: name,
+        path: path,
+        branch: branch,
+        status: status.lines.count,
+        behind: behind,
+        ahead: ahead,
+        dirty: dirty
+      }
+    end
+  end
+
+  def git_status
+    `git status --porcelain 2>/dev/null`
+  end
+
+  def batch_status
+    repos = detect_repos
+
+    if repos.empty?
+      puts "No git repositories found"
+      puts "Add repos with: gitbatch add <path>"
+      return
+    end
+
+    puts "\e[1mScanning #{repos.size} repositories...\e[0m\n"
+
+    results = Parallel.map(repos, in_threads: @threads) do |repo|
+      get_repo_info(repo)
+    end
+
+    results.sort_by! { |r| r[:name].downcase }
+
+    results.each do |info|
+      status_icon = case
+                    when info[:dirty] then "\e[33m✗\e[0m"
+                    when info[:behind] > 0 then "\e[31m↓\e[0m"
+                    when info[:ahead] > 0 then "\e[32m↑\e[0m"
+                    else "\e[32m✓\e[0m"
+                    end
+
+      branch = "\e[36m#{info[:branch]}\e[0m"
+      sync = info[:behind] > 0 ? " \e[31mbelow #{info[:behind]}\e[0m" : ""
+      sync += info[:ahead] > 0 ? " \e[32mahead #{info[:ahead]}\e[0m" : ""
+
+      printf "%-30s %s %s%s\n", info[:name], status_icon, branch, sync
+    end
+
+    dirty_count = results.count { |r| r[:dirty] }
+    behind_count = results.count { |r| r[:behind] > 0 }
+    ahead_count = results.count { |r| r[:ahead] > 0 }
+
+    puts "\n\e[90m#{results.size} repos: #{dirty_count} dirty, #{behind_count} behind, #{ahead_count} ahead\e[0m"
+  end
+
+  def batch_pull
+    repos = detect_repos
+    Parallel.each(repos, in_threads: @threads) do |repo|
+      Dir.chdir(repo) do
+        name = File.basename(repo)
+        result = `git pull 2>&1`
+        if result.include?('Already up to date') || result.include?('Already up-to-date')
+          puts "\e[90m#{name}: up-to-date\e[0m"
+        elsif $?.success?
+          puts "\e[32m#{name}: pulled\e[0m"
+        else
+          puts "\e[31m#{name}: #{result.strip}\e[0m"
+        end
+      end
+    end
+  end
+
+  def batch_push
+    repos = detect_repos
+    Parallel.each(repos, in_threads: @threads) do |repo|
+      Dir.chdir(repo) do
+        name = File.basename(repo)
+        result = `git push 2>&1`
+        puts "\e[32m#{name}: pushed\e[0m" if $?.success?
+      end
+    end
+  end
+
+  def batch_fetch
+    repos = detect_repos
+    Parallel.each(repos, in_threads: @threads) do |repo|
+      Dir.chdir(repo) do
+        name = File.basename(repo)
+        `git fetch 2>&1`
+        puts "\e[32m#{name}: fetched\e[0m"
+      end
+    end
+  end
+
+  def batch_commit(args)
+    message = args[0] || "WIP: batch commit"
+    repos = detect_repos
+
+    repos_with_changes = repos.select do |repo|
+      Dir.chdir(repo) { !git_status.strip.empty? }
+    end
+
+    if repos_with_changes.empty?
+      puts "No repositories with changes"
+      return
+    end
+
+    puts "Repositories with changes:"
+    repos_with_changes.each { |r| puts "  #{File.basename(r)}" }
+
+    print "\nCommit with message '#{message}'? [y/N]: "
+    return unless $stdin.gets&.strip&.downcase == 'y'
+
+    repos_with_changes.each do |repo|
+      Dir.chdir(repo) do
+        system('git add -A')
+        system("git commit -m '#{message}'")
+        puts "\e[32m#{File.basename(repo)}: committed\e[0m"
+      end
+    end
+  end
+
+  def batch_command(command, args)
+    repos = detect_repos
+
+    Parallel.each(repos, in_threads: @threads) do |repo|
+      Dir.chdir(repo) do
+        name = File.basename(repo)
+        result = `git #{command} #{args.join(' ')} 2>&1`
+        puts "#{name}: #{result.strip}"
+      end
+    end
+  end
+
+  def add_repos(args)
+    return puts "Usage: gitbatch add <path>" if args.empty?
+
+    args.each do |arg|
+      path = File.expand_path(arg)
+
+      if File.directory?(File.join(path, '.git'))
+        @repos << path unless @repos.include?(path)
+        puts "\e[32mAdded: #{path}\e[0m"
+      else
+        puts "\e[31mNot a git repo: #{path}\e[0m"
+      end
+    end
+
+    @repos.uniq!
+    save_repos
+  end
+
+  def remove_repos(args)
+    return puts "Usage: gitbatch remove <name>" if args.empty?
+
+    @repos.reject! do |repo|
+      args.any? { |arg| File.basename(repo) == arg || repo.include?(arg) }
+    end
+
+    save_repos
+    puts "\e[32mRemoved #{args.join(', ')}\e[0m"
+  end
+
+  def list_repos
+    @repos.each do |repo|
+      puts repo
+    end
+
+    puts "\n\e[90m#{@repos.size} repositories tracked\e[0m"
+  end
+
+  def scan_repos(args)
+    base = args[0] || @dir
+    puts "Scanning #{base}..."
+
+    Dir.glob(File.join(base, '*')).each do |dir|
+      next unless File.directory?(File.join(dir, '.git'))
+      next if @repos.include?(dir)
+
+      @repos << dir
+      puts "\e[32m+\e[0m #{File.basename(dir)}"
+    end
+
+    save_repos
+    puts "\e[32mFound #{@repos.size} repositories\e[0m"
+  end
+
+  def clean_invalid
+    before = @repos.size
+    @repos.select! { |repo| File.directory?(File.join(repo, '.git')) }
+    save_repos
+    puts "\e[32mRemoved #{before - @repos.size} invalid repos\e[0m"
+  end
+
+  def show_info(args)
+    name = args[0]
+    return puts "Usage: gitbatch info <name>" unless name
+
+    repo = @repos.find { |r| File.basename(r) == name }
+    return puts "\e[31mRepo not found: #{name}\e[0m" unless repo
+
+    info = get_repo_info(repo)
+
+    puts "\e[1m#{info[:name]}\e[0m"
+    puts "Path: #{info[:path]}"
+    puts "Branch: #{info[:branch]}"
+    puts "Dirty: #{info[:dirty] ? 'yes' : 'no'}"
+    puts "Behind: #{info[:behind]}" if info[:behind] > 0
+    puts "Ahead: #{info[:ahead]}" if info[:ahead] > 0
+
+    if info[:dirty]
+      puts "\nChanges:"
+      Dir.chdir(repo) { puts `git status --short` }
+    end
+  end
+end
+
+options = {}
+OptionParser.new do |opts|
+  opts.banner = "Usage: gitbatch <command> [options]"
+  opts.on('-p', '--parallel N', 'Parallel threads', Integer) { |v| options[:parallel] = v }
+  opts.on('-d', '--dir DIR', 'Base directory') { |v| options[:dir] = v }
+  opts.on('-f', '--filter PATTERN', 'Filter repos by name') { |v| options[:filter] = v }
+  opts.on('--dirty', 'Only dirty repos') { options[:filter] = :dirty }
+  opts.on('--behind', 'Only repos behind remote') { options[:filter] = :behind }
+  opts.on('-h', '--help', 'Show help') { puts opts; exit }
+end.parse!
+
+begin
+  Gitbatch.new(options).run(ARGV)
+rescue LoadError
+  # Parallel not available, run sequentially
+  class Gitbatch
+    def detect_repos_parallel(base)
+      detect_repos
+    end
+  end
+  Gitbatch.new(options).run(ARGV)
+end

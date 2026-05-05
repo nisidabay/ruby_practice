@@ -1,0 +1,67 @@
+••• Vim - Indentation in Normal Mode
+
+>> Indent the current line to the right.
+<< Unindent the current line to the left.
+5>> Indent the next 5 lines to the right.
+== Autoindent the current line according to your indentation settings.
+4= Autoindent the next 4 lines.
+=% Autoindent a block of code from the current brace to its matching brace.
+gg=G Fix the indentation of the entire file (from the first line to the last).
+
+••• Vim - Indentation in Command Mode
+
+g/pattern/> Indent all lines matching a pattern.
+g/pattern/sil! > Indent all lines matching a pattern without displaying messages.
+16,28> Indent lines 16 through 28.
+
+••• Vim - Navigation in Code
+**]m** Go to the start of the next method definition.
+**[m** Go to the start of the previous method definition.
+
+**]M** Go to the end of the next (or current) method definition.
+**[M** Go to the end of the previous method definition.
+
+**]]** Go to the start of the next module or class definition.
+**[[** Go to the start of the previous module or class definition.
+% Jump between matching pairs of brackets, braces, or keywords.
+
+••• Vim - Editing Commands
+
+dG Delete from the current line to the end of the file.
+
+yG Copy (yank) from the current line to the end of the file.
+
+3p Paste the copied content 3 times.
+
+5x Delete 5 characters to the right.
+
+ya} Copy all characters within {} (including the braces).
+
+g/call/d Delete all lines containing the word call.
+
+g/cat/ s/animal/mamal/g Replace animal with mamal in lines containing cat.
+
+3,8! sort Sort lines 3 to 8.
+
+
+••• Vim - Number Manipulation
+
+3 Ctrl + a Increment the number under the cursor by 3.
+g Ctrl + a Increment numbers in visual mode (requires selecting numbers first).
+
+•••Vi - Autocompletion
+
+Ctrl + p Autocomplete word (previous match).
+Ctrl + n Autocomplete word (next match).
+Ctrl + x Start autocompletion (e.g., Ctrl + x Ctrl + l for line completion).
+Ctrl + x Ctrl + l Line completion.
+Ctrl + x Ctrl + f File path completion.
+Ctrl + x Ctrl + n Keyword completion.
+
+••• Vim - Insert Mode Shortcuts
+
+Ctrl + o Execute a single normal mode command while in insert mode 
+Ctrl + t Indent the current line in insert mode.
+Ctrl + d Unindent the current line in insert mode.
+0 Ctrl + d Delete indentation in the current line in insert mode.
+

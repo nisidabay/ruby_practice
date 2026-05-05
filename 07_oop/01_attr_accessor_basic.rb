@@ -23,20 +23,5 @@ dog.age = 2
 dog.report_age
 
 # Invalid values are accepted without error:
-dog.age = -1  # This runs without complaint (bad!)
+dog.age = -1 # This runs without complaint (bad!)
 dog.report_age
-
-# This could also be done like this:
-# If you want read-only attributes, use attr_reader instead:
-#
-# class Dog
-#   attr_reader :name
-#
-#   def initialize(name)
-#     @name = name
-#   end
-# end
-#
-# dog = Dog.new("Fido")
-# puts dog.name  # Works
-# dog.name = "Rex"  # Error: undefined method `name='

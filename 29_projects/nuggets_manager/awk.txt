@@ -1,0 +1,32 @@
+••• Awk - Print the length of the longest input file
+awk '{ if (length($0) > max) max = length($0) } END { print max, $0}' test.txt
+
+••• Awk - Print every line that is longer than 60 characters
+awk 'length($0) > 60' test.text
+
+••• Awk - Print every line that has at least one filed
+awk 'NF > 0' test.txt
+
+••• Awk - Print six random numbers from 1 to 49, inclusive: 
+awk 'BEGIN{ srand; for(i=1;i<=5;i++) print int(50 * rand())}' 
+
+••• Awk - Print number of bytes
+ls -l | awk ' {x += $5}; END { print "Number of bytes:" x}'
+
+••• Awk - Print number of kilobytes
+ls -l | awk ' {x += $5}; END { print "Number of bytes:" (x + 1023)/1024}'   
+
+••• Awk - Print a sorted list of the login names of all users:
+awk -F ":" 'print $1' /etc/passwd | sort
+
+••• Awk - Print the number of lines (fields) in a file:
+awk 'END{ print "Lines in a file: ", NR)' test.txt
+
+••• Awk - Print even lines in a file:
+awk 'NR % 2 == 0' test.txt
+
+••• Awk - Print odd lines in a file:
+awk 'NR % 2 == 1' test.txt
+
+••• Awk - Print fields in reverse order
+awk '{ for (i = NF; i >= 1; i--) print $i }' test.txt

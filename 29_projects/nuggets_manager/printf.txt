@@ -1,0 +1,36 @@
+••• Bash - printf -  Print a integer in bold blue *
+prinf "\e[1;34m%.3d\e[0m\n]" 42
+
+••• Bash - printf -  Print a float number with Unicode Euro sign
+printf "\u20AC %.2f\n" 123.4
+
+••• Bash - printf -  Store a formated message in a variable
+printf -v myvar "This is %s = %d\n" "a year" 2016
+
+••• Bash - printf -  Replacement with carriage return
+printf "Hone is the root of all evil\rMoney\n"
+
+••• Bash - printf -  Printint a floating point number
+printf "Floating point: %08.3f\n" 9.243546
+
+••• Bash - printf -  Left-justify a value
+printf "%-10s %d" "shoes" 22
+
+••• Bash - printf -  Show the limits of the width field
+printf ":%-10s: %d" "shoes" 22
+
+••• Bash - printf -  Print the sum of two numbers
+printf "2+3=%d\n" $((2+3))
+
+••• Bash - printf -  Print a string returned from other command
+printf "Current user: %s\n" $(whoami)
+
+••• Bash - printf -  Print nothing if no argument supplied to %s••
+printf "One: %s two: %s\n" "Alpha"
+
+••• Bash - printf -  Print zero if no argument supplied to %d
+printf "Integer: %d\n"
+
+••• Bash - printf -  Print escape sequences in argument strings
+printf "%b" "\u20AC\n"
+

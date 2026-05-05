@@ -1,19 +1,14 @@
 #!/usr/bin/env ruby
 # frozen_string_literal: true
-#
-# Break
-# This file contains Ruby code for break.
 
-# break - terminates the loop completely
+# break.rb — break exits a loop immediately
 
-money_setence = 'I love $ in the morning, $ in the afternoon, and $ at night'
+sentence = 'I love $ in the morning, $ in the afternoon, and $ at night'
 
-current_index = 0
-final_index = money_setence.length - 1
+i = 0
+while i < sentence.length
+  break if sentence[i] == '$'
 
-while current_index <= final_index
-  break if money_setence[current_index] == '$'
-
-  current_index += 1
+  i += 1
 end
-puts current_index
+puts i  # => 7 (index of first $)

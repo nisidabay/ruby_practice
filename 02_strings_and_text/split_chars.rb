@@ -1,14 +1,11 @@
 #!/usr/bin/env ruby
+# frozen_string_literal: true
 
-# What it does: Splits the string into an array using an empty string as the
-# delimiter.
+# split_chars.rb — splitting a string into characters
+
 vehicle = 'Spaceship'
-characters = vehicle.split('')
-p characters
 
-# What it does: Explicitly converts the string into an array of its characters.
-p vehicle.chars
+p vehicle.split('')       # => ["S", "p", "a", "c", "e", "s", "h", "i", "p"]
+p vehicle.chars           # same, more idiomatic
 
-# What it does: Print individual characters
-
-vehicle.each_char { |letter| p "#{letter}" }
+vehicle.each_char { |letter| puts letter }

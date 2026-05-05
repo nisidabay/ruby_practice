@@ -1,0 +1,108 @@
+••• Python - Collections - deque
+from collections import deque
+
+Deques are a generalization of stacks and queues (the name is pronounced "deck" 
+and is short for “double-ended queue”). Deques support thread-safe, memory 
+efficient appends and pops from either side of the deque with approximately the 
+same O(1) performance in either direction.
+
+Main methods
+------------
+'append', 'appendleft', 'clear', 'copy', 'count', 'extend', 'extendleft', 
+'index', 'insert', 'maxlen', 'pop', 'popleft', 'remove', 'reverse', 'rotate'
+
+••• Python - Collections - namedtuple
+from collections import namedtuple
+
+Namedtuples instances are just as memory efficient as regular tuples because 
+they do not have per-instance dictionaries. Each kind of namedtuple is 
+represented by its own class, created by using the namedtuple() factory
+function. The arguments are the name of the new class and a string containing
+the names of the elements.
+
+Main methods
+------------
+'_make()', '_asdict()', '_replace()','_fields', '_fields_defaults'
+
+Example
+--------
+from collections import namedtuple
+
+Person = namedtuple("Person", "name job", defaults=["Python Developer"])
+person = Person("Jane")
+print(person)
+
+>>> Person(name='Jane', job='Python Developer')
+
+person._asdict()
+>>> {'name': 'Jane', 'job': 'Python Developer'}
+
+person = person._replace(job="Web Developer")
+print(person)
+Person(name='Jane', job='Web Developer')
+
+def custom_divmod(x, y):
+    DivMod = namedtuple("DivMod", "quotient remainder")
+    return DivMod(*divmod(x, y))
+
+result = custom_divmod(12, 5)
+print(result)
+print(result.quotient)
+print(result.remainder)
+
+••• Python - Collections - OrderedDict
+from collections import OrderedDict
+
+An OrderedDict is a dictionary subclass that remembers the order in which its 
+contents are added.
+
+Main methods
+------------
+'clear', 'copy', 'fromkeys', 'get', 'items', 'keys', 'move_to_end', 'pop',
+'popitem', 'setdefault', 'update', 'values'
+
+••• Python - Collections - Counter
+from collections import Counter
+
+A Counter is a dict subclass for counting hashable objects. It is a collection 
+where elements are stored as dictionary keys and their counts are stored as 
+dictionary values. Counts are allowed to be any integer value including zero or
+negative counts.
+
+Main methods
+------------
+'clear', 'copy', 'elements', 'fromkeys', 'get', 'items', 'keys', 'most_common',
+'pop', 'popitem', 'setdefault', 'subtract', 'update', 'values'
+
+Example
+--------
+from collections import Counter
+cnt = Counter()
+for word in ['red', 'blue', 'red', 'green', 'blue', 'blue']:
+    cnt[word] += 1
+    
+print(cnt.most_common(10))
+
+••• Python - Collections - defaultdict
+from collections import defaultdict
+
+Defaultdict is a sub-class of the dict class that returns a dictionary-like 
+object. The functionality of both dictionaries and default are almost same 
+except for the fact that default never raises a KeyError. It provides a 
+default value for the key that does not exists.
+
+••• Python - Collections - accumulate
+Return series of accumulated sums (or other binary function results).
+
+Example
+--------
+from itertools import accumulate
+import operator
+a = [1,2,3,4,5]
+acc = accumulate(a)
+print(list(acc))
+>>>[1, 3, 6, 10, 15]
+
+acc = accumulate(a, func=operator.mul)
+print(list(acc))
+>>>[1, 2, 6, 24, 120]

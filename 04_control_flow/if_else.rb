@@ -1,8 +1,7 @@
 #!/usr/bin/env ruby
 # frozen_string_literal: true
 
-# If else
-# This file contains Ruby code for if else.
+# if_else.rb
 
 def numeric_energy(value)
   if value > 0
@@ -14,8 +13,6 @@ def numeric_energy(value)
   end
 end
 
-puts numeric_energy(5)
-puts numeric_energy(10)
-puts numeric_energy(-5)
-puts numeric_energy(-8)
-puts numeric_energy(0)
+puts numeric_energy(5)    # => Positive
+puts numeric_energy(-5)   # => Negative
+puts numeric_energy(0)    # => Zero Hero

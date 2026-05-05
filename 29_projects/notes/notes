@@ -1,0 +1,297 @@
+#!/usr/bin/env ruby
+# frozen_string_literal: true
+
+require 'optparse'
+require 'fileutils'
+require 'json'
+require 'time'
+
+class Notes
+  NOTES_DIR = File.expand_path('~/.notes')
+  INDEX_FILE = File.join(NOTES_DIR, 'index.json')
+
+  def initialize(options = {})
+    @notes_dir = options[:dir] || NOTES_DIR
+    @index_file = File.join(@notes_dir, 'index.json')
+    FileUtils.mkdir_p(@notes_dir)
+    @index = load_index
+  end
+
+  def run(args)
+    command = args.shift || 'list'
+
+    case command
+    when 'new', 'n' then create_note(args)
+    when 'list', 'ls', 'l' then list_notes(args)
+    when 'search', 's' then search_notes(args)
+    when 'show' then show_note(args)
+    when 'edit', 'e' then edit_note(args)
+    when 'tag', 't' then tag_note(args)
+    when 'delete', 'rm', 'd' then delete_note(args)
+    when 'export' then export_notes(args)
+    when 'sync' then sync_notes
+    else
+      list_notes([command] + args)
+    end
+  end
+
+  private
+
+  def load_index
+    return {} unless File.exist?(@index_file)
+    JSON.parse(File.read(@index_file))
+  rescue JSON::ParserError
+    {}
+  end
+
+  def save_index
+    File.write(@index_file, JSON.pretty_generate(@index))
+  end
+
+  def create_note(args)
+    title = args.join(' ')
+    title = "Untitled" if title.empty?
+
+    id = next_id
+    filename = generate_filename(id, title)
+    filepath = File.join(@notes_dir, filename)
+
+    note = {
+      'id' => id,
+      'title' => title,
+      'tags' => extract_tags(args),
+      'created_at' => Time.now.iso8601,
+      'updated_at' => Time.now.iso8601,
+      'file' => filename
+    }
+
+    @index[id.to_s] = note
+    save_index
+
+    File.write(filepath, note_content(title, args - [title]))
+
+    puts "\e[32mCreated note ##{id}: #{title}\e[0m"
+    puts "File: #{filepath}"
+
+    edit_file(filepath)
+  end
+
+  def note_content(title, body_lines)
+    body = body_lines.empty? ? "" : body_lines.join("\n")
+    <<~NOTE
+      # #{title}
+
+      #{body}
+
+      ---
+      Tags: 
+      Created: #{Time.now.strftime('%Y-%m-%d %H:%M')}
+    NOTE
+  end
+
+  def generate_filename(id, title)
+    slug = title.downcase.gsub(/[^a-z0-9]+/, '-').gsub(/^-|-$/, '')[0, 50]
+    timestamp = Time.now.strftime('%Y%m%d_%H%M%S')
+    "#{timestamp}_#{id}_#{slug}.md"
+  end
+
+  def next_id
+    @index.keys.map(&:to_i).max.to_i + 1
+  end
+
+  def extract_tags(args)
+    args.select { |a| a.start_with?('#') }.map { |a| a.gsub('#', '') }
+  end
+
+  def list_notes(args)
+    options = parse_list_options(args)
+
+    notes = @index.values
+
+    notes = filter_notes(notes, options)
+    notes = sort_notes(notes, options[:sort])
+
+    if notes.empty?
+      puts "No notes found"
+      return
+    end
+
+    display_notes(notes)
+  end
+
+  def filter_notes(notes, options)
+    notes = notes.select { |n| n['tags']&.include?(options[:tag]) } if options[:tag]
+    notes = notes.select { |n| search_match(n, options[:search]) } if options[:search]
+    notes
+  end
+
+  def search_match(note, query)
+    return true unless query
+    down_query = query.downcase
+    return true if note['title']&.downcase&.include?(down_query)
+    return true if note['tags']&.any? { |t| t.downcase.include?(down_query) }
+
+    filepath = File.join(@notes_dir, note['file'])
+    if File.exist?(filepath)
+      content = File.read(filepath).downcase
+      return true if content.include?(down_query)
+    end
+
+    false
+  end
+
+  def sort_notes(notes, sort_by)
+    case sort_by
+    when 'date', 'created' then notes.sort_by { |n| Time.parse(n['created_at']) }.reverse
+    when 'updated' then notes.sort_by { |n| Time.parse(n['updated_at']) }.reverse
+    when 'title' then notes.sort_by { |n| n['title'].downcase }
+    else notes.sort_by { |n| n['id'].to_i }.reverse
+    end
+  end
+
+  def display_notes(notes)
+    notes.each do |note|
+      id = note['id'].to_s.rjust(4)
+      title = note['title'][0, 50]
+      tags = note['tags']&.any? ? " \e[36m#{note['tags'].map { |t| "##{t}" }.join(' ')}\e[0m" : ""
+      date = Time.parse(note['created_at']).strftime('%Y-%m-%d')
+
+      puts "#{id} #{title}#{tags} \e[90m#{date}\e[0m"
+    end
+
+    puts "\n\e[90m#{notes.size} notes\e[0m"
+  end
+
+  def search_notes(args)
+    query = args.join(' ')
+    return puts "Usage: notes search <query>" if query.empty?
+
+    list_notes(['--search', query])
+  end
+
+  def show_note(args)
+    id = args[0]&.to_i
+    return puts "Usage: notes show <id>" unless id
+
+    note = @index[id.to_s]
+    return puts "\e[31mNote ##{id} not found\e[0m" unless note
+
+    filepath = File.join(@notes_dir, note['file'])
+    puts File.read(filepath)
+  end
+
+  def edit_note(args)
+    id = args[0]&.to_i
+    return puts "Usage: notes edit <id>" unless id
+
+    note = @index[id.to_s]
+    return puts "\e[31mNote ##{id} not found\e[0m" unless note
+
+    filepath = File.join(@notes_dir, note['file'])
+    edit_file(filepath)
+
+    note['updated_at'] = Time.now.iso8601
+    save_index
+  end
+
+  def edit_file(filepath)
+    editor = ENV['EDITOR'] || ENV['VISUAL'] || 'nano'
+    system("#{editor} #{Shellwords.escape(filepath)}")
+  end
+
+  def tag_note(args)
+    id = args.shift&.to_i
+    return puts "Usage: notes tag <id> <tag>..." unless id
+
+    note = @index[id.to_s]
+    return puts "\e[31mNote ##{id} not found\e[0m" unless note
+
+    tags = args.empty? ? [] : args
+
+    if args[0] == '--clear'
+      note['tags'] = []
+    else
+      note['tags'] ||= []
+      note['tags'] += tags
+      note['tags'].uniq!
+    end
+
+    note['updated_at'] = Time.now.iso8601
+    save_index
+
+    puts "\e[32mTags updated: #{note['tags']&.join(', ')}\e[0m"
+  end
+
+  def delete_note(args)
+    id = args[0]&.to_i
+    return puts "Usage: notes delete <id>" unless id
+
+    note = @index[id.to_s]
+    return puts "\e[31mNote ##{id} not found\e[0m" unless note
+
+    print "Delete note '#{note['title']}'? [y/N]: "
+    return unless $stdin.gets&.strip&.downcase == 'y'
+
+    filepath = File.join(@notes_dir, note['file'])
+    File.delete(filepath) if File.exist?(filepath)
+    @index.delete(id.to_s)
+    save_index
+
+    puts "\e[32mDeleted note ##{id}\e[0m"
+  end
+
+  def export_notes(args)
+    format = args[0] || 'text'
+    notes = @index.values.sort_by { |n| n['id'].to_i }
+
+    case format
+    when 'json'
+      puts JSON.pretty_generate(notes)
+    when 'text', 'md'
+      notes.each do |note|
+        filepath = File.join(@notes_dir, note['file'])
+        puts "=" * 60
+        puts "Note ##{note['id']}: #{note['title']}"
+        puts File.read(filepath) if File.exist?(filepath)
+        puts
+      end
+    else
+      puts "Unknown format: #{format}. Use: json, text, md"
+    end
+  end
+
+  def sync_notes
+    return puts "\e[31mGit sync not configured.\e[0m\nRun: cd #{@notes_dir} && git init" unless File.exist?(File.join(@notes_dir, '.git'))
+
+    Dir.chdir(@notes_dir) do
+      system('git add .')
+      system('git commit -m "Sync notes"')
+      system('git pull --rebase')
+      system('git push')
+    end
+
+    puts "\e[32mNotes synced\e[0m"
+  end
+
+  def parse_list_options(args)
+    options = {}
+
+    args.each_with_index do |arg, idx|
+      case arg
+      when '-t', '--tag' then options[:tag] = args[idx + 1]
+      when '-s', '--search' then options[:search] = args[idx + 1]
+      when '--sort' then options[:sort] = args[idx + 1]
+      end
+    end
+
+    options[:tag] ||= args.find { |a| a.start_with?('#') }&.gsub('#', '')
+    options
+  end
+end
+
+OptionParser.new do |opts|
+  opts.banner = "Usage: notes <command> [options]"
+  puts opts if ARGV.include?('-h') || ARGV.include?('--help')
+end.parse!
+
+Notes.new.run(ARGV)

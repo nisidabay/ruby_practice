@@ -1,0 +1,139 @@
+••• Neovim - vim.fn.expand
+Purpose: Expands special symbols (e.g., `~`, `$HOME`) into their full paths.
+Example: local data_path = vim.fn.expand("~/_dotfiles/share_data/note_marks.lua")
+
+••• Neovim - vim.fn.fnamemodify
+Purpose: Modifies file paths by applying specific transformations.
+Example: local dir = vim.fn.fnamemodify(data_path, ":h") -- Extracts the directory path
+
+••• Neovim - vim.fn.isdirectory
+Purpose: Checks if a given path is a directory.
+Example: if vim.fn.isdirectory("/path/to/dir") == 0 then print("Directory does not exist!") end
+
+••• Neovim - vim.fn.filereadable
+Purpose: Checks if a file exists and is readable.
+Example: if vim.fn.filereadable(path) == 1 then vim.cmd("edit " .. path) end
+
+••• Neovim - vim.fn.mkdir
+Purpose: Creates a directory.
+Example: vim.fn.mkdir("/path/to/new_dir", "p")
+
+••• Neovim - io.open
+Purpose: Opens a file for reading or writing.
+Example: local file = io.open(data_path, "r") if not file then file = io.open(data_path, "w") file:write("return {}") file:close() end
+
+••• Neovim - pcall
+Purpose: Calls a function in protected mode, catching errors.
+Example: local success, loaded = pcall(dofile, data_path) if not success then print("Failed to load data:", loaded) end
+
+••• Neovim - dofile
+Purpose: Executes a Lua script and returns its result.
+Example: local success, loaded = pcall(dofile, data_path) if success and type(loaded) == "table" then notes = loaded end
+
+••• Neovim - vim.notify
+Purpose: Displays notifications in Neovim.
+Example: vim.notify("Note added!", vim.log.levels.INFO)
+
+••• Neovim - vim.api.nvim_create_buf
+Purpose: Creates a new buffer.
+Example: local buf = vim.api.nvim_create_buf(false, true) -- Create a scratch buffer
+
+••• Neovim - vim.api.nvim_buf_set_lines
+Purpose: Sets the content of a buffer.
+Example: vim.api.nvim_buf_set_lines(buf, 0, -1, false, {"Line 1", "Line 2"})
+
+••• Neovim - vim.api.nvim_open_win
+Purpose: Opens a new window.
+Example: local win = vim.api.nvim_open_win(buf, true, { relative = "editor", width = 80, height = 20, row = 10, col = 10, style = "minimal", border = "rounded" })
+
+••• Neovim - vim.api.nvim_win_set_option
+Purpose: Sets options for a window.
+Example: vim.api.nvim_win_set_option(win, "wrap", true) -- Enable text wrapping
+
+••• Neovim - vim.api.nvim_buf_set_keymap
+Purpose: Defines key mappings for a buffer.
+Example: vim.api.nvim_buf_set_keymap(buf, "n", "q", "<cmd>q!<CR>", { noremap = true, silent = true })
+
+••• Neovim - vim.api.nvim_win_set_cursor
+Purpose: Sets the cursor position in a window.
+Example: vim.api.nvim_win_set_cursor(0, { line, col }) -- Move cursor to (line, col)
+
+••• Neovim - vim.api.nvim_buf_line_count
+Purpose: Returns the total number of lines in a buffer.
+Example: local total_lines = vim.api.nvim_buf_line_count(0)
+
+••• Neovim - vim.api.nvim_buf_get_lines
+Purpose: Retrieves lines from a buffer.
+Example: local target_line = vim.api.nvim_buf_get_lines(0, line - 1, line, false)[1]
+
+••• Neovim - vim.ui.input
+Purpose: Prompts the user for input.
+Example: vim.ui.input({ prompt = "Enter note content: " }, function(content) if content ~= "" then print("You entered:", content) end end)
+
+••• Neovim - vim.loop.fs_stat
+Purpose: Checks if a file or directory exists.
+Example: if not vim.loop.fs_stat("/path/to/file") then print("File does not exist!") end
+
+••• Neovim - vim.cmd
+Purpose: Executes Ex commands.
+Example: vim.cmd("edit /path/to/file.lua") -- Opens a file
+
+••• Neovim - string.format
+Purpose: Formats strings with placeholders.
+Example: local msg = string.format("Note %d: %s", index, content)
+
+••• Neovim - table.insert
+Purpose: Adds an element to a table.
+Example: table.insert(notes, { file = "/path/to/file", line = 10, col = 5 })
+
+••• Neovim - table.remove
+Purpose: Removes an element from a table.
+Example: table.remove(notes, index) -- Removes the note at `index`
+
+••• Neovim - vim.keymap.set
+Purpose: Modern API for setting keymaps.
+Example: vim.keymap.set('n', '<leader>ff', function() vim.cmd('Telescope find_files') end, { desc = 'Find files' })
+
+••• Neovim - vim.api.nvim_create_autocmd
+Purpose: Creates an autocommand.
+Example: vim.api.nvim_create_autocmd("BufWritePre", { pattern = "*.lua", callback = function() vim.cmd("echo 'Saving Lua file'") end })
+
+••• Neovim - vim.api.nvim_create_augroup
+Purpose: Creates an autocommand group.
+Example: local format_group = vim.api.nvim_create_augroup("FormatGroup", { clear = true })
+
+••• Neovim - vim.fn.glob
+Purpose: Expands wildcards in a path.
+Example: local config_files = vim.fn.glob("~/.config/nvim/**/*.lua", false, true)
+
+••• Neovim - vim.fn.systemlist
+Purpose: Executes a shell command and returns output as a list.
+Example: local git_files = vim.fn.systemlist("git ls-files")
+
+••• Neovim - vim.opt
+Purpose: Modern API for setting Neovim options.
+Example: vim.opt.number = true; vim.opt.path:append("**")
+
+••• Neovim - vim.lsp.buf.hover
+Purpose: Displays hover information from Language Server Protocol.
+Example: vim.keymap.set('n', 'K', vim.lsp.buf.hover, { silent = true })
+
+••• Neovim - vim.fs.normalize
+Purpose: Normalizes a path for cross-platform compatibility.
+Example: local normalized_path = vim.fs.normalize("~/projects/../config")
+
+••• Neovim - vim.diagnostic.open_float
+Purpose: Shows diagnostics in a floating window.
+Example: vim.keymap.set('n', '<leader>d', vim.diagnostic.open_float, { silent = true })
+
+••• Neovim - vim.treesitter.get_parser
+Purpose: Accesses the Treesitter parser for the current buffer.
+Example: local parser = vim.treesitter.get_parser(0, "lua")
+
+••• Neovim - vim.json.encode
+Purpose: Converts a Lua table to a JSON string.
+Example: local json_string = vim.json.encode({theme = "nord", indent = 2})
+
+••• Neovim - vim.tbl_deep_extend
+Purpose: Deeply merges multiple tables.
+Example: local final_config = vim.tbl_deep_extend("force", defaults, user_config)

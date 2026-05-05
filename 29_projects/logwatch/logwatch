@@ -1,0 +1,260 @@
+#!/usr/bin/env ruby
+# frozen_string_literal: true
+
+require 'optparse'
+require 'time'
+require 'date'
+require 'json'
+
+class Logwatch
+  COLORS = {
+    error: 31,
+    warn: 33,
+    warning: 33,
+    info: 32,
+    debug: 34,
+    fatal: 35,
+    critical: 35
+  }.freeze
+
+  TIME_PATTERNS = [
+    /^(\d{4}-\d{2}-\d{2}[T ]\d{2}:\d{2}:\d{2})/,
+    /^(\w{3}\s+\d{1,2}\s+\d{2}:\d{2}:\d{2})/,
+    /^(\d{2}:\d{2}:\d{2})/,
+    /^(\[\d{4}-\d{2}-\d{2}[T ]\d{2}:\d{2}:\d{2})/
+  ].freeze
+
+  def initialize(options = {})
+    @filter = options[:filter]
+    @highlight = options[:highlight] || false
+    @color = options[:color] != false
+    @format = options[:format] || 'auto'
+    @since = parse_time(options[:since])
+    @follow = options[:follow] || false
+    @lines = (options[:lines] || 100).to_i
+    @show_time = options[:time] != false
+    @relative_time = options[:relative] || false
+  end
+
+  def run(files)
+    files = ['-'] if files.empty?
+
+    files.each do |file|
+      watch(file)
+    end
+  end
+
+  private
+
+  def parse_time(str)
+    return nil unless str
+
+    case str.downcase
+    when 'today' then Date.today.to_time
+    when 'yesterday' then (Date.today - 1).to_time
+    when /^(\d+)([mhd])$/
+      num = $1.to_i
+      case $2
+      when 'm' then Time.now - (num * 60)
+      when 'h' then Time.now - (num * 3600)
+      when 'd' then Time.now - (num * 86400)
+      end
+    else Time.parse(str) rescue nil
+    end
+  end
+
+  def watch(file)
+    if file == '-'
+      read_stdin
+    elsif @follow
+      follow_file(file)
+    else
+      read_file(file)
+    end
+  end
+
+  def read_stdin
+    $stdin.each_line do |line|
+      process_line(line, 'stdin')
+    end
+  end
+
+  def read_file(file)
+    return puts "File not found: #{file}" unless File.exist?(file)
+
+    basename = File.basename(file)
+
+    if @lines > 0
+      # Read last N lines
+      lines = tail_lines(file, @lines)
+      lines.each { |l| process_line(l, basename) }
+    else
+      File.foreach(file) do |line|
+        process_line(line, basename)
+      end
+    end
+  end
+
+  def tail_lines(file, n)
+    lines = []
+    File.foreach(file) do |line|
+      lines << line
+      lines.shift if lines.size > n
+    end
+    lines
+  end
+
+  def follow_file(file)
+    return puts "File not found: #{file}" unless File.exist?(file)
+
+    # First show existing content
+    read_file(file)
+
+    # Then follow
+    File.open(file) do |f|
+      f.seek(0, IO::SEEK_END)
+
+      loop do
+        line = f.gets
+        if line
+          process_line(line, File.basename(file))
+        else
+          sleep 0.1
+        end
+      rescue Interrupt
+        puts "\nStopped"
+        exit
+      end
+    end
+  end
+
+  def process_line(line, source)
+    line = line.chomp
+
+    # Filter
+    return unless matches_filter?(line)
+
+    # Parse time
+    timestamp = extract_timestamp(line)
+
+    # Check since
+    return if @since && timestamp && timestamp < @since
+
+    # Format output
+    output = format_line(line, source, timestamp)
+
+    puts output
+  rescue => e
+    puts line
+  end
+
+  def matches_filter?(line)
+    return true unless @filter
+
+    if @filter.is_a?(Array)
+      @filter.any? { |f| line.match?(Regexp.new(f, Regexp::IGNORECASE)) }
+    else
+      line.match?(Regexp.new(@filter, Regexp::IGNORECASE))
+    end
+  end
+
+  def extract_timestamp(line)
+    TIME_PATTERNS.each do |pattern|
+      if match = line.match(pattern)
+        begin
+          return Time.parse(match[1].gsub('[', ''))
+        rescue
+          next
+        end
+      end
+    end
+    nil
+  end
+
+  def format_line(line, source, timestamp)
+    return line unless @color || @highlight || @show_time
+
+    parts = []
+
+    # Time
+    if @show_time && timestamp
+      time_str = @relative_time ? relative_time(timestamp) : timestamp.strftime('%H:%M:%S')
+      parts << "\e[90m#{time_str}\e[0m"
+    end
+
+    # Source
+    parts << "\e[36m#{source}\e[0m" if source
+
+    # Line with highlights
+    if @highlight && @filter
+      highlighted = line.gsub(Regexp.new(@filter, Regexp::IGNORECASE)) do |match|
+        "\e[1m\e[33m#{match}\e[0m"
+      end
+      parts << highlighted
+    elsif @color
+      parts << colorize(line)
+    else
+      parts << line
+    end
+
+    parts.join(' ')
+  end
+
+  def colorize(line)
+    lower = line.downcase
+
+    COLORS.each do |level, color|
+      if lower.include?(level.to_s)
+        return "\e[#{color}m#{line}\e[0m"
+      end
+    end
+
+    line
+  end
+
+  def relative_time(timestamp)
+    diff = Time.now - timestamp
+
+    case diff
+    when 0..60 then "#{diff.to_i}s ago"
+    when 60..3600 then "#{(diff / 60).to_i}m ago"
+    when 3600..86400 then "#{(diff / 3600).to_i}h ago"
+    else timestamp.strftime('%m/%d %H:%M')
+    end
+  end
+end
+
+class String
+  def to_time
+    Time.parse(self)
+  rescue
+    nil
+  end
+end
+
+class Date
+  def to_time
+    Time.new(year, month, day)
+  end
+end
+
+options = {}
+OptionParser.new do |opts|
+  opts.banner = "Usage: logwatch [file] [options]"
+
+  opts.on('-f', '--follow', 'Follow file (like tail -f)') { options[:follow] = true }
+  opts.on('-l', '--lines N', 'Number of lines to show', Integer) { |v| options[:lines] = v }
+  opts.on('-F', '--filter REGEX', 'Filter lines matching regex') { |v| options[:filter] = v }
+  opts.on('-H', '--highlight', 'Highlight matched patterns') { options[:highlight] = true }
+  opts.on('--no-color', 'Disable colors') { options[:color] = false }
+  opts.on('-t', '--time', 'Show timestamps') { options[:time] = true }
+  opts.on('-r', '--relative', 'Show relative time') { options[:relative] = true }
+  opts.on('-s', '--since TIME', 'Show entries since time (e.g., "1h", "2d", "today")') { |v| options[:since] = v }
+  opts.on('--json', 'Parse as JSON lines') { options[:format] = 'json' }
+  opts.on('--combined', 'Parse as nginx/apache combined format') { options[:format] = 'combined' }
+  opts.on('-h', '--help', 'Show help') { puts opts; exit }
+end.parse!
+
+files = ARGV.empty? ? ['-'] : ARGV
+
+Logwatch.new(options).run(files)

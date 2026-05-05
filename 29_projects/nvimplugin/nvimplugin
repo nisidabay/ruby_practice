@@ -1,0 +1,316 @@
+#!/usr/bin/env ruby
+# frozen_string_literal: true
+
+require 'optparse'
+require 'json'
+require 'yaml'
+require 'fileutils'
+
+class Nvimplugin
+  CONFIG_DIR = ENV['XDG_CONFIG_HOME'] || File.expand_path('~/.config')
+  NVIM_DIR = File.join(CONFIG_DIR, 'nvim')
+  PLUGINS_DIR = File.join(NVIM_DIR, 'lua', 'plugins')
+  LAZY_LOCK = File.join(NVIM_DIR, 'lazy-lock.json')
+
+  def initialize(options = {})
+    @nvim_dir = NVIM_DIR
+    @plugins_dir = PLUGINS_DIR
+    @config = options[:config] || 'init'
+    @dry_run = options[:dry_run] || false
+    FileUtils.mkdir_p(@plugins_dir)
+    @installed = load_installed_plugins
+  end
+
+  def run(args)
+    command = args.shift || 'list'
+
+    case command
+    when 'add' then add_plugin(args)
+    when 'remove', 'rm' then remove_plugin(args)
+    when 'list', 'ls' then list_plugins(args)
+    when 'search' then search_plugins(args)
+    when 'update' then update_plugins(args)
+    when 'check' then check_updates(args)
+    when 'health' then run_health(args)
+    when 'clean' then clean_plugins(args)
+    when 'info' then show_info(args)
+    when 'sync' then sync_plugins(args)
+    else
+      puts "Unknown command: #{command}"
+      list_plugins([]) if installed.empty?
+    end
+  end
+
+  private
+
+  def load_installed_plugins
+    plugins = {}
+
+    Dir.glob(File.join(@plugins_dir, '*.lua')).each do |file|
+      content = File.read(file)
+      content.scan(/"([^"]+\/[^"]+)"/) do |match|
+        plugins[match[0]] = { file: file }
+      end
+    end
+
+    # Also check lazy-lock.json
+    if File.exist?(LAZY_LOCK)
+      lock = JSON.parse(File.read(LAZY_LOCK))
+      lock.each do |name, info|
+        plugins[name] ||= {}
+        plugins[name]['version'] = info['version'] if info['version']
+      end
+    end
+
+    plugins
+  end
+
+  def add_plugin(args)
+    plugin = args.shift
+    return puts "Usage: nvimplugin add <author/plugin> [options]" unless plugin
+
+    options = parse_plugin_options(args)
+
+    # Find existing plugins file or create new
+    plugin_file = find_plugin_file(plugin, options[:event])
+
+    spec = generate_plugin_spec(plugin, options)
+    content = File.read(plugin_file)
+
+    # Check if already exists
+    if content.include?("\"#{plugin}\"")
+      puts "\e[33mPlugin already installed: #{plugin}\e[0m"
+      return
+    end
+
+    # Add to file
+    if @dry_run
+      puts "Would add to #{plugin_file}:"
+      puts spec
+    else
+      File.write(plugin_file, content + "\n" + spec)
+      puts "\e[32mAdded #{plugin} to #{File.basename(plugin_file)}\e[0m"
+    end
+
+    sync_needed if !@dry_run
+  end
+
+  def generate_plugin_spec(plugin, options)
+    name = plugin.split('/').last
+    spec = ["  {"]
+
+    if options[:event]
+      spec << "    \"#{plugin}\","
+      spec << "    event = \"#{options[:event]}\","
+    elsif options[:cmd]
+      spec << "    \"#{plugin}\","
+      spec << "    cmd = \"#{options[:cmd]}\","
+    else
+      spec << "    \"#{plugin}\","
+    end
+
+    if options[:dependencies]
+      spec << "    dependencies = { #{options[:dependencies].map { |d| "\"#{d}\"" }.join(', ')} },"
+    end
+
+    if options[:config]
+      spec << "    config = function()"
+      spec << "      require(\"#{name}\").setup()"
+      spec << "    end,"
+    end
+
+    spec << "  },"
+
+    spec.join("\n")
+  end
+
+  def find_plugin_file(plugin, event)
+    # Try to find appropriate file
+    if event
+      event_file = File.join(@plugins_dir, event.downcase + '.lua')
+      return event_file if File.exist?(event_file)
+    end
+
+    # Check for common groupings
+    groups = {
+      'treesitter' => 'treesitter.lua',
+      'lsp' => 'lsp.lua',
+      'completion' => 'completion.lua',
+      'telescope' => 'telescope.lua',
+      'git' => 'git.lua'
+    }
+
+    name = plugin.downcase
+    groups.each do |key, file|
+      return File.join(@plugins_dir, file) if name.include?(key) && File.exist?(File.join(@plugins_dir, file))
+    end
+
+    # Use default init.lua or create it
+    init_file = File.join(@plugins_dir, 'init.lua')
+    return init_file if File.exist?(init_file)
+
+    # Create new file
+    new_file = File.join(@plugins_dir, 'plugins.lua')
+    File.write(new_file, "return {\n}\n")
+    new_file
+  end
+
+  def remove_plugin(args)
+    plugin = args[0]
+    return puts "Usage: nvimplugin remove <author/plugin>" unless plugin
+
+    Dir.glob(File.join(@plugins_dir, '*.lua')).each do |file|
+      content = File.read(file)
+      next unless content.include?("\"#{plugin}\"")
+
+      # Remove plugin spec
+      new_content = remove_plugin_from_file(content, plugin)
+
+      if @dry_run
+        puts "Would remove #{plugin} from #{File.basename(file)}"
+      else
+        File.write(file, new_content)
+        puts "\e[32mRemoved #{plugin} from #{File.basename(file)}\e[0m"
+      end
+    end
+
+    sync_needed if !@dry_run
+  end
+
+  def remove_plugin_from_file(content, plugin)
+    # Remove the plugin entry (handles multi-line)
+    content.gsub(/ *\{\s*\n?\s*"#{Regexp.escape(plugin)}"[^\}]*\},?\s*\n?/, '')
+  end
+
+  def list_plugins(args)
+    format = args[0] || 'list'
+
+    plugins = @installed.keys.sort
+
+    case format
+    when 'json'
+      puts JSON.pretty_generate(@installed)
+    when 'count'
+      puts "#{plugins.size} plugins installed"
+    else
+      puts "\e[1mInstalled plugins (#{plugins.size}):\e[0m"
+      plugins.each do |name|
+        version = @installed[name]['version']
+        version_str = version ? " \e[90m#{version}\e[0m" : ""
+        puts "  #{name}#{version_str}"
+      end
+    end
+  end
+
+  def search_plugins(args)
+    query = args[0]
+    return puts "Usage: nvimplugin search <query>" unless query
+
+    # Search on GitHub (simplified)
+    puts "\e[1mSearching for '#{query}'...\e[0m"
+    puts "(This searches popular Neovim plugins)\n"
+
+    # Common plugins matching query
+    popular = %w[
+      nvim-treesitter/nvim-treesitter
+      neovim/nvim-lspconfig
+      hrsh7th/nvim-cmp
+      nvim-telescope/telescope.nvim
+      akinsho/toggleterm.nvim
+      folke/which-key.nvim
+      folke/trouble.nvim
+      lewis6991/gitsigns.nvim
+      tpope/vim-fugitive
+      vim-airline/vim-airline
+    ]
+
+    matches = popular.select { |p| p.downcase.include?(query.downcase) }
+
+    matches.each do |plugin|
+      installed = installed.include?(plugin)
+      status = installed ? "\e[32m[installed]\e[0m" : ""
+      puts "  #{plugin} #{status}"
+    end
+
+    puts "\e[90mFor more results, search nvim.io or github.com\e[0m"
+  end
+
+  def update_plugins(args)
+    specific = args[0]
+
+    if specific
+      puts "\e[1mUpdating #{specific}...\e[0m"
+      system("nvim --headless \"+Lazy! build #{specific}\" +q")
+    else
+      puts "\e[1mUpdating all plugins...\e[0m"
+      system("nvim --headless '+Lazy! sync' +q")
+    end
+
+    puts "\e[32mDone\e[0m"
+  end
+
+  def check_updates(args)
+    puts "\e[1mChecking for updates...\e[0m"
+
+    result = `nvim --headless '+Lazy! show' +q 2>&1`
+    puts result
+  end
+
+  def run_health(args)
+    puts "\e[1mRunning :checkhealth...\e[0m"
+    system("nvim --headless '+Lazy! health' +q")
+  end
+
+  def clean_plugins(args)
+    puts "\e[1mCleaning unused plugins...\e[0m"
+    system("nvim --headless '+Lazy! clean' +q")
+    puts "\e[32mDone\e[0m"
+  end
+
+  def show_info(args)
+    plugin = args[0]
+    return puts "Usage: nvimplugin info <author/plugin>" unless plugin
+
+    info = @installed[plugin]
+    return puts "\e[31mPlugin not found: #{plugin}\e[0m" unless info
+
+    puts "\e[1m#{plugin}\e[0m"
+    puts "Version: #{info['version'] || 'unknown'}" if info['version']
+    puts "Config: #{info[:file]}" if info[:file]
+    puts "Installed: yes"
+  end
+
+  def sync_plugins(args)
+    puts "\e[1mSyncing plugins...\e[0m"
+    system("nvim --headless '+Lazy! sync' +q")
+    puts "\e[32mDone\e[0m"
+  end
+
+  def sync_needed
+    puts "Run :Lazy sync or 'nvimplugin sync' to install"
+  end
+
+  def parse_plugin_options(args)
+    options = {}
+
+    args.each_with_index do |arg, idx|
+      case arg
+      when '-e', '--event' then options[:event] = args[idx + 1]
+      when '-c', '--cmd' then options[:cmd] = args[idx + 1]
+      when '-d', '--dependencies' then options[:dependencies] = args[idx + 1]&.split(',')
+      when '--config' then options[:config] = true
+      end
+    end
+
+    options
+  end
+end
+
+OptionParser.new do |opts|
+  opts.banner = "Usage: nvimplugin <command> [options]"
+  opts.on('-c', '--config FILE', 'Config file to use') { |v| options[:config] = v }
+  opts.on('--dry-run', 'Preview without changes') { options[:dry_run] = true }
+  opts.on('-h', '--help', 'Show help') { puts opts; exit }
+end.parse!
+
+Nvimplugin.new(ARGV).run(ARGV)

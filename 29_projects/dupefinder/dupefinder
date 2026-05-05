@@ -1,0 +1,195 @@
+#!/usr/bin/env ruby
+# frozen_string_literal: true
+
+require 'optparse'
+require 'digest'
+require 'fileutils'
+require 'json'
+
+class Dupefinder
+  IGNORED_DIRS = %w[.git .svn node_modules __pycache__ .bundle vendor .cache].freeze
+
+  def initialize(options = {})
+    @directory = File.expand_path(options[:directory] || Dir.pwd)
+    @min_size = parse_size(options[:min_size] || 0)
+    @delete_mode = options[:delete] || false
+    @json_output = options[:json] || false
+    @verbose = options[:verbose] || false
+    @dry_run = options[:dry_run] || false
+  end
+
+  def run
+    puts "Scanning #{@directory}..." unless @json_output
+
+    duplicates = find_duplicates
+
+    if duplicates.empty?
+      puts "No duplicates found" unless @json_output
+      return
+    end
+
+    if @json_output
+      puts JSON.pretty_generate(duplicates)
+    else
+      display_duplicates(duplicates)
+    end
+
+    if @delete_mode
+      handle_deletion(duplicates)
+    end
+  end
+
+  private
+
+  def parse_size(str)
+    return str.to_i if str.is_a?(Numeric)
+    return 0 if str.nil? || str.empty?
+
+    str = str.to_s
+    multipliers = { 'k' => 1024, 'm' => 1024**2, 'g' => 1024**3 }
+
+    str.downcase!
+    multipliers.each do |suffix, mult|
+      return str.to_i * mult if str.end_with?(suffix)
+    end
+
+    str.to_i
+  end
+
+  def find_duplicates
+    files_by_size = {}
+    total_files = 0
+
+    Dir.glob(File.join(@directory, '**/*')).each do |path|
+      next if File.directory?(path)
+      next if ignored?(path)
+
+      size = File.size(path)
+      next if size < @min_size
+      next if size == 0
+
+      files_by_size[size] ||= []
+      files_by_size[size] << path
+      total_files += 1
+
+      print "\rScanned #{total_files} files..." if @verbose && (total_files % 100 == 0)
+    end
+
+    print "\n" if @verbose
+
+    duplicates = {}
+
+    files_by_size.each do |size, files|
+      next if files.length == 1
+
+      files_by_checksum = Hash.new { |h, k| h[k] = [] }
+
+      files.each do |file|
+        checksum = calculate_checksum(file)
+        files_by_checksum[checksum] << file
+      end
+
+      files_by_checksum.each do |checksum, dup_files|
+        next if dup_files.length == 1
+
+        duplicates[checksum] = {
+          size: size,
+          human_size: human_size(size),
+          files: dup_files
+        }
+      end
+    end
+
+    duplicates
+  end
+
+  def ignored?(path)
+    path_parts = path.split('/')
+    IGNORED_DIRS.any? { |dir| path_parts.include?(dir) }
+  end
+
+  def calculate_checksum(file)
+    sha256 = Digest::SHA256.new
+    File.open(file, 'rb') do |f|
+      while (chunk = f.read(8192))
+        sha256.update(chunk)
+      end
+    end
+    sha256.hexdigest
+  end
+
+  def human_size(bytes)
+    units = ['B', 'KB', 'MB', 'GB', 'TB']
+    size = bytes.to_f
+
+    unit = units.find do |u|
+      size < 1024 || u == units.last ? true : (size /= 1024; false)
+    end
+
+    "#{size.round(2)} #{unit}"
+  end
+
+  def display_duplicates(duplicates)
+    puts "\n\e[1mFound #{duplicates.length} duplicate sets:\e[0m\n"
+
+    duplicates.each_with_index do |(checksum, data), idx|
+      puts "\n\e[33m[#{idx + 1}] Size: #{data[:human_size]}\e[0m"
+      data[:files].each_with_index do |file, f_idx|
+        relative = file.sub("#{@directory}/", '')
+        puts "    #{f_idx + 1}. #{relative}"
+      end
+    end
+
+    wasted = duplicates.values.sum { |d| d[:size] * (d[:files].length - 1) }
+    puts "\n\e[31mWasted space: #{human_size(wasted)}\e[0m"
+  end
+
+  def handle_deletion(duplicates)
+    puts "\n\e[33m--- Deletion Mode ---\e[0m"
+    puts "Select files to delete (or 'keep' to mark originals)"
+
+    duplicates.each_with_index do |(checksum, data), group_idx|
+      puts "\n\e[1mGroup #{group_idx + 1} (#{data[:human_size]}):\e[0m"
+
+      data[:files].each_with_index do |file, file_idx|
+        relative = file.sub("#{@directory}/", '')
+        print "  #{file_idx + 1}. #{relative}\n"
+      end
+
+      print "\nDelete which? (number/all but first/skip): "
+      answer = $stdin.gets&.strip&.downcase
+
+      to_delete = case answer
+                  when 'all', 'all but first'
+                    data[:files][1..]
+                  when /^\d+$/
+                    [data[:files][answer.to_i - 1]].compact
+                  else
+                    []
+                  end
+
+      to_delete.each do |file|
+        if @dry_run
+          puts "\e[33mWould delete: #{file}\e[0m"
+        else
+          File.delete(file)
+          puts "\e[32mDeleted: #{file}\e[0m"
+        end
+      end
+    end
+  end
+end
+
+options = {}
+OptionParser.new do |opts|
+  opts.banner = "Usage: dupefinder [directory] [options]"
+
+  opts.on('-d', '--delete', 'Interactive delete mode') { options[:delete] = true }
+  opts.on('-j', '--json', 'Output as JSON') { options[:json] = true }
+  opts.on('-s', '--min-size SIZE', 'Minimum file size (e.g., 1M, 500K)') { |v| options[:min_size] = v }
+  opts.on('-v', '--verbose', 'Verbose output') { options[:verbose] = true }
+  opts.on('--dry-run', 'Preview deletions') { options[:dry_run] = true }
+  opts.on('-h', '--help', 'Show help') { puts opts; exit }
+end.parse!
+
+Dupefinder.new(options.merge(directory: ARGV[0])).run

@@ -1,48 +1,26 @@
 #!/usr/bin/env ruby
 # frozen_string_literal: true
-#
-# Regular expressions
-# This file contains Ruby code for regular expressions.
 
-# Substitutions
-# Only one match
-puts 'foobar'.sub('bar', 'foo')
+# regular_expressions.rb — sub, gsub, scan, anchors
 
-# Global match
-puts 'This is a test'.gsub('i', '')
+# sub: first match only, gsub: all matches
+puts 'foobar'.sub('bar', 'foo')            # => foofoo
+puts 'This is a test'.gsub('i', '')        # => Ths s a test
 
-# Replace the first two characters with 'Hello'
-x = 'This is a test'
-puts x.sub(/^../, 'Hello')
+# Anchors: ^ and $
+puts 'This is a test'.sub(/^../, 'Hello')  # => Hellois is a test
+puts 'This is a test'.sub(/..$/, 'Hello')  # => This is a teHello
 
-# Replace the last two characters with 'Hello'
-x = 'This is a test'
-puts x.sub(/..$/, 'Hello')
-
-# Iteration with a regular expression
+# scan: iterate over matches
 'xyz'.scan(/./) { |letter| puts letter }
+'This test scan'.scan(/\w\w/) { |chars| puts chars }
 
-# Scannint two characters
-'This is a test scan'.scan(/../) { |chars| puts chars }
+# \A and \z anchor to absolute string start/end (not line start/end)
+x = 'This_is_a_test'
+puts x.sub(/\A/, 'Hello')   # => HelloThis_is_a_test
+puts x.sub(/\z/, 'Hello')   # => This_is_a_testHello
 
-# Scanning two alphanumeric characters
-'This is a test scan'.scan(/\w\w/) { |letters| puts letters }
+# Extract data with scan
+'The car costs $1000 and the cat costs $10'.scan(/\d+/) { |x| puts x }
+'The car costs $1000 and the cat costs $10'.scan(/[aeiou]/) { |x| puts x }
 
-Note = %q(If you want to anchor to the absolute start or end of a string, you can use \A and \z, respectively,whereas ^ and $ anchor to the starts and ends of lines within a string.
-)
-puts Note
-puts
-
-x = 'This_is_ a_test'
-puts x.sub(/\A/, 'Hello')
-puts x.sub(/\z/, 'Hello')
-
-# Extract numbers from string
-'The car costs $1000 and the cat costs $10'.scan(/\d+/) do |x|
-  puts x
-end
-
-# Extract vowels from string
-'The car costs $1000 and the cat costs $10'.scan(/[aeiou]/) do |x|
-  puts x
-end

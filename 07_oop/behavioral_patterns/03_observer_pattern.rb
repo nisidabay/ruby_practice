@@ -1,12 +1,11 @@
 #!/usr/bin/env ruby
+# frozen_string_literal: true
 
-# Problem: You want objects to automatically react when another object changes state.
-# Example: A weather station that updates multiple displays (current conditions, statistics, alerts) when measurements change.
-#
-# Solution: Use the observer pattern - subjects notify all registered observers when they change.
-# Visibility: Observers subscribe/unsubscribe, subject doesn't know what they do.
+# observer_pattern.rb — subjects notify registered observers on state change
 
 class WeatherStation
+  attr_reader :temperature, :humidity
+
   def initialize
     @observers = []
     @temperature = 0
@@ -24,19 +23,9 @@ class WeatherStation
   def measurements_changed(temp, humidity)
     @temperature = temp
     @humidity = humidity
-    puts "\n[WeatherStation] Updated: #{@temperature}°C, #{@humidity}%"
-    notify_observers
+    puts "\n[WeatherStation] #{@temperature}°C, #{@humidity}%"
+    @observers.each { |o| o.update(self) }
   end
-
-  private
-
-  def notify_observers
-    @observers.each { |observer| observer.update(self) }
-  end
-
-  public
-
-  attr_reader :temperature, :humidity
 end
 
 class CurrentConditionsDisplay
@@ -61,75 +50,15 @@ end
 
 class AlertDisplay
   def update(station)
-    if station.temperature > 35
-      puts ">>> ⚠️ HIGH TEMP ALERT: #{station.temperature}°C"
-    end
-    if station.humidity < 20
-      puts ">>> ⚠️ LOW HUMIDITY ALERT: #{station.humidity}%"
-    end
+    puts ">>> ⚠️ HIGH TEMP ALERT: #{station.temperature}°C" if station.temperature > 35
+    puts ">>> ⚠️ LOW HUMIDITY ALERT: #{station.humidity}%" if station.humidity < 20
   end
 end
 
-# Usage: Create subject and observers, then subscribe
 station = WeatherStation.new
-
-current = CurrentConditionsDisplay.new
-stats = StatisticsDisplay.new
-alerts = AlertDisplay.new
-
-station.attach(current)
-station.attach(stats)
-station.attach(alerts)
-
-# Changes trigger automatic notifications to all observers
+station.attach(CurrentConditionsDisplay.new)
+station.attach(StatisticsDisplay.new)
+station.attach(AlertDisplay.new)
 station.measurements_changed(25, 60)
-station.measurements_changed(28, 55)
-station.measurements_changed(36, 45)  # Triggers temp alert
+station.measurements_changed(36, 45)
 
-# Unsubscribe when no longer needed
-station.detach(stats)
-station.measurements_changed(30, 50)  # Stats won't update
-
-# Alternative: Block-based observers for simple cases
-# For simple cases, use blocks instead of full observer classes:
-
-class SimpleWeatherStation
-  def initialize
-    @observers = []
-    @temperature = 0
-    @humidity = 0
-  end
-
-  def attach(&block)
-    @observers << block
-  end
-
-  def measurements_changed(temp, humidity)
-    @temperature = temp
-    @humidity = humidity
-    puts "\n[WeatherStation] Updated: #{@temperature}°C, #{@humidity}% humidity"
-    notify_observers
-  end
-
-  private
-
-  def notify_observers
-    @observers.each { |observer| observer.call(self) }
-  end
-
-  public
-
-  attr_reader :temperature, :humidity
-end
-
-puts "\n--- Block-based Observer Pattern ---"
-
-station = SimpleWeatherStation.new
-
-# Attach observers as blocks - no class definitions needed!
-station.attach { |s| puts ">>> 🌡️  Temp: #{s.temperature}°C" }
-station.attach { |s| puts ">>> 💧 Humidity: #{s.humidity}%" }
-station.attach { |s| puts ">>> ⚠️  ALERT!" if s.temperature > 30 }
-
-station.measurements_changed(25, 60)
-station.measurements_changed(32, 45)  # Triggers alert

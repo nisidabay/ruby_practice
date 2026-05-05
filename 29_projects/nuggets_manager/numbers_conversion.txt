@@ -1,0 +1,147 @@
+••• Decimal to Binary Example: 53₁₀ to binary
+53 ÷ 2 = 26 remainder 1
+26 ÷ 2 = 13 remainder 0
+13 ÷ 2 = 6  remainder 1
+6 ÷ 2 = 3   remainder 0
+3 ÷ 2 = 1   remainder 1
+1 ÷ 2 = 0   remainder 1
+Result (reading from bottom to top): 110101₂
+
+••• Decimal to Octal Example: 278₁₀ to octal
+278 ÷ 8 = 34 remainder 6
+34 ÷ 8 = 4  remainder 2
+4 ÷ 8 = 0   remainder 4
+Result (reading from bottom to top): 426₈
+
+••• Decimal to Hexadecimal Example: 430₁₀ to hexadecimal
+430 ÷ 16 = 26 remainder 14 (E)
+26 ÷ 16 = 1  remainder 10 (A)
+1 ÷ 16 = 0   remainder 1
+Result (reading from bottom to top): 1AE₁₆
+
+••• Binary to Decimal Example: 10110₂ to decimal
+1*2⁴ + 0*2³ + 1*2² + 1*2¹ + 0*2⁰ = 16 + 0 + 4 + 2 + 0 = 22₁₀
+
+••• Octal to Decimal Example: 745₈ to decimal
+7*8² + 4*8¹ + 5*8⁰ = 7*64 + 4*8 + 5*1 = 448 + 32 + 5 = 485₁₀
+
+••• Hexadecimal to Decimal Example: 2AF₁₆ to decimal
+2*16² + 10*16¹ + 15*16⁰ = 2*256 + 10*16 + 15*1 = 512 + 160 + 15 = 687₁₀
+
+••• Binary to Hexadecimal:
+Group binary digits into SETS OF 4 (from right to left, add leading zeros if
+necessary), then convert each group.
+
+Example: 1011010110₂ to hexadecimal
+Group into fours: 0010 1101 0110
+Convert each group: 2    D    6
+Result: 2D6₁₆
+
+••• Hexadecimal to Binary:
+Convert each hexadecimal digit to its 4-digit binary equivalent.
+
+Example: A3F₁₆ to binary
+A → 1010
+3 → 0011
+F → 1111
+Result: 101000111111₂
+
+••• Binary to Octal:
+Group binary digits into SETS OF 3 (from right to left, add leading zeros if
+necessary), then convert each group.
+
+Example: 11010111₂ to octal
+Group into threes: 011 010 111
+Convert each group: 3   2   7
+Result: 327₈
+
+••• Octal to Binary:
+Convert each octal digit to its 3-digit binary equivalent.
+
+Example: 562₈ to binary
+5 → 101
+6 → 110
+2 → 010
+Result: 101110010₂
+
+••• Hexadecimal to Octal:
+First convert hexadecimal to binary, then convert binary to octal.
+
+Example: 2AF₁₆ to octal
+2AF₁₆ → 001010101111₂ (convert each hex digit to 4 binary digits)
+Group into threes: 001 010 101 111
+Convert each group: 1   2   5   7
+Result: 1257₈
+
+••• Octal to Hexadecimal:
+First convert octal to binary, then convert binary to hexadecimal.
+
+Example: 1257₈ to hexadecimal
+1257₈ → 001010101111₂ (convert each octal digit to 3 binary digits)
+Group into fours: 0010 1010 1111
+Convert each group: 2    A    F
+Result: 2AF₁₆
+
+••• Uses of bitwise AND operator (&)
+* Checking if a number is even or odd
+    **  AND with 1: if result is 0, number is even; if 1, odd
+* Extracting specific bits from a number
+    ** Create a mask with 1s in positions to extract, 0s elsewhere
+* Clearing specific bits in a number
+    ** Create a mask where bits to clear are 1, then complement it
+    int value = 0b11111111;  // 255 in decimal
+    int mask = 0b00001111;   // We want to clear the upper 4 bits
+    value &= ~mask;          // Result: 0b11110000 (240 in decimal)
+* Check if a bit is set
+    ** AND with a mask having 1 only in the bit position to check
+* Removing least significant 1 bit
+    ** AND number with (number - 1)
+
+••• Uses of bitwise OR operator (|)
+* Setting flags or combining options
+    ** OR with a constant representing the flag/option
+* Set specific bits
+    ** Create a mask with 1s in positions to set, 0s elsewhere
+* Implementing bitmasks for permissions or settings
+    ** Each bit represents a distinct permission/setting
+* Converting lowercase letters to uppercase
+    ** OR with 0x20 (assuming ASCII encoding)
+
+••• Uses of XOR (^)
+* Flipping individual bits
+    ** XOR with a mask having 1s in positions to flip
+* Swapping two variables without a temporary variable
+* Checking if two numbers have opposite signs
+    ** XOR the numbers and check if the result is negative
+* Implementing simple encryption algorithms
+    ** XOR with a key for basic symmetric encryption
+* Detecting changes in data
+    ** XOR new data with old data to find changed bits
+* Calculating parity
+    ** XOR all bits together; result is parity bit
+* Finding the missing number in a sequence
+    ** XOR all numbers in sequence with all expected numbers
+* Removing duplicates in an array where all elements appear twice except one
+    ** XOR all elements; result is the unique element
+
+••• Uses of left shift (<<) and right shift (>>)
+* Multiplying or dividing by powers of 2
+    ** Left shift to multiply, right shift to divide
+* Creating masks with a specific number of 1 bits
+    ** (1 << n) - 1 creates a mask with n least significant bits set
+* Implementing efficient power functions for 2^n
+    ** 1 << n is equivalent to 2^n
+* Packing and unpacking bits into integers
+    ** Use shifts to position bits, then OR to combine
+
+••• Bits manipulation
+| --------- | ---------    | ---- |
+| operator  | operation    | mask |
+| --------- | ---------    | ---- |
+| AND       | Bit clearing | 0    |
+| AND       | Bit testing  | 1    |
+| OR        | Bit setting  | 1    |
+| XOR       | Bit toggling | 1    |
+| --------- | ---------    | ---- |
+
+

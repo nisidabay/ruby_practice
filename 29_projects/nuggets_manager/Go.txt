@@ -1,0 +1,56 @@
+••• Go - Create a map using a literal declaration
+
+// Create a map with string keys and int values
+myMap := map[ string ]int{
+    "apple":  1,
+    "banana": 2,
+    "cherry": 3,
+}
+
+••• Go - Create a map using 'make' function
+
+// Create an empty map with string keys and int values
+myMap := make(map[ string ]int)
+
+// Add key-value pairs
+myMap["apple"] = 1
+myMap["banana"] = 2
+myMap["cherry"] = 3
+
+••• Go - Create a map using 'new' function
+
+// Create a pointer to an empty map with string keys and int values
+myMap := new(map[ string ]int)
+
+// Initialize the map (not required, but recommended)
+*myMap = make(map[ string ]int)
+
+// Add key-value pairs
+(*myMap)["apple"] = 1
+(*myMap)["banana"] = 2
+(*myMap)["cherry"] = 3
+
+••• Go - Create a map using a composite literal
+
+// Create an empty map with string keys and int values
+myMap := map[ string ]int{}
+
+// Add key-value pairs using make
+myMap = make(map[ string ]int)
+myMap["apple"] = 1
+myMap["banana"] = 2
+myMap["cherry"] = 3
+
+••• Go - Create a map using 'map' type variable
+
+// Declare a map variable
+var myMap map[ string ]int
+
+// Initialize the map using make
+myMap = make(map[ string ]int)
+
+// Add key-value pairs
+myMap["apple"] = 1
+myMap["banana"] = 2
+myMap["cherry"] = 3
+

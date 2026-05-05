@@ -1,11 +1,7 @@
 #!/usr/bin/env ruby
+# frozen_string_literal: true
 
-# Problem: You want a method callable on the module (public),
-# but also usable internally in classes (private helper),
-# and NOT callable directly on class/instances from outside.
-#
-# Solution: Use module_function with both include and extend.
-# Visibility: PUBLIC on module, PRIVATE in classes (but usable internally).
+# module_function — public on module, private when mixed into classes
 
 module Calculator
   def add(a, b)
@@ -15,45 +11,19 @@ module Calculator
   module_function :add
 end
 
-# 1. Module call (public)
-puts Calculator.add(10, 5)
+puts Calculator.add(10, 5)          # public on module
 
-# 2. Class and instance can use it internally
 class MathOperations
-  extend Calculator   # Private class methods
-  include Calculator  # Private instance methods
+  extend Calculator                 # private class methods
+  include Calculator                # private instance methods
 
-  def self.calculate(a, b)
-    add(a, b)  # Works internally
-  end
-
-  def calculate(a, b)
-    add(a, b)  # Works internally
-  end
+  def self.class_calc(a, b) = add(a, b)  # internal call works
+  def instance_calc(a, b) = add(a, b)    # internal call works
 end
 
-puts MathOperations.calculate(10, 5)      # Works (internal)
-puts MathOperations.new.calculate(10, 5)  # Works (internal)
+puts MathOperations.class_calc(10, 5)         # works
+puts MathOperations.new.instance_calc(10, 5)  # works
 
-# These fail (external calls to private method):
-# MathOperations.add(10, 5)      # NoMethodError
-# MathOperations.new.add(10, 5)  # NoMethodError
+# MathOperations.add(10, 5)        # private method error
+# MathOperations.new.add(10, 5)    # private method error
 
-# This could also be done like this:
-# If you want the method to be public everywhere,
-# use extend self:
-#
-# module Calculator
-#   extend self
-#   def add(a, b)
-#     a + b
-#   end
-# end
-#
-# class MathOperations
-#   extend Calculator
-#   include Calculator
-# end
-#
-# MathOperations.add(10, 5)      # Works (public)
-# MathOperations.new.add(10, 5)  # Works (public)

@@ -1,0 +1,240 @@
+#!/usr/bin/env ruby
+# frozen_string_literal: true
+
+require 'optparse'
+require 'sys/proctable'
+require 'json'
+require 'io/console'
+
+class Procop
+  IGNORED_PROCESSES = %w[procop].freeze
+
+  def initialize(options = {})
+    @user = options[:user] || ENV['USER']
+    @sort_by = options[:sort] || :pid
+    @filter = options[:filter]
+    @interactive = options[:interactive] || false
+    @signal = options[:signal] || 'TERM'
+    @format = options[:format] || 'table'
+    @tree = options[:tree] || false
+    @all_users = options[:all] || false
+    @selected_index = 0
+    @processes = []
+    @running = true
+  end
+
+  def run
+    load_processes
+
+    return puts "No processes found" if @processes.empty?
+    return output_json if @format == 'json'
+
+    if @interactive && $stdout.tty?
+      interactive_mode
+    else
+      display_table
+    end
+  end
+
+  private
+
+  def load_processes
+    @processes = Sys::Proctable.ps.map do |proc|
+      {
+        pid: proc.pid,
+        ppid: proc.ppid,
+        name: proc.name || proc.comm || 'unknown',
+        user: proc.user || 'unknown',
+        cpu: proc.pcpu || 0,
+        mem: proc.size || 0,
+        vsz: proc.vsize || 0,
+        rss: proc.rss || 0,
+        state: proc.state || 'unknown',
+        cmdline: proc.cmdline,
+        started: proc.starttime
+      }
+    end
+
+    @processes = filter_processes(@processes)
+    @processes = sort_processes(@processes)
+
+    @processes
+  end
+
+  def filter_processes(processes)
+    processes = processes.select { |p| p[:name] != 'procop' }
+    processes = processes.select { |p| p[:user] == @user } unless @all_users
+    processes = processes.select { |p| p[:name].downcase.include?(@filter.downcase) } if @filter
+    processes
+  end
+
+  def sort_processes(processes)
+    case @sort_by
+    when :cpu then processes.sort_by { |p| -p[:cpu] }
+    when :mem then processes.sort_by { |p| -p[:mem] }
+    when :pid then processes.sort_by { |p| p[:pid] }
+    when :name then processes.sort_by { |p| p[:name].downcase }
+    else processes
+    end
+  end
+
+  def display_table
+    width = `tput cols 2>/dev/null`.to_i
+    width = 120 if width == 0
+
+    header = format("\e[1m%-7s %-7s %-6s %-8s %-6s %-6s %-s\e[0m", 'PID', 'PPID', 'USER', 'STATUS', 'CPU%', 'MEM%', 'NAME')
+    puts header
+    puts '-' * [width - 10, 80].max
+
+    @processes.first(50).each do |proc|
+      color = proc[:cpu] > 50 ? 31 : (proc[:cpu] > 20 ? 33 : 0)
+      mem_mb = (proc[:mem] / 1024.0 / 1024.0).round(1)
+      cpu = proc[:cpu].round(1)
+
+      line = format("%-7d %-7d %-6s %-8s %-6s %-6s %-s",
+        proc[:pid],
+        proc[:ppid],
+        proc[:user][0, 6],
+        proc[:state][0, 8],
+        "#{cpu}%",
+        "#{mem_mb}M",
+        proc[:name][0, 20]
+      )
+
+      puts color > 0 ? "\e[#{color}m#{line}\e[0m" : line
+    end
+
+    puts "\n\e[90mShowing #{@processes.size} processes\e[0m"
+  end
+
+  def output_json
+    puts JSON.pretty_generate(@processes)
+  end
+
+  def interactive_mode
+    setup_terminal
+
+    while @running
+      render
+      handle_input
+    end
+  ensure
+    restore_terminal
+  end
+
+  def setup_terminal
+    system('stty raw -echo')
+    print `tput civis 2>/dev/null`
+  end
+
+  def restore_terminal
+    system('stty cooked echo')
+    print `tput cnorm 2>/dev/null`
+  end
+
+  def render
+    print "\e[2J\e[H"
+
+    puts "\e[1m\e[36mProcop - Process Monitor\e[0m"
+    puts "Sorted by: #{@sort_by} | Filter: #{@filter || 'none'}"
+    puts "-" * 60
+
+    display = @processes.first(20)
+
+    display.each_with_index do |proc, idx|
+      is_selected = idx == @selected_index
+      prefix = is_selected ? "\e[32m> " : "  "
+
+      mem_mb = (proc[:mem] / 1024.0 / 1024.0).round(1)
+      line = format("%-7d %-7s %-5s %s",
+        proc[:pid],
+        proc[:name][0, 15],
+        "#{proc[:cpu].round(1)}%",
+        "#{mem_mb}M"
+      )
+
+      if is_selected
+        puts "#{prefix}\e[7m#{line}\e[0m"
+      else
+        puts "#{prefix}#{line}"
+      end
+    end
+
+    puts "\n\e[90m[j/k] navigate [Enter] kill [q] quit [r] refresh\e[0m"
+  end
+
+  def handle_input
+    char = $stdin.getch
+
+    case char
+    when 'q', "\u0003" then @running = false
+    when 'j', "\e[B" then @selected_index = [@processes.size - 1, @selected_index + 1].min
+    when 'k', "\e[A" then @selected_index = [0, @selected_index - 1].max
+    when 'r' then @processes = load_processes
+    when "\r", "\n"
+      kill_selected
+    when '/'
+      print "\e[2K\e[1GFilter: "
+      filter_str = $stdin.gets.chomp rescue ''
+      @filter = filter_str unless filter_str.empty?
+      @processes = load_processes
+    end
+  end
+
+  def kill_selected
+    proc = @processes[@selected_index]
+    return unless proc
+
+    print "\e[2K\e[GKill #{proc[:name]} (#{proc[:pid]})? [y/N]: "
+    if $stdin.getch.downcase == 'y'
+      begin
+        Process.kill(@signal, proc[:pid])
+        puts "\e[32mSent #{@signal} to #{proc[:pid]}\e[0m"
+      rescue => e
+        puts "\e[31mFailed: #{e.message}\e[0m"
+      end
+      sleep 0.5
+      @processes = load_processes
+    end
+  end
+end
+
+class String
+  def getch
+    require 'io/console'
+    $stdin.getch
+  rescue
+    gets
+  end
+end
+
+options = {}
+OptionParser.new do |opts|
+  opts.banner = "Usage: procop [command] [options]"
+
+  opts.on('-u', '--user USER', 'Filter by user') { |v| options[:user] = v }
+  opts.on('-s', '--sort FIELD', 'Sort by: cpu, mem, pid, name') { |v| options[:sort] = v.to_sym }
+  opts.on('-f', '--filter NAME', 'Filter by process name') { |v| options[:filter] = v }
+  opts.on('-i', '--interactive', 'Interactive mode') { options[:interactive] = true }
+  opts.on('-S', '--signal SIG', 'Signal to send (TERM, KILL, etc)') { |v| options[:signal] = v }
+  opts.on('-j', '--json', 'JSON output') { options[:format] = 'json' }
+  opts.on('-a', '--all', 'Show all users') { options[:all] = true }
+  opts.on('-t', '--tree', 'Tree view') { options[:tree] = true }
+  opts.on('-h', '--help', 'Show help') { puts opts; exit }
+end.parse!
+
+command = ARGV.shift
+
+if command == 'kill' || command == 'k'
+  pid = ARGV.shift&.to_i
+  signal = options[:signal] || 'TERM'
+  begin
+    Process.kill(signal, pid)
+    puts "Sent #{signal} to #{pid}"
+  rescue => e
+    puts "Failed: #{e.message}"
+  end
+else
+  options[:filter] = command if command && !command.start_with?('-')
+  Procop.new(options).run
+end

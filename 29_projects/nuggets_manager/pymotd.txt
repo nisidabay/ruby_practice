@@ -1,0 +1,692 @@
+••• deque
+from collections import deque
+
+Deques are a generalization of stacks and queues (the name is pronounced "deck" 
+and is short for “double-ended queue”). Deques support thread-safe, memory 
+efficient appends and pops from either side of the deque with approximately the 
+same O(1) performance in either direction.
+
+Main methods
+------------
+'append', 'appendleft', 'clear', 'copy', 'count', 'extend', 'extendleft', 
+'index', 'insert', 'maxlen', 'pop', 'popleft', 'remove', 'reverse', 'rotate'
+
+••• namedtuple
+from collections import namedtuple
+
+Namedtuples instances are just as memory efficient as regular tuples because 
+they do not have per-instance dictionaries. Each kind of namedtuple is 
+represented by its own class, created by using the namedtuple() factory
+function. The arguments are the name of the new class and a string containing
+the names of the elements.
+
+Main methods
+------------
+'_make()', '_asdict()', '_replace()','_fields', '_fields_defaults'
+
+Example
+--------
+from collections import namedtuple
+
+Person = namedtuple("Person", "name job", defaults=["Python Developer"])
+person = Person("Jane")
+print(person)
+
+>>> Person(name='Jane', job='Python Developer')
+
+person._asdict()
+>>> {'name': 'Jane', 'job': 'Python Developer'}
+
+person = person._replace(job="Web Developer")
+print(person)
+Person(name='Jane', job='Web Developer')
+
+def custom_divmod(x, y):
+    DivMod = namedtuple("DivMod", "quotient remainder")
+    return DivMod(*divmod(x, y))
+
+result = custom_divmod(12, 5)
+print(result)
+print(result.quotient)
+print(result.remainder)
+
+••• OrderedDict
+from collections import OrderedDict
+
+An OrderedDict is a dictionary subclass that remembers the order in which its 
+contents are added.
+
+Main methods
+------------
+'clear', 'copy', 'fromkeys', 'get', 'items', 'keys', 'move_to_end', 'pop',
+'popitem', 'setdefault', 'update', 'values'
+
+••• Counter
+from collections import Counter
+
+A Counter is a dict subclass for counting hashable objects. It is a collection 
+where elements are stored as dictionary keys and their counts are stored as 
+dictionary values. Counts are allowed to be any integer value including zero or
+negative counts.
+
+Main methods
+------------
+'clear', 'copy', 'elements', 'fromkeys', 'get', 'items', 'keys', 'most_common',
+'pop', 'popitem', 'setdefault', 'subtract', 'update', 'values'
+
+Example
+--------
+cnt = Counter()
+for word in ['red', 'blue', 'red', 'green', 'blue', 'blue']:
+    cnt[word] += 1
+    
+import re
+words = re.findall("\w+", text, re.I)
+Counter(words).most_common(10)
+
+••• defaultdict
+from collections import defaultdict
+
+Defaultdict is a sub-class of the dict class that returns a dictionary-like 
+object. The functionality of both dictionaries and default are almost same 
+except for the fact that default never raises a KeyError. It provides a 
+default value for the key that does not exists.
+
+••• accumulate
+Return series of accumulated sums (or other binary function results).
+
+Example
+--------
+from itertools import accumulate
+import operator
+a = [1,2,3,4,5]
+acc = accumulate(a)
+print(list(acc))
+>>>[1, 3, 6, 10, 15]
+
+acc = accumulate(a, func=operator.mul)
+print(list(acc))
+>>>[1, 2, 6, 24, 120]
+
+••• product
+from itertools import accumulate
+
+Cartesian product of input iterables.  Equivalent to nested for-loops.
+
+Example
+--------
+from itertools import product
+
+a=[1,2]
+b=[3,4]
+p=product(a,b)
+print(list(p))
+>>>[(1, 3), (1, 4), (2, 3), (2, 4)]
+
+p=product(a,b,repeat=2)
+print(list(p))
+>>>[(1, 3, 1, 3), (1, 3, 1, 4), (1, 3, 2, 3), (1, 3, 2, 4), (1, 4, 1, 3), (1, 4
+, 1, 4), (1, 4, 2, 3), (1, 4, 2, 4), (2, 3, 1, 3), (2, 3, 1, 4), (2, 3, 2, 3
+), (2, 3, 2, 4), (2, 4, 1, 3), (2, 4, 1, 4), (2, 4, 2, 3), (2, 4, 2, 4)]
+
+••• Enumerate 
+Enumerate is built-in python function that takes input as iterator, list etc 
+and returns a tuple containing index and data at that index in the iterator 
+sequence.
+
+Example
+--------
+cars = ["Aston" , "Audi", "McLaren "]
+print enumerate(cars)
+
+>>> [(0, 'Aston'), (1, 'Audi'), (2, 'McLaren ')]
+
+•••Zip••
+This function is helpful to combine similar type iterators(list-list or dict-
+dict etc,) data items at ith position. It uses the shortest length of these
+input iterators. Other items of larger length iterators are skipped. In case of
+empty iterators, it returns No output.
+
+Example
+--------
+cars = ["Aston", "Audi", "McLaren"]
+accessories = ["GPS", "Car Repair Kit",
+               "Dolby sound kit"]
+
+for c, a in zip(cars, accessories):
+    print "Car: %s, Accessory required: %s"\
+          %(c, a)
+ >>> Car: Aston, Accessory required: GPS
+ >>> Car: Audi, Accessory required: Car Repair Kit
+ >>> Car: McLaren, Accessory required: Dolby sound kit
+
+•••Unzip list of tuples••
+Example
+--------
+l1,l2 = zip(*[('Aston', 'GPS'), 
+              ('Audi', 'Car Repair'), 
+              ('McLaren', 'Dolby sound kit') 
+           ])
+  
+print(l1)
+print(l2)
+
+ >>> ('Aston', 'Audi', 'McLaren')
+ >>> ('GPS', 'Car Repair', 'Dolby sound kit')
+
+••• Print the length of the longest input file
+awk '{ if (length($0) > max) max = length($0) } END { print max, $0}' test.txt
+
+••• Print every line that is longer than 60 characters
+awk 'length($0) > 60' test.text
+
+••• Print every line that has at least one filed
+awk 'NF > 0' test.txt
+
+••• Print seven random numbers from 0 to 100, inclusive: 
+awk 'BEGIN{ for(i=0;i<=7;i++) print int(101 * rand())}' 
+
+••• Print number of bytes
+ls -l | awk ' {x += $5}; END { print "Number of bytes:" x}'
+
+••• Print number of kilobytes
+ls -l | awk ' {x += $5}; END { print "Number of bytes:" (x + 1023)/1024}'   
+
+••• Print a sorted list of the login names of all users:
+awk -F ":" 'print $1' /etc/passwd | sort
+
+••• Print the number of lines (fields) in a file:
+awk 'END{ print "Lines in a file: ", NR)' test.txt
+
+••• Print even lines in a file:
+awk 'NR % 2 == 0' test.txt
+
+••• Print odd lines in a file:
+awk 'NR % 2 == 1' test.txt
+
+••• Print fields in reverse order
+awk '{ for (i = NF; i >= 1; i--) print $i }' test.txt
+
+
+••• count(start=0, step = 1)
+The count iterator will return evenly spaced values starting with the number
+you pass in as its start parameter. Count also accept a step parameter.
+
+Example
+--------
+from itertools import count
+for i in count(10):
+    if i > 20:
+        break
+    else:
+        print(i)
+
+••• cycle(iterable)
+The cycle iterator allows you to create an iterator that will cycle through a
+series of values infinitely.
+
+Example
+--------
+from itertools import cycle
+for item in cycle('XYZ'):
+    if count > 5:
+        break
+    print(item)
+    count += 1
+
+••• repeat(object)
+The repeat iterators will return an object over and over again forever unless
+you set its times argument.
+
+Example
+--------
+from itertools import repeat
+repeat(20, 5)
+
+••• chain(*iterables)
+The chain iterator will take a series of iterables and basically flatten them
+down into one long iterable.
+
+Example
+--------
+from itertools import chain
+my_list = list(chain(['foo','bar'], [1, 2, 5], ['ls', '/some/dir']))
+
+••• chain.from_iterable(iterable)
+Instead of passing in a series of iterables, you have to pass it a nested
+list.
+
+Example
+--------
+from itertools import chain.from_iterable
+my_list =  list(chain.from_iterable([listA, listB])
+
+••• compress(data, selectors)
+The compress itertool is useful for filtering the first iterable with the
+second. This works by making the second iterable a list of Booleans (or ones and
+zeroes which amounts to the same thing).
+
+Example
+--------
+from itertools import compress
+letters = "ABCDEFG"
+bools = [True, False, True, True, False]
+list(compress(letters, bools))
+
+••• dropwhile(predicate, iterable)
+Drops elements that doesn't meet the criteria and STOP without checking more
+values.
+
+Example
+--------
+from itertools import dropwhile
+list(dropwhile(lambda x: x<5, [1,4,6,4,10]))
+>>> [6, 4, 10]
+
+••• filterfalse(predicate, iterable)
+Similar to dropwhile but CHECKS EACH AND EVERY VALUE that doesn't meet the 
+criteria.
+
+Example
+--------
+from itertools import filterfalse
+list(filterfalse(lambda x: x<5, [1,4,6,4,10]))
+>>> [6, 10]
+
+••• groupby(iterable, key=None)
+The groupby iterator will return consecutive keys and groups from your
+iterable.
+
+Example
+-------
+from itertools import groupby
+
+zipcodes = [("sergio", 11100), ("dani", 11100), ("carlos", 28039),
+            ("alicia", 28039), ("clara", 28040)]
+
+sorted_zipcodes = (sorted(zipcodes))
+
+for _, group in groupby(sorted_zipcodes, lambda name: name[0]):
+    for name, zipcode in group:
+        print(f"name:{name} zipcode:{zipcode}")
+        
+••• islice(iterable, start, stop[, step])
+This will take a slice by index of your iterable and returns the selected 
+items as an iterator.
+
+Example
+-------
+from itertools import islice
+
+iterator = list(islice('123456', 4))
+>>> [1,2,3,4]
+
+iterator = list(islice(count(), 1, 4))
+>>> [1,2,3,4]
+
+••• starmap(function, iterable)
+This will create an iterator that can compute using the funtion
+and iterable provided.
+
+Example
+-------
+from itertools import startmap
+for item in starmap(lambda x,y:x+y; [(2,3), (4,5)]):
+    print(item)
+
+>> 5, 9
+
+••• takewhile(predicate, iterable)
+Return elements that do meet the criteria and STOP WITHOUT CHECKING MORE
+values. Its's the opposite of dropwhile.
+
+Example
+-------
+from itertools import takewhile
+list(takewhile(lambda x: x<5, [1,4,6,4,1]))
+
+>> [1, 4]
+
+••• tee(iterable)
+The tee tool will create n iterators from a single iterable.
+
+Example 
+-------
+from itertools import tee
+
+data = (1, 2)
+iter1, iter2 = tee(data)
+
+for item in iter1:
+    print(item)
+
+for item in iter2:
+    print(item)
+    
+••• zip_longest(*iterables, fillvalue=None)
+This iterator can be used to zip two iterables together.
+If the iterables don't happen to be the same length, then 
+you can pass a fillvalue.
+
+Example
+-------
+from itertools import zip_longest
+
+for item in zip_longest('ABCD', 'xy', fillvalue='BLANK'):
+    print(item)
+
+>>
+('A', 'x')
+('B', 'y')
+('C', 'BLANK')
+('D', 'BLANK')
+
+••• combinations(iterable, r)
+This tool allows you to create an iterable grouping it in r tuples.
+
+Example
+-------
+from itertools import combinations
+
+list(combinations('WXYZ', 2))
+>>
+[('W', 'Z'), ('W', 'Y'), ('W', 'Z'), ('Z', 'Y'), ('Z', 'Z'), ('
+Y', 'Z')]
+
+••• combinations_with_replacement(iterable, r)
+Similar to combinations. The elements do repeat.
+
+Example
+-------
+from itertools import combinations_with_replacement
+
+list(combinations_with_replacement('WXYZ', 2))
+>>
+[('W', 'W'), ('W', 'Z'), ('W', 'Y'), ('W', 'Z'), ('Z', 'Z'), ('
+Z', 'Y'), ('Z', 'Z'), ('Y', 'Y'), ('Y', 'Z'), ('Z', 'Z')]
+
+••• permutations(iterable, r)
+Similar to combinations, permutations are emitted in lexicographic order.
+
+Example
+-------
+from itertools import permutations
+
+for item in permutations("WXYZ", 2):
+    print("".join(item))
+>>
+('W', 'X')
+('W', 'Y')
+('W', 'Z')
+('X', 'W')
+('X', 'Y')
+('X', 'Z')
+('Y', 'W')
+('Y', 'X')
+('Y', 'Z')
+('Z', 'W')
+('Z', 'X')
+('Z', 'Y')
+
+••• Walrus operator
+Walrus-operator consists of assignment expressions.
+It is a way to assign an expression to a variable, even a variable does not
+exists. Since python3.8 avoid repetition of code.
+
+Example
+-------
+a= [1, 2, 3, 4]
+if (n:= len(a)) > 3:
+    print(f"List is too long ({n} elements, expected <=3")
+    
+Example    
+-------
+people = [{
+    "name": "sergio"
+}, {
+    "name": "carlos"
+}, {
+    "name": "clara"
+}, {
+    "name": "daniele"
+}]
+
+for item in people:
+    if name := item.get("name"):
+        print(f"Found name: {name}")
+
+••• Sed inplace editing with backup••
+sed -i.bkp 's/blue/green/' file
+
+••• Sed inplace editing
+sed -i 's/blue/green/' file
+
+••• Sed inplace editing with prefix backup name
+sed -i'bkp.*' 's/blue/green/' file
+
+••• Sed place backups in different directory
+sed -i'backups/*' 's/blue/green/' file
+
+••• Sed conditional execution. Only lines containing 2
+sed '/2/ s/,/-/g' file
+
+••• Sed conditional execution. Lines not containing 2
+sed '/2/! s/,/-/g' file
+
+••• Sed delete lines containing 'at'
+sed '/at/d' file
+
+••• Sed delete lines not containig 'at'
+sed '/at/!d' file
+
+••• Sed print lines containing 'at'
+sed -n '/at/p' file
+
+••• Sed print replaced lines
+sed -n 's/1/one/gp' file
+
+••• Sed print lines not containing 'at'
+Equivalent to "d" command
+sed -n '/at/!p' file
+
+••• Sed quit without further proccessing printing the matching line
+sed '/at/q' file
+
+••• Sed quit without further processing without printing the maching line
+sed '/at/Q' file
+
+
+••• wget. Descargar un archivo/s
+wget URL
+
+••• wget. Descargar archivos de una lista
+wget -i archivos.txt
+
+••• wget. Continuar la descarga
+wget -c URL
+
+••• wget. Guardar un archivo de log
+wget URL -o log.txt
+
+••• wget. Limit bandwidth
+wget URL --limit-rate=50k
+
+••• wget. Use username and password
+wget URL --http-user=name --http-password=secret
+
+••• wget. Increase retry attempts
+wget URL -t num (default 20)
+
+••• wget. Infinite retries
+wget URL -t inf
+
+••• wget. Download an entire page
+wget www.linuxtotal.com.mx
+
+••• wget. Download stylesheets, images ...
+wget www.linuxtotal.com.mx -p
+
+••• wget. Recursively download 5 levels
+wget URL -r
+
+••• wget. Increase recursion depth
+wget -r -l10 URL
+wget -r -linf URL
+
+••• wget. Convert links to local
+wget --convert-links -r URL
+wget -k -r URL
+
+••• wget. Change download directory
+wget -P /dir
+
+••• wget. Download a full mirror of the site
+wget --mirror URL
+
+••• wget. Convert download to html format
+wget --convert-links --html-extension
+wget -K -E URL
+
+••• wget. Recursion with external pages
+wget -H -r -l3 -E -p URL
+
+••• grep Options:
+    * -A Show number of lines after the match
+    * -B Show number of lines before the match
+    * -C Show number of lines around the match
+    * -c Show the files and number of matches
+    * -e Use the following pattern; useful for multiple strings and special
+    * -F Match exact word
+    * -H Print filename
+    * -i Case insensitive
+    * -I Ignore binary files
+    * -l Show what files contain the match
+    * -L Show what files do not contain the match
+    * -n Print line number
+    * -P Perform a Perl compatible regexp
+    * -r Recursive search in directories
+    * -v Invert match. Lines that don't match
+    * -w Match whole words
+    * -x Match the expression in the whole line
+
+••• grep search recusively ignoring binary files and printing line number
+grep -RIn pattern path
+
+••• grep uses regexp (`?`, `+`, `{}`, `()` y `|`), ignoring case
+grep -Ei pattern path
+
+••• grep print lines before and after the match
+grep -C|B|A 3 pattern path
+
+••• grep print the name of the files and the line number of the match
+grep -Hn pattern path
+
+••• grep get the stdio as input
+cat file | grep pattern
+
+••• grep lines that do not match
+grep -v pattern
+
+••• grep search for "pig" or "dog" recusively ignoring case
+grep -i -e pig -e dog -r .
+
+••• Searching for a specific string in a file *
+$ egrep debian samplefile.txt
+
+••• Searching for a specific string in multiple files *
+$ egrep “debian” *.txt
+
+••• Recursively searching the string in the entire directory *
+$ egrep -r "sample" *
+
+••• Performing a case-insensitive search *
+$ egrep -i "search_string” filename
+
+••• Searching for a string as a full word and not as a sub-string *
+$ egrep -i “on” samplefile.txt
+
+••• Printing only the filenames that contain the string *
+$ egrep -l sample *.txt
+
+••• Printing only the search string from a file *
+$ egrep -o This samplefile_.txt
+
+••• *N number of lines After the search string:•• *
+$ egrep -A 2 "sample” samplefile.txt
+
+••• *N number of lines Before the search string:•• *
+$ egrep -B 2 "sample” samplefile.txt
+
+••• *N number of lines Around the search string:•• *
+$ egrep -C 2 "sample” samplefile.txt
+
+••• Matching regular expression in files *
+$ egrep "RegularExpressions" filename
+
+Let us explain how you can use Regular Expressions in your egrep search:
+
+| Repetition operator | Use                                                          |
+| ------------------- | ------------------------------------------------------------ |
+| ?                   | The preceding item before ? is optional and is matched maximum one time |
+| *                   | The preceding item before * will be matched zero or more times |
+| +                   | The preceding item before + will be matched one or more times |
+| {n}                 | The preceding item is exactly matched n number of times.     |
+| {n,}                | The preceding item is matched n or more times                |
+| {,m}                | The preceding item is matched maximum m times                |
+| {n,m}               | The preceding item is matched at least n times but not more than m times |
+
+••• Highlighting the search string *
+$ sudo export GREP_OPTIONS='--color=auto' GREP_COLOR='100;8'
+
+••• Performing Invert search in a file *
+$ egrep -v "two" samplefile_.txt
+
+••• Performing invert search based on multiple criteria/search pattern *
+$ egrep -v -e “one” -e "two" samplefile_.txt
+
+••• Printing the number of lines that match the search string *
+$ egrep -c "This” filename
+$ grep -v -c "search_string” filename
+
+••• Displaying the line number where the string is matched *
+$ grep -n "This” samplefile_.txt
+
+••• Displaying the position in the file where the search string matches *
+$ grep -o -b "This” samplefile_.txt
+
+••• To view a compress file *
+zcat compressed-file.txt.gz
+
+••• To page through a compressed file *
+zless somefile.gz
+
+••• To search inside a compressed file *
+zgrep -i word somefile.gz
+
+••• To compare two compressed files *
+zdiff file1.txt.gz file2.txt.gz
+
+••• Sort a file in ascending order *
+sort path/to/file
+
+••• Sort a file in descending order * *
+sort --reverse path/to/file
+
+••• Sort a file in case-insensitive way *
+sort --ignore-case path/to/file
+
+••• Sort a file using numeric rather than alphabetic order *
+sort --numeric-sort path/to/file
+sort -k number path/to/file
+
+••• Sort `/etc/passwd` by the 3rd field, using "" as a field separator *
+sort --field-separator= --key=3n /etc/passwd
+
+••• Sort a file preserving only unique lines *
+sort --unique path/to/file
+
+••• Sort a file in place *
+sort --output=path/to/file path/to/file
+
+••• Sort numbers with exponents *
+sort --general-numeric-sort path/to/file

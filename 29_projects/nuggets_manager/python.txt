@@ -1,0 +1,383 @@
+••• Python -  deque
+from collections import deque
+
+Deques are a generalization of stacks and queues (the name is pronounced "deck" 
+and is short for “double-ended queue”). Deques support thread-safe, memory 
+efficient appends and pops from either side of the deque with approximately the 
+same O(1) performance in either direction.
+
+Main methods
+------------
+'append', 'appendleft', 'clear', 'copy', 'count', 'extend', 'extendleft', 
+'index', 'insert', 'maxlen', 'pop', 'popleft', 'remove', 'reverse', 'rotate'
+
+••• Python -  namedtuple
+from collections import namedtuple
+
+Namedtuples instances are just as memory efficient as regular tuples because 
+they do not have per-instance dictionaries. Each kind of namedtuple is 
+represented by its own class, created by using the namedtuple() factory
+function. The arguments are the name of the new class and a string containing
+the names of the elements.
+
+Main methods
+------------
+'_make()', '_asdict()', '_replace()','_fields', '_fields_defaults'
+
+Example
+--------
+from collections import namedtuple
+
+Person = namedtuple("Person", "name job", defaults=["Python Developer"])
+person = Person("Jane")
+print(person)
+
+>>> Person(name='Jane', job='Python Developer')
+
+person._asdict()
+>>> {'name': 'Jane', 'job': 'Python Developer'}
+
+person = person._replace(job="Web Developer")
+print(person)
+Person(name='Jane', job='Web Developer')
+
+def custom_divmod(x, y):
+    DivMod = namedtuple("DivMod", "quotient remainder")
+    return DivMod(*divmod(x, y))
+
+result = custom_divmod(12, 5)
+print(result)
+print(result.quotient)
+print(result.remainder)
+
+••• Python -  OrderedDict
+from collections import OrderedDict
+
+An OrderedDict is a dictionary subclass that remembers the order in which its 
+contents are added.
+
+Main methods
+------------
+'clear', 'copy', 'fromkeys', 'get', 'items', 'keys', 'move_to_end', 'pop',
+'popitem', 'setdefault', 'update', 'values'
+
+Regular dicts don’t take order into account when comparing dicts for equality, but OrderedDicts do:
+
+from collections import OrderedDict
+od1 = OrderedDict([("a", 1), ("b", 2)])
+od2 = OrderedDict([("b", 2), ("a", 1)])
+>>> od1 == od2
+False
+
+••• Python -  Counter
+from collections import Counter
+
+A Counter is a dict subclass for counting hashable objects. It is a collection 
+where elements are stored as dictionary keys and their counts are stored as 
+dictionary values. Counts are allowed to be any integer value including zero or
+negative counts.
+
+Main methods
+------------
+'clear', 'copy', 'elements', 'fromkeys', 'get', 'items', 'keys', 'most_common',
+'pop', 'popitem', 'setdefault', 'subtract', 'update', 'values'
+
+Example
+--------
+cnt = Counter()
+for word in ['red', 'blue', 'red', 'green', 'blue', 'blue']:
+    cnt[word] += 1
+    
+import re
+words = re.findall("\w+", text, re.I)
+Counter(words).most_common(10)
+
+••• Python -  defaultdict
+from collections import defaultdict
+
+Defaultdict is a sub-class of the dict class that returns a dictionary-like 
+object. The functionality of both dictionaries and default are almost same 
+except for the fact that default never raises a KeyError. It provides a 
+default value for the key that does not exists.
+
+••• Python -  Enumerate 
+Enumerate is built-in python function that takes input as iterator, list etc 
+and returns a tuple containing index and data at that index in the iterator 
+sequence.
+
+Example
+--------
+cars = ["Aston" , "Audi", "McLaren "]
+print enumerate(cars)
+
+>>> [(0, 'Aston'), (1, 'Audi'), (2, 'McLaren ')]
+
+••• Python - Zip••
+This function is helpful to combine similar type iterators(list-list or dict-
+dict etc,) data items at ith position. It uses the shortest length of these
+input iterators. Other items of larger length iterators are skipped. In case of
+empty iterators, it returns No output.
+
+Example
+--------
+cars = ["Aston", "Audi", "McLaren"]
+accessories = ["GPS", "Car Repair Kit",
+               "Dolby sound kit"]
+
+for c, a in zip(cars, accessories):
+    print "Car: %s, Accessory required: %s"\
+          %(c, a)
+ >>> Car: Aston, Accessory required: GPS
+ >>> Car: Audi, Accessory required: Car Repair Kit
+ >>> Car: McLaren, Accessory required: Dolby sound kit
+
+••• Python - Unzip list of tuples••
+Example
+--------
+l1,l2 = zip(*[('Aston', 'GPS'), 
+              ('Audi', 'Car Repair'), 
+              ('McLaren', 'Dolby sound kit') 
+           ])
+  
+print(l1)
+print(l2)
+
+ >>> ('Aston', 'Audi', 'McLaren')
+ >>> ('GPS', 'Car Repair', 'Dolby sound kit')
+
+••• Python -  Walrus operator
+Walrus-operator consists of assignment expressions.
+It is a way to assign an expression to a variable, even a variable does not
+exists. Since python3.8 avoid repetition of code.
+
+Example
+-------
+a= [1, 2, 3, 4]
+if (n:= len(a)) > 3:
+    print(f"List is too long ({n} elements, expected <=3")
+    
+Example    
+-------
+people = [{
+    "name": "sergio"
+}, {
+    "name": "carlos"
+}, {
+    "name": "clara"
+}, {
+    "name": "daniele"
+}]
+
+for item in people:
+    if name := item.get("name"):
+        print(f"Found name: {name}")
+
+
+••• Python -  List comprehensions
+
+List comprehensions are used to create a new list from some other iterable. 
+It might be another list, or maybe even something like a zip object.
+
+There are several different types of comprehension, but the most commonly used 
+are list comprehensions.
+
+names = ["mary", "Richard", "Noah", "KATE"]
+processed_names = [name.title() for name in names]
+
+names = ("mary", "Richard", "Noah", "KATE")
+ages = (36, 21, 40, 28)
+
+people = [(name.title(), age) for name, age in zip(names, ages)]
+
+••• Python -  List comprehensions
+
+Sometimes comprehensions can get fairly long, especially if we have long 
+variable names. In those cases, it can be helpful to break the comprehension up 
+over several lines, like this:
+
+people = [
+	(name.title(), age)
+	for name, age in zip(names, ages)
+]
+
+••• Python -  Set comprehensions
+
+The internal structure of the comprehension is identical to the list 
+comprehension, we just need to surround everything in curly braces, rather 
+than square brackets.
+
+names = ["mary", "Richard", "Noah", "KATE"]
+names = {name.title() for name in names}
+
+••• Python -  Dictionary comprehensions
+
+Dictionary comprehensions are a little different from the list and set 
+comprehensions that we've seen already though, because dictionaries need both 
+a key and a value for each item.
+
+student_ids = (112343, 134555, 113826, 124888)
+names = ("mary", "Richard", "Noah", "KATE")
+
+students = {
+	student_id: name.title()
+	for student_id, name in zip(student_ids, names)
+}
+
+••• Python -  Share file between Pc and Phone
+python3 -m http.serveryyp$r=A
+On pc:
+python3 -m http.server 8888
+
+On phone:
+type the ip of the pc and port
+Ex. 192.168.1.133:8888
+
+
+••• Python -  Checking internet connection
+import urllib.request
+
+def connect():
+    try:
+        urllib.request.urlopen('http://google.com') 
+        return True
+    except:
+        return False
+
+print( 'connected' if connect() else 'no internet!' )
+
+
+import socket
+IPaddress=socket.gethostbyname(socket.gethostname())
+if IPaddress=="127.0.0.1":
+    print("No internet, your localhost is "+ IPaddress)
+else:
+    print("Connected, with the IP address: "+ IPaddress )
+
+
+••• Python -  Coloring terminal output
+from colorama import Fore, Back, Style
+
+print(Fore.RED + 'some red text')
+print(Back.GREEN + 'and with a green background')
+print(Style.DIM + 'and in dim text')
+print(Style.RESET_ALL)
+print('back to normal now')
+
+
+••• Python -  Command line arguments
+import sys
+
+try:
+    if len(sys.argv[1:]) > 1:
+        for file in sys.argv[1:]:
+            print(f"[+] Working with {file}")
+    else:
+        print(f"[-] No argument provided)
+except Exception as e:
+    print(type(e).__name__)
+
+••• Python -  Decompile a .pyc file
+
+To decompile compiled .pyc python3 files, I used uncompyle6 in my current Ubuntu OS as follows:
+
+1. Installation of uncompyle6: 
+   pip3 install uncompyle6
+
+2. To create a .py file from .pyc file Run: 
+   uncompyle6 -o . your_filename.pyc
+
+3. Automatically a new .py file will be created with the same existing .pyc file name.
+
+••• Python -  Docstring_template
+
+def double_letter(text: str, output=True):
+
+ """
+   Check double letters in a text.
+
+   Args:
+      text (str): the text to parse.
+      output(bool): the ouput to stdout or as a list.
+
+ """
+
+••• Python -  Python version 
+import platform
+print(platform.python_version())
+
+••• Python -  Display images with tkinter
+
+from tkinter import Toplevel, Label
+from PIL import Image, ImageTk
+
+root = Toplevel()
+
+im = Image.open("photo.png")
+photo = ImageTk.PhotoImage(im)
+
+label = Label(root, image=photo)
+" keep a reference!
+label.image = photo  
+label.pack()
+
+
+••• Python -  Measure the execution time of small bits of python code
+
+import timeit
+
+
+mycode = """
+txt = ["lambda functions are anonymous functions",
+        "anonymous functions dont have a name",
+        "functions are objects in Python"]
+
+
+marks=map(lambda x: (True, x) if "anonymous" in x else (False, x), txt)
+"""
+print(timeit.timeit(stmt = mycode, number = 10))
+
+mycode2 = """
+txt = ["lambda functions are anonymous functions",
+        "anonymous functions dont have a name",
+        "functions are objects in Python"]
+
+
+marks2=[(True, x)if "anonymous" in x else (False, x) for x in txt]
+"""
+
+print(timeit.timeit(stmt = mycode2, number = 10))
+
+
+••• Python -  New-Style Classes
+x = Foo()
+type(x) == x.__class__
+
+••• Python -  pydoc3 <name> ...
+    Show text documentation on something.  <name> may be the name of a
+    Python keyword, topic, function, module, or package, or a dotted
+    reference to a class or function within a module or module in a
+    package.  If <name> contains a '/', it is used as the path to a
+    Python source file to document. If name is 'keywords', 'topics',
+    or 'modules', a listing of these things is displayed.
+
+••• Python -  pydoc3 -k <keyword>
+    Search for a keyword in the synopsis lines of all available modules.
+
+••• Python -  pydoc3 -n <hostname>
+    Start an HTTP server with the given hostname (default: localhost).
+
+••• Python -  pydoc3 -p <port>
+    Start an HTTP server on the given port on the local machine.  Port
+    number 0 can be used to get an arbitrary unused port.
+
+••• Python -  pydoc3 -b
+    Start an HTTP server on an arbitrary unused port and open a web browser
+    to interactively browse documentation.  This option can be used in
+    combination with -n and/or -p.
+
+••• Python -  pydoc3 -w <name> ...
+    Write out the HTML documentation for a module to a file in the current
+    directory.  If <name> contains a '/', it is treated as a filename; if
+    it names a directory, documentation is written for all the contents.
+
+

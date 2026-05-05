@@ -1,0 +1,85 @@
+••• Rsync
+
+The rsync commands uses compression and decompression when receiving and
+sending files, this means it will consume very less bandwidth. Rsync only
+updates the differences between the source and destination as it uses the
+remote update protocol. It also supports owners, groups, links, permissions,
+and devices.
+
+Local to local transfer or sync
+-------------------------------
+rsync {option} {source} {destination}
+
+Local to remote transfer or sync
+--------------------------------
+rsync {option} {source} {user@host:destination}
+
+Remote to local transfer or sync
+--------------------------------
+rsync {option} {user@host:destination} {destination}
+
+••• Rsync -  Copy files locally
+
+rsync -a {filename} {destination}
+rsync -a source.zip /home/nisidabay/Documents
+
+If you don’t add a name for the file in the destination, it will copy the same 
+name as the source file. To change the name of the destination file, use:
+
+rsync –a {filename} {destination/filename}
+
+••• Rsync -  Copy the contents of a directory to the destination
+
+rsync -av {source}/ {destination}
+
+••• Rsync -  Copy the whole directory to the destination
+
+rsync -av {source} {destination}
+
+••• Rsync -  Show progress
+
+rsync –rv –progress {source} {destination}
+
+••• Rsync -  Ignore files
+
+rsync -vr --exclude '{condition}' {source} {destination}
+
+rsync -vr --exclude '*.tmp' {source} {destination}
+
+••• Rsync -  List file and directories
+
+rsync {filename}
+
+••• Rsync -  Copy files from a local to a remote machine
+
+For moving files to a remote machine, you will need to install openssh-server.
+
+rsync –a {source} {remote username@remote IP:/destination}
+rsync -a /home/nisidabay/Documents nisidabay@192.168.1.38:/home/nisidabay
+
+••• Rsync -  Copy files from a remote to a local machine
+
+rsync –a {remote source} {local username@local IP:/destination}
+rsync -a /home/nisidabay/doc nisidabay@192.168.1.69:/home/nisidabay
+
+••• Rsync -  Add current date to the destination file
+
+rsync -av /home/test/Desktop/Linux /home/test/Desktop/rsync$(date +\\%Y-\\%m)
+
+••• Rsync -  View differences between the source and destination files
+
+rsync -avzi {source}/ {destination}/
+
+The parameter “f” means file. Other parameters include:
+
+t: change in timestamp
+
+d: change in destination
+
+s: change in file size
+
+••• Rsync -  Limit bandwidth when transferring files
+
+To limit the bandwidth while transferring files, use:
+
+rsync -vr --bwlimit=1000 {source}/* {destination}

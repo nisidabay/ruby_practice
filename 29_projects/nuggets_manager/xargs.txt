@@ -1,0 +1,74 @@
+••• xargs
+Reads arguments from standard input (stdin) and executes a Unix command
+with each group of arguments until all are used.
+
+••• xargs executes the output of the preceding command.
+find . -type f -print | xargs grep -l WARNING | xargs pr | lpr
+
+••• xargs uses "echo" as the default command.
+xargs "Hello" (Ctr-d) -> Hello
+
+••• xargs - most used options
+(t) Verbose output
+(n) Sets the max number of arguments xargs passes to each command.
+    Default is 5000.
+
+ls | xargs -n 1 grep -in "python|bash" *.py *.sh
+
+(p) Prompt. Waits for confirmation before executing the command.
+
+echo "one two three" | xargs -p touch
+
+(L) Number of non-blank lines to process.
+
+xargs -L 1 grep -in "python|bash" *.py *.sh
+
+(0) Ignores whitespace and newlines.
+
+find . -name "foo*" -print0 | xargs -0 vim
+
+(a) Reads arguments from a file instead of stdin.
+
+xargs -a input.txt ls -l
+
+(I) Replacement string — the argument to pass to another command.
+    You can use % instead of {}.
+
+cat directories.txt | xargs -I % sh -c "echo creating %; mkdir %"
+
+••• xargs create directories from a list
+cat directories.txt | xargs -I % sh -c "echo creating %; mkdir %"
+
+••• xargs delete files in nested directories.
+find . -name "*.png" -type f -print0 | xargs -0 -I {} rm -v -rf "{}"
+
+••• xargs delete all files except one type.
+find . -type f -not -name "*.sh" -print0 | xargs -0 -I {} rm -v {}
+
+••• xargs compress files
+find . -name "*.page" -type f -print0 | xargs -0 tar cvzf page_files.tar.gz
+
+••• xargs Create 5 files
+seq 5 | xargs -n 1 -I{} touch {}.txt
+
+••• xargs create files from a file list
+cat filenames.txt | xargs -n 1 touch
+cat filenames.txt | xargs -I {} -n 1 touch {}.txt
+
+••• xargs delete files
+find . -type f -name "*.txt" -print | xargs -n 1 -t rm 
+
+••• xargs delete files with prompt
+find . -maxdepth 1 -type f -name "[0-9].txt" | xargs -p -t rm
+
+••• xargs delete txt files from first level
+find . -maxdepth 1 -type f -name "*.txt" | xargs -L1 -I {} rm {}
+
+••• xargs Copy txt files to a directory
+ls *.txt | xargs -n 1 -I {} cp -v {} ./temp
+
+••• xargs move certain files to a directory
+find . -type f -maxdepth 1 -not -name "*.sh" | xargs -n 1 -I{} mv {} dest/{}
+
+••• xargs rename file extensions
+ls | cut -d. -f1 | xargs -I {} mv {}.txt {}.text

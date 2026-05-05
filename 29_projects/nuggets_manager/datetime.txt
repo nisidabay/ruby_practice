@@ -1,0 +1,23 @@
+••• Python - datetime - Get today date as string
+The datetime.date.today() function creates a datetime object with the current 
+date that can be reformatted using the strftime('%Y-%m-%d') method call to 
+print out the current date in a specific format (year-month-day).
+
+import datetime
+today = datetime.date.today()
+print(today.strftime("%d-%m-%Y"))
+
+••• Python - datetime - Get today date as string
+str(datetime.datetime.today())
+
+••• Python - datetime - 10 One-Liner solutions to get today's date as string
+1) datetime.datetime.now().strftime("%Y-%m-%d")
+2) datetime.date.today().strftime("%Y-%m-%d")
+3) time.strftime("%Y-%m-%d")
+4) datetime.date.today().isoformat()
+5) datetime.date.today().strftime("%Y/%m/%d")
+6) datetime.datetime.now().date().strftime("%Y-%m-%d")
+7) datetime.datetime.now().date().isoformat()
+8) datetime.datetime.now().strftime("%d-%m-%Y")
+9) date.today().strftime("%Y-%m-%d")
+10) datetime.date.today().strftime("%d/%m/%Y")

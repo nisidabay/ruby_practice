@@ -1,11 +1,7 @@
 #!/usr/bin/env ruby
 # frozen_string_literal: true
 
-# Problem: You want to create a class with multiple instance methods.
-# Example: A Cake class with bake, slice, and sell methods.
-#
-# Solution: Define instance methods inside the class body.
-# Visibility: Methods are PUBLIC by default.
+# instance_methods_cake.rb — defining instance methods
 
 class Cake
   def bake
@@ -21,21 +17,8 @@ class Cake
   end
 end
 
-# Usage: Create instance and call methods
 cake = Cake.new
 puts cake.bake
 puts cake.slice
 puts cake.sell
 
-# This could also be done like this:
-# Add state with initialize and instance variables:
-#
-# class Cake
-#   def initialize(flavor)
-#     @flavor = flavor
-#   end
-#
-#   def bake
-#     "Baking #{@flavor} cake"
-#   end
-# end

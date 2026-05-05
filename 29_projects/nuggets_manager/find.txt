@@ -1,0 +1,99 @@
+••• Linux -  Find: all files with .js extension
+find . -name "*.js"
+
+••• Linux -  Find: directories with name "src"
+find . -type d -name src
+
+••• Linux -  Find: file under multiple directories
+find folder1 folder2 -name filename.txt
+
+••• Linux -  Find: directories matching the name "bin" or "bat" 
+find . -type d -name bin -or -name bat
+
+••• Linux -  Find: files excluding a path on the search
+find . -type f -name "*.md" -not -path "private_bin/*"
+
+••• Linux -  Find: files greater than 100 bytes
+find . -type f -size +100C
+
+••• Linux -  Find: files greater than 1k and less than 4k
+find . -type f -size +1k -size -4k | xargs ls -lh > temp.txt
+
+••• Linux -  Find: files more than 3 days ago
+find . -type f -mtime +3
+
+••• Linux -  Find: search files edited in the last 24 hours
+find . -type f -mtime -1
+
+••• Linux -  Find: Delete all files edited in the last 24 hours
+find . -type f -mtime -1 -delete
+
+••• Linux -  Find: Execute a command on each result of the search
+find . -type f -exec cat {} \;
+
+••• Linux -  Find: files modified 10 mins ago
+find . -type f -mmin +10
+
+••• Linux -  Find: files modified between 1 and 5 minutes
+find . -type f -mmin +1 -mmin -5
+
+••• Linux -  Find: files accessed 5 mins ago
+find . -type f -amin +5
+
+••• Linux -  Find: files accessed 5 days ago
+find . -type -f atime +5
+
+••• Linux -  Find: files changed 5 mins ago
+find . -type f -cmin -5
+
+••• Linux -  Find: files changed 5 days ago
+find . -type f -ctime -5
+
+••• Linux -  Find: empty files
+find . -type f -empty
+
+••• Linux -  Find: files with certain permissions and modified them
+find . -type f -perm 777 -exec chmod 755 {} \;
+
+••• Linux -  Find: files with octal permissions 777 and save them to a file
+find . -type f -perm 777 | xargs ls -lh > wrong_perm.txt
+
+••• Linux -  Find: Change ownership and group.  + and \; are equivalent
+find . -exec chown clm:users {} +
+find . -exec chown clm:users {} \;
+
+••• Linux -  Find: Delete files "jpg" only one dir below
+find . -maxdepth 1 -type f -name "*.log" -delete
+
+••• Linux -  Find: setuid files
+find / -type f -perm -u=s
+
+••• Linux -  Find: delete empty files
+find . -type f -empty -delete
+
+••• Linux -  Find: a string in a series of files
+find . -type f -exec grep -Rl "struct" {}\ ; | xargs -n 1 vim
+
+••• Linux -  Find: Identify and sort ".pdf" files by size
+find -type f -exec du -Sh {} + 2>/dev/null | grep .pdf | sort -rh
+
+••• Linux -  Find: Execute commands on each match
+find "$BOOKS_DIR" -type f -name '._*' -exec echo "Removing {}" \; -exec rm {} \;
+
+••• Linux -  Find: Show matches before removing files
+find /path/to/directory -type f -name '._*' -print
+
+••• Linux -  Find: Execute a shell for each file found
+_ means the current file ($0)
+find "$BOOKS_DIR" -type f -name '._*' -exec sh -c 'echo "Removing $1"; rm "$1"' _ {} \;
+
+••• Linux -  Find: Use of {} \; or {} +
+The {} and \; or + are used with -exec or similar actions (-execdir, -ok, etc.)
+to specify a spawn proccess to execute on each file.
+
+If there's not command to execute and only a query there's no need to use them.
+
+{} \; is used when you need to execute a command for each file individually.
+{} + is more efficient, grouping file names to execute the command as few times
+as possible.
+

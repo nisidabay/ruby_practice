@@ -1,0 +1,74 @@
+••• Python - Subprocess -  Check if a program is installed
+
+import subprocess
+
+def check_pip() -> bool:
+    """Check if python3-pip is installed."""
+    pip = subprocess.run(['which', 'pip'], capture_output=True, text=True)
+    return pip.returncode == 0
+
+••• Python - Subprocess -  Execute a Shell Command
+import subprocess
+
+# Start the 'cat' command as a subprocess that reads from stdin, 
+# and also capture stderr in addition to stdout
+p = subprocess.Popen(["cat"], stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+
+# Provide input to the 'cat' command through stdin and capture stdout and stderr
+stdout, stderr = p.communicate(input="Hello from the shell\n")
+
+# Print the output from 'cat' command
+print("Standard Output:", stdout)
+
+# Check and print any error if captured in stderr
+if stderr:
+    print("Standard Error:", stderr)
+else:
+    print("No Standard Error.")
+
+••• Python - Subprocess -  Capture Command Output
+
+def capture_command_output(command: list) -> str:
+    """Execute a command and capture its output."""
+    result = subprocess.run(command, capture_output=True, text=True)
+    return result.stdout
+
+# Example usage
+output = capture_command_output(["ls", "-l"])
+print(output)
+
+••• Python - Subprocess -  Run a Command with Timeout
+
+def run_with_timeout(command: list, timeout: int) -> bool:
+    """Run a command with a specified timeout."""
+    try:
+        subprocess.run(command, timeout=timeout)
+        return True
+    except subprocess.TimeoutExpired:
+        return False
+
+# Example usage
+success = run_with_timeout(["sleep", "10"], 5)
+print("Success:", success)
+
+••• Python - Subprocess -  Check Command Success
+
+def check_command_success(command: list) -> bool:
+    """Check if a command executes successfully."""
+    result = subprocess.run(command)
+    return result.returncode == 0
+
+# Example usage
+is_successful = check_command_success(["ls", "-l"])
+print("Command successful:", is_successful)
+
+••• Python - Subprocess -  Running Commands in the Background
+
+def run_in_background(command: list) -> subprocess.Popen:
+    """Start a command in the background."""
+    return subprocess.Popen(command)
+
+# Example usage
+process = run_in_background(["sleep", "30"])
+print("Process ID:", process.pid)
+

@@ -1,0 +1,12 @@
+••• GNU - zcat - To view a compress file *
+zcat compressed-file.txt.gz
+
+••• GNU - zless - To page through a compressed file *
+zless somefile.gz
+
+••• GNU - zgrep - To search inside a compressed file *
+zgrep -i word somefile.gz
+
+••• GNU - zdiff - To compare two compressed files *
+zdiff file1.txt.gz file2.txt.gz
+

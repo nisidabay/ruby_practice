@@ -1,182 +1,65 @@
 #!/usr/bin/env ruby
 # frozen_string_literal: true
 
-#
-# Hashes
-# This file contains Ruby code for hashes.
+# hashes.rb — Hash basics and common patterns
 
-# Hashes in Ruby
+# Creation
+h = {}
+h = { name: 'Alice', age: 30 }
+h = Hash.new(0)                    # default value for missing keys
+h = Hash.new { |hash, key| hash[key] = [] }  # default with block
 
-# Creating hashes
-puts '=== Creating Hashes ==='
-
-# Method 1: Using hash literal
-empty_hash = {}
-puts "Empty hash: #{empty_hash}"
-
-# Method 2: Using Hash.new
-another_empty = {}
-puts "Hash.new: #{another_empty}"
-
-# Method 3: With default value
-hash_with_default = Hash.new(0)
-puts "Accessing missing key returns default: #{hash_with_default[:missing]}"
-puts "Hash is still empty: #{hash_with_default}"
-
-# Method 4: With default value block
-hash_with_block = Hash.new { |hash, key| hash[key] = [] }
-hash_with_block[:items] << 'something'
-puts "Block default: #{hash_with_block}"
-
-# Method 5: Symbol keys (most common)
+# Access
 person = { name: 'Alice', age: 30, city: 'NYC' }
-puts "Symbol keys: #{person}"
+puts person[:name]                 # => Alice
+puts person.fetch(:country, 'USA') # => USA (default if key missing)
+puts person.key?(:name)            # => true
+puts person.key?(:country)         # => false
 
-# Method 6: String keys
-string_keys = { 'name' => 'Bob', 'age' => 25 }
-puts "String keys: #{string_keys}"
+# Modify
+person[:email] = 'a@example.com'   # add
+person[:age] = 31                  # update
+person.delete(:email)              # remove
+p person
 
-# Method 7: Mixed keys (not recommended)
-mixed = { 'name' => 'Charlie', age: 35, '2' => '4', 3 => 9, :five => 'twenty-five',
-          ten: 10 }
-puts "Mixed keys: #{mixed}"
+# Merge
+h = { a: 1, b: 2 }.merge(b: 3, c: 4)  # => {a:1, b:3, c:4}
+{ a: 1, b: 2 }.merge!(b: 3)            # destructive merge
 
-puts "\n=== Accessing Values ==="
+# Iteration
+person.each { |k, v| puts "#{k}: #{v}" }
+person.each_key { |k| puts k }
+person.each_value { |v| puts v }
 
-person = { name: 'Alice', age: 30, city: 'NYC' }
-
-# Using square brackets
-puts "Name: #{person[:name]}"
-
-# Fetch with default
-puts "Missing key with default: #{person.fetch(:country, 'USA')}"
-
-# Fetch with block
-puts "Fetch with block: #{person.fetch(:country) { |k| "Unknown: #{k}" }}"
-
-# Check if key exists
-puts "Has name? #{person.key?(:name)}"
-puts "Has :country? #{person.key?(:country)}"
-
-puts "\n=== Modifying Hashes ==="
-
-# Adding/updating values
-person[:email] = 'alice@example.com'
-person[:age] = 31
-puts "After update: #{person}"
-
-# Merge hashes
-additional_info = { country: 'USA', phone: '555-1234' }
-merged = person.merge(additional_info)
-puts "Merged: #{merged}"
-
-# Delete keys
-person.delete(:email)
-puts "After delete: #{person}"
-
-# Compact (remove nil values)
-sparse = { a: 1, b: nil, c: 3 }
-puts "Before compact: #{sparse}"
-puts "After compact: #{sparse.compact}"
-
-puts "\n=== Iterating ==="
-
-person = { name: 'Alice', age: 30, city: 'NYC', country: 'USA' }
-
-# Iterate over key-value pairs
-puts 'Key-value pairs:'
-person.each do |key, value|
-  puts "  #{key}: #{value}"
-end
-
-# Iterate over keys only
-puts "\nKeys:"
-person.each_key { |key| puts "  #{key}" }
-
-# Iterate over values only
-puts "\nValues:"
-person.each_value { |value| puts "  #{value}" }
-
-# With index
-puts "\nWith index:"
-person.each_with_index { |(key, value), index| puts "  #{index}: #{key}=#{value}" }
-
-puts "\n=== Common Methods ==="
-
-scores = { alice: 95, bob: 82, charlie: 88, diana: 92 }
-
-# Keys and values
-puts "Keys: #{scores.keys}"
-puts "Values: #{scores.values}"
-
-# Size
-puts "Size: #{scores.size}"
-puts "Empty? #{scores.empty?}"
-
-# Sort
-puts "Sorted by name: #{scores.sort}"
-puts "Sorted by score (desc): #{scores.sort_by { |_, v| -v }}"
+# Keys/Values/Size
+puts person.keys, person.values, person.size
 
 # Select/Reject
-puts "Passing scores (>85): #{scores.select { |_, v| v > 85 }}"
-puts "Failing scores (<85): #{scores.reject { |_, v| v > 85 }}"
+scores = { alice: 95, bob: 82, charlie: 88 }
+p scores.select { |k, v| v > 85 }   # passing
+p scores.reject { |k, v| v > 85 }   # failing
 
-# Map (transform)
-puts "All passing: #{scores.map { |k, v| k if v >= 85 }.compact}"
+# Transform
+p person.transform_keys { |k| k.to_s.upcase }
+p person.transform_values { |v| v.to_s }
 
-# Merge! (destructive)
-h1 = { a: 1, b: 2 }
-h2 = { b: 3, c: 4 }
-h1.merge!(h2)
-puts "After merge!: #{h1}"
+# Sort
+p scores.sort                        # by key
+p scores.sort_by { |k, v| -v }      # by value descending
 
-puts "\n=== Practical Examples ==="
-
-# Counting occurrences
+# Counting (classic pattern)
 words = %w[apple banana apple cherry banana apple]
 counts = Hash.new(0)
-words.each { |word| counts[word] += 1 }
-puts "Word counts: #{counts}"
+words.each { |w| counts[w] += 1 }
+p counts  # => {"apple"=>3, "banana"=>2, "cherry"=>1}
 
-# Grouping
-numbers = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
-grouped = numbers.group_by { |n| n.even? ? 'even' : 'odd' }
-puts "Grouped by parity: #{grouped}"
+# Group by
+p (1..10).group_by { |n| n.even? ? 'even' : 'odd' }
 
-# Inverting
-scores = { alice: 95, bob: 82 }
-inverted = scores.invert
-puts "Inverted: #{inverted}"
-
-# Default value for missing keys
-inventory = Hash.new(0)
-inventory[:apples] += 5
-inventory[:oranges] += 3
-puts "Inventory: #{inventory}"
-
-# Nested hash
-database = {
-  users: {
-    alice: { email: 'alice@test.com', role: 'admin' },
-    bob: { email: 'bob@test.com', role: 'user' },
-  },
-}
-puts "Nested access: #{database[:users][:alice][:email]}"
-
-puts "\n=== Advanced Methods ==="
-
-# Slice (get subset)
-person = { name: 'Alice', age: 30, city: 'NYC', country: 'USA', email: 'a@t.com' }
-puts "Sliced: #{person.slice(:name, :email)}"
-
-# Transform keys/values
-transformed = person.transform_keys { |k| k.to_s.upcase }
-puts "Transformed keys: #{transformed}"
-
-transformed = person.transform_values { |v| v.to_s }
-puts "Transformed values: #{transformed}"
-
-# Dig (safe nested access)
+# Invert, Slice, Dig
+p scores.invert
+p person.slice(:name, :age)
 data = { user: { address: { city: 'NYC' } } }
-puts "Dig: #{data.dig(:user, :address, :city)}"
-puts "Dig missing (with fallback): #{data.dig(:user, :address, :zip) || 'N/A'}"
+p data.dig(:user, :address, :city)  # => "NYC"
+p data.dig(:user, :address, :zip) || 'N/A'  # => "N/A"
+

@@ -1,0 +1,57 @@
+••• Linux - users_and_groups -  Adding user with home dir
+useradd -m username
+
+••• Linux - users_and_groups -  Adding user with custom home dir
+useradd -d /path -m username
+
+••• Linux - users_and_groups -  Adding system users (below id 1000)
+useradd -r -r default_shell username
+
+••• Linux - users_and_groups -  Modifying user
+usermod -l new_username old_username
+
+••• Linux - users_and_groups -  Modifying home directory
+usermod -m -d /path/home username
+
+••• Linux - users_and_groups -  Set account expiration date
+usermod --expiredate yyyy-mm-dd username
+
+••• Linux - users_and_groups -  Adding user to new group
+usermod --append --groups g1,g1..gn username
+
+••• Linux - users_and_groups -  Change default shell
+usermod --shell shell_path username
+
+••• Linux - users_and_groups -  Lock and unlock user
+usermode --lock username
+usermod --unlock username
+
+••• Linux - users_and_groups -  Removing a user
+userdel username
+
+••• Linux - users_and_groups -  Removing a user with home directory
+userdel -r username
+
+••• Linux - users_and_groups -  Special permissions
+setuid chmod u+s (executable)
+setgid chmod g+s (directory)
+sticky chmod o+s (directory)
+
+••• Linux - users_and_groups -  Remove a user's password
+sudo passwd user -d
+
+••• Linux - users_and_groups -  Deleting a user from the system
+sudo userdel -r user
+
+••• Linux - users_and_groups -  Add a user to the sudo group
+sudo adduser user sudo
+
+••• Linux - users_and_groups -  Remove the password prompt from sudo
+On raspi
+--------
+sudo visudo /etc/sudoers.d/010_nisidabay-nopasswd
+insert
+------
+nisidabay ALL=(ALL) NOPASSWD: ALL
+save and exit
+

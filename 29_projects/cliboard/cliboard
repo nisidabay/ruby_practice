@@ -1,0 +1,11 @@
+#!/usr/bin/env ruby
+# frozen_string_literal: true
+
+# cliboard - Clipboard History Manager
+# A modular clipboard history tool for Wayland and X11
+
+$LOAD_PATH.unshift(File.join(File.dirname(__FILE__), 'lib'))
+
+require 'cliboard'
+
+exit Cliboard::CLI.new.run(ARGV)

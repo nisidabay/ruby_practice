@@ -1,0 +1,404 @@
+#!/usr/bin/env ruby
+# frozen_string_literal: true
+
+require 'optparse'
+require 'json'
+require 'fileutils'
+require 'time'
+
+class Cliboard
+  DATA_DIR = File.expand_path('~/.config/cliboard')
+  HISTORY_FILE = File.join(DATA_DIR, 'history.json')
+  PINS_FILE = File.join(DATA_DIR, 'pins.json')
+  CONFIG_FILE = File.join(DATA_DIR, 'config.json')
+  MAX_HISTORY = 100
+
+  def initialize
+    FileUtils.mkdir_p(DATA_DIR)
+    @history = load_json(HISTORY_FILE)
+    @pins = load_json(PINS_FILE)
+    @config = load_config
+    @clipboard_cmd = detect_clipboard
+  end
+
+  def run(args)
+    command = args.shift || 'history'
+
+    case command
+    when 'history', 'h' then show_history(args)
+    when 'select', 's' then select_item(args)
+    when 'pin', 'p' then pin_item(args)
+    when 'unpin', 'up' then unpin_item(args)
+    when 'pins' then show_pins
+    when 'search' then search_history(args)
+    when 'clear', 'c' then clear_history
+    when 'config' then handle_config(['config'] + args)
+    when 'watch' then watch_clipboard
+    when 'copy', 'cp' then copy_item(args)
+    when 'add' then add_current_clipboard(args)
+    when 'get' then get_current_clipboard
+    when 'help', '-h', '--help'
+      OptionParser.new do |opts|
+        opts.banner = "Usage: cliboard <command> [arguments]"
+        opts.separator ""
+        opts.separator "Commands:"
+        opts.separator "  history          Show clipboard history"
+        opts.separator "  add              Add current clipboard to history"
+        opts.separator "  get              Print current clipboard content"
+        opts.separator "  select <N>       Copy history item #N to clipboard"
+        opts.separator "  copy <N>        Copy history item #N to clipboard"
+        opts.separator "  pin <N>          Pin history item #N (keeps at top)"
+        opts.separator "  unpin <N>        Remove pin from item #N"
+        opts.separator "  pins             Show pinned items"
+        opts.separator "  search <query>   Search clipboard history"
+        opts.separator "  clear            Clear all history"
+        opts.separator "  watch            Watch clipboard for changes (background)"
+        opts.separator "  config           Manage configuration"
+        opts.separator ""
+        opts.separator "Config commands:"
+        opts.separator "  config set <key> <value>  Set config value"
+        opts.separator "  config get <key>          Get config value"
+        opts.separator "  config list               Show all config"
+        opts.separator ""
+        opts.separator "Config keys:"
+        opts.separator "  max_history  Maximum history items (default: 100)"
+        opts.separator ""
+        opts.separator "Examples:"
+        opts.separator "  cliboard watch &           # Start clipboard watcher"
+        opts.separator "  cliboard add               # Add current clipboard"
+        opts.separator "  cliboard history           # Show history"
+        opts.separator "  cliboard select 2          # Copy item #2"
+        opts.separator "  cliboard pin 3            # Pin item #3"
+        opts.separator "  cliboard config set max_history 50"
+        opts.separator ""
+        opts.separator "Options:"
+        opts.on('-h', '--help', 'Show this help')
+        puts opts
+      end
+    else
+      puts "Unknown command: #{command}"
+      puts "Use 'cliboard --help' for usage"
+    end
+  end
+
+  private
+
+  def detect_clipboard
+    if system('which wl-copy > /dev/null 2>&1')
+      { copy: 'wl-copy', paste: 'wl-paste' }
+    elsif system('which xclip > /dev/null 2>&1')
+      { copy: 'xclip -selection clipboard', paste: 'xclip -selection clipboard -o' }
+    else
+      { copy: nil, paste: nil }
+    end
+  end
+
+  def load_json(file)
+    return [] unless File.exist?(file)
+    JSON.parse(File.read(file))
+  rescue JSON::ParserError
+    []
+  end
+
+  def save_json(file, data)
+    File.write(file, JSON.pretty_generate(data))
+  end
+
+  def load_config
+    return { 'max_history' => MAX_HISTORY } unless File.exist?(CONFIG_FILE)
+    JSON.parse(File.read(CONFIG_FILE))
+  rescue
+    { 'max_history' => MAX_HISTORY }
+  end
+
+  def save_config
+    save_json(CONFIG_FILE, @config)
+  end
+
+  def get_clipboard
+    return nil unless @clipboard_cmd[:paste]
+    result = `#{@clipboard_cmd[:paste]} 2>/dev/null`.strip
+    result.empty? ? nil : result
+  rescue
+    nil
+  end
+
+  def set_clipboard(text)
+    return false unless @clipboard_cmd[:copy] && text
+    IO.popen(@clipboard_cmd[:copy], 'w') { |io| io.write(text) }
+    true
+  rescue
+    false
+  end
+
+  def show_history(args)
+    limit = args.find { |a| a.match?(/^\d+$/) }&.to_i || @config['max_history'] || 20
+
+    if @history.empty?
+      puts "No clipboard history"
+      puts "Run 'cliboard watch' in background to capture clipboard"
+      puts "Or run 'cliboard add' to add current clipboard content"
+      return
+    end
+
+    display_items(@history.last(limit), limit)
+  end
+
+  def display_items(items, limit = nil)
+    return if items.empty?
+
+    display_len = 80
+
+    if @pins.any?
+      puts "\e[1m\e[33m[ Pinned ]\e[0m"
+      @pins.each_with_index do |pin, idx|
+        text = pin['text'][0, display_len]
+        puts "  \e[36m#{idx + 1}. #{text}\e[0m"
+      end
+      puts
+    end
+
+    count = items.size
+    puts "\e[1m\e[32m[ History ]\e[0m"
+
+    items.reverse_each.with_index do |item, idx|
+      text = item['text'][0, display_len]
+      time = Time.parse(item['created_at']).strftime('%H:%M')
+      pinned = @pins.any? { |p| p['text'] == item['text'] }
+      icon = pinned ? "\e[33m📌\e[0m " : "  "
+      num = (count - idx).to_s.rjust(3)
+      puts "#{icon}#{num} \e[90m#{time}\e[0m #{text}"
+    end
+  end
+
+  def select_item(args)
+    index = args.find { |a| a.match?(/^\d+$/) }&.to_i
+    return puts "Usage: cliboard select <index>" unless index
+
+    item = @history[index - 1]
+    return puts "\e[31mItem not found\e[0m" unless item
+
+    set_clipboard(item['text'])
+    puts "\e[32mCopied to clipboard\e[0m"
+    puts item['text'][0, 100]
+  end
+
+  def copy_item(args)
+    index = args.find { |a| a.match?(/^\d+$/) }&.to_i
+    return puts "Usage: cliboard copy <index>" unless index
+
+    source = args.include?('--pin') ? @pins : @history
+    item = source[index - 1]
+    return puts "\e[31mItem not found\e[0m" unless item
+
+    if set_clipboard(item['text'])
+      puts "\e[32mCopied to clipboard\e[0m"
+    else
+      puts "\e[31mFailed to copy\e[0m"
+    end
+  end
+
+  def pin_item(args)
+    index = args.find { |a| a.match?(/^\d+$/) }&.to_i
+    return puts "Usage: cliboard pin <index>" unless index
+
+    item = @history[index - 1]
+    return puts "\e[31mItem not found\e[0m" unless item
+
+    unless @pins.any? { |p| p['text'] == item['text'] }
+      @pins << { 'text' => item['text'], 'created_at' => Time.now.iso8601 }
+      save_json(PINS_FILE, @pins)
+      puts "\e[32mPinned: #{item['text'][0, 50]}\e[0m"
+    end
+  end
+
+  def unpin_item(args)
+    index = args.find { |a| a.match?(/^\d+$/) }&.to_i
+    return puts "Usage: cliboard unpin <index>" unless index
+
+    if @pins[index - 1]
+      removed = @pins.delete_at(index - 1)
+      save_json(PINS_FILE, @pins)
+      puts "\e[32mUnpinned: #{removed['text'][0, 50]}\e[0m"
+    end
+  end
+
+  def show_pins
+    if @pins.empty?
+      puts "No pinned items"
+    else
+      display_items(@pins, @pins.size)
+    end
+  end
+
+  def search_history(args)
+    query = args.join(' ')
+    return puts "Usage: cliboard search <query>" if query.empty?
+
+    results = @history.select { |h| h['text']&.downcase&.include?(query.downcase) }
+    if results.empty?
+      puts "No results for '#{query}'"
+    else
+      display_items(results, results.size)
+    end
+  end
+
+  def clear_history
+    @history = []
+    save_json(HISTORY_FILE, @history)
+    puts "\e[32mClipboard history cleared\e[0m"
+  end
+
+  def handle_config(args)
+    args.shift
+
+    case args[0]
+    when 'set'
+      key = args[1]
+      value = args[2]
+
+      if key.nil? || value.nil?
+        puts "Usage: cliboard config set <key> <value>"
+        puts ""
+        puts "Keys:"
+        puts "  max_history <N>  Maximum items in history (default: 100)"
+        puts ""
+        puts "Example:"
+        puts "  cliboard config set max_history 50"
+      elsif key == 'max_history'
+        @config['max_history'] = value.to_i
+        save_config
+        puts "\e[32mSet max_history to #{value}\e[0m"
+      else
+        puts "Unknown config key: #{key}"
+        puts "Valid keys: max_history"
+      end
+    when 'get'
+      key = args[1]
+      if key.nil?
+        puts "Usage: cliboard config get <key>"
+        puts ""
+        puts "Keys:"
+        puts "  max_history  Maximum items in history"
+      else
+        puts @config[key]
+      end
+    when 'list'
+      puts "Current configuration:"
+      puts JSON.pretty_generate(@config)
+    when 'help', nil
+      puts "Config commands:"
+      puts "  set <key> <value>  Set a configuration value"
+      puts "  get <key>          Get a configuration value"
+      puts "  list               Show all configuration values"
+      puts ""
+      puts "Keys:"
+      puts "  max_history  Maximum items in history (default: 100)"
+      puts ""
+      puts "Examples:"
+      puts "  cliboard config set max_history 50"
+      puts "  cliboard config get max_history"
+      puts "  cliboard config list"
+    else
+      puts "Unknown config command: #{args[0]}"
+      puts "Use 'cliboard config help' for usage"
+    end
+  end
+
+  def watch_clipboard
+    puts "Watching clipboard... (Ctrl+C to stop)"
+    puts "Current clipboard content will be captured"
+    puts
+
+    # Add current clipboard
+    current = get_clipboard
+    if current && !current.empty?
+      add_to_history(current)
+      puts "\e[32mCaptured: #{current[0, 60]}...\e[0m"
+    end
+
+    last_text = current
+
+    loop do
+      sleep 0.5
+      text = get_clipboard
+      next unless text && !text.empty? && text != last_text
+
+      add_to_history(text)
+      last_text = text
+      puts "\e[32mCaptured: #{text[0, 60]}...\e[0m"
+    end
+  rescue Interrupt
+    puts "\nStopped"
+  end
+
+  def add_current_clipboard(args)
+    text = get_clipboard
+    if text && !text.empty?
+      add_to_history(text)
+      puts "\e[32mAdded: #{text[0, 60]}\e[0m"
+    else
+      puts "\e[31mClipboard is empty\e[0m"
+    end
+  end
+
+  def get_current_clipboard
+    text = get_clipboard
+    if text
+      puts text
+    else
+      puts "\e[31mClipboard is empty\e[0m"
+    end
+  end
+
+  def add_to_history(text)
+    return if text.nil? || text.empty?
+
+    @history.reject! { |h| h['text'] == text }
+    @history << { 'text' => text, 'created_at' => Time.now.iso8601 }
+
+    max = @config['max_history'] || MAX_HISTORY
+    @history = @history.last(max)
+
+    save_json(HISTORY_FILE, @history)
+  end
+end
+
+OptionParser.new do |opts|
+  opts.banner = "Usage: cliboard <command> [arguments]"
+  opts.separator ""
+  opts.separator "Commands:"
+  opts.separator "  history          Show clipboard history"
+  opts.separator "  add              Add current clipboard to history"
+  opts.separator "  get              Print current clipboard content"
+  opts.separator "  select <N>       Copy history item #N to clipboard"
+  opts.separator "  copy <N>         Copy history item #N to clipboard"
+  opts.separator "  pin <N>          Pin history item #N (keeps at top)"
+  opts.separator "  unpin <N>        Remove pin from item #N"
+  opts.separator "  pins             Show pinned items"
+  opts.separator "  search <query>   Search clipboard history"
+  opts.separator "  clear            Clear all history"
+  opts.separator "  watch            Watch clipboard for changes (background)"
+  opts.separator "  config           Manage configuration"
+  opts.separator ""
+  opts.separator "Config commands:"
+  opts.separator "  config set <key> <value>  Set config value"
+  opts.separator "  config get <key>          Get config value"
+  opts.separator "  config list               Show all config"
+  opts.separator ""
+  opts.separator "Config keys:"
+  opts.separator "  max_history  Maximum history items (default: 100)"
+  opts.separator ""
+  opts.separator "Examples:"
+  opts.separator "  cliboard watch &           # Start clipboard watcher"
+  opts.separator "  cliboard add               # Add current clipboard"
+  opts.separator "  cliboard history           # Show history"
+  opts.separator "  cliboard select 2          # Copy item #2"
+  opts.separator "  cliboard pin 3            # Pin item #3"
+  opts.separator "  cliboard config set max_history 50"
+  opts.separator ""
+  opts.separator "Options:"
+  opts.on('-h', '--help', 'Show this help') { puts opts; exit }
+end.parse!
+
+Cliboard.new.run(ARGV)

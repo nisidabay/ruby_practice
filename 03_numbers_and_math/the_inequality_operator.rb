@@ -1,17 +1,12 @@
 #!/usr/bin/env ruby
 # frozen_string_literal: true
-# The inequality operator
-# This file contains Ruby code for the inequality operator.
 
+# the_inequality_operator.rb — != compares values
 
-# Inequality operator !=
+puts 10 != 5           # => true
+puts 10 != 10          # => false
 
-puts 10 != 5
-puts 10 != 10
-
-puts 'Hello' != 'Goodbye'
-puts 'Hello' != 'hello'
-puts 'Hello' != 'Hello '
-puts 'Hello' != 'Hello'
-
-puts 5 != '5'
+puts 'Hello' != 'Goodbye'   # => true
+puts 'Hello' != 'hello'     # => true (case sensitive)
+puts 'Hello' != 'Hello'     # => false
+puts 5 != '5'               # => true (different types)

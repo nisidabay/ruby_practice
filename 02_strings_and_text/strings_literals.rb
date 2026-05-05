@@ -1,13 +1,12 @@
 #!/usr/bin/env ruby
 # frozen_string_literal: true
 
-# String literals
+# strings_literals.rb — multi-line strings and heredocs
 
 x = 'This is a test
 of the multi
 line capabilities'
 puts x
-puts
 
 y = <<~END_MY_STRING
   This is the string

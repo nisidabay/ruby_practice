@@ -1,0 +1,211 @@
+#!/usr/bin/env ruby
+# frozen_string_literal: true
+
+require 'optparse'
+require 'fileutils'
+
+class Renamer
+  attr_reader :errors
+
+  def initialize(options = {})
+    @dry_run = options[:dry_run] || false
+    @template = options[:template]
+    @lowercase = options[:lowercase] || false
+    @undo = options[:undo]
+    @history_dir = File.expand_path('~/.config/renamer')
+    @history_file = File.join(@history_dir, 'history.json')
+    @errors = []
+  end
+
+  def run(files, pattern, replacement)
+    if @undo
+      undo_last
+      return
+    end
+
+    FileUtils.mkdir_p(@history_dir)
+
+    renames = build_renames(files, pattern, replacement)
+    return if renames.empty?
+
+    puts display_renames(renames)
+
+    if @dry_run
+      puts "\n\e[33mDry run - no changes made\e[0m"
+      return
+    end
+
+    if confirm?
+      execute_renames(renames)
+      save_history(renames)
+    end
+  end
+
+  private
+
+  def build_renames(files, pattern, replacement)
+    renames = []
+    counter = 1
+
+    files.each do |file|
+      next unless File.exist?(file)
+
+      new_name = if @template
+                   apply_template(file, counter)
+                 elsif @lowercase
+                   file.downcase
+                 else
+                   apply_regex(file, pattern, replacement)
+                 end
+
+      if new_name && new_name != file
+        renames << { old: file, new: new_name }
+        counter += 1
+      end
+    end
+
+    renames
+  end
+
+  def apply_regex(file, pattern, replacement)
+    if pattern.start_with?('s/')
+      parts = pattern.split('/')
+      if parts.length >= 3
+        regex = Regexp.new(parts[1])
+        file.sub(regex, replacement || parts[2] || '')
+      end
+    else
+      file.sub(Regexp.new(pattern), replacement || '')
+    end
+  rescue RegexpError => e
+    @errors << "Invalid regex: #{e.message}"
+    file
+  end
+
+  def apply_template(file, counter)
+    ext = File.extname(file)
+    basename = File.basename(file, ext)
+    parent = File.basename(File.dirname(file))
+    date = Time.now.strftime('%Y%m%d')
+
+    @template
+      .gsub('{n}', counter.to_s)
+      .gsub('{n:03d}', format('%03d', counter))
+      .gsub('{n:04d}', format('%04d', counter))
+      .gsub('{date}', date)
+      .gsub('{ext}', ext.sub('.', ''))
+      .gsub('{name}', basename)
+      .gsub('{parent}', parent)
+  end
+
+  def display_renames(renames)
+    max_width = renames.map { |r| File.basename(r[:old]).length }.max
+    renames.map do |r|
+      old_name = File.basename(r[:old])
+      new_name = File.basename(r[:new])
+      padding = ' ' * (max_width - old_name.length)
+      "  #{old_name}#{padding} -> #{new_name}"
+    end.join("\n")
+  end
+
+  def confirm?
+    print "\nApply changes? [y/N]: "
+    $stdin.getch&.downcase == 'y'
+  rescue NoMethodError
+    $stdin.gets&.downcase&.start_with?('y')
+  end
+
+  def execute_renames(renames)
+    renames.each do |r|
+      begin
+        FileUtils.mv(r[:old], r[:new])
+        puts "\e[32mRenamed: #{r[:old]} -> #{r[:new]}\e[0m"
+      rescue => e
+        puts "\e[31mFailed: #{r[:old]} - #{e.message}\e[0m"
+      end
+    end
+  end
+
+  def save_history(renames)
+    require 'json'
+
+    history = if File.exist?(@history_file)
+                JSON.parse(File.read(@history_file))
+              else
+                []
+              end
+
+    history << {
+      timestamp: Time.now.iso8601,
+      renames: renames
+    }
+
+    File.write(@history_file, JSON.pretty_generate(history))
+  end
+
+  def undo_last
+    return puts "No history found" unless File.exist?(@history_file)
+
+    require 'json'
+    history = JSON.parse(File.read(@history_file))
+    return puts "No operations to undo" if history.empty?
+
+    last = history.pop
+    last['renames'].reverse_each do |r|
+      if File.exist?(r['new'])
+        FileUtils.mv(r['new'], r['old'])
+        puts "Undone: #{r['new']} -> #{r['old']}"
+      end
+    end
+
+    File.write(@history_file, JSON.pretty_generate(history))
+  rescue JSON::ParserError
+    puts "Invalid history file"
+  end
+end
+
+class String
+  def getch
+    begin
+      require 'io/console'
+      $stdin.getch
+    rescue LoadError
+      nil
+    end
+  end
+end
+
+options = {}
+OptionParser.new do |opts|
+  opts.banner = "Usage: renamer [options] <pattern> <replacement> <files...>"
+  opts.banner += "\n       renamer --template <template> <files...>"
+
+  opts.on('-t', '--template TEMPLATE', 'Use template: {n}, {n:03d}, {date}, {ext}, {name}, {parent}') { |v| options[:template] = v }
+  opts.on('-d', '--dry-run', 'Preview changes without applying') { options[:dry_run] = true }
+  opts.on('-l', '--lowercase', 'Convert to lowercase') { options[:lowercase] = true }
+  opts.on('-u', '--undo', 'Undo last operation') { options[:undo] = true }
+  opts.on('-h', '--help', 'Show help') { puts opts; exit }
+end.parse!
+
+renamer = Renamer.new(options)
+
+if options[:undo]
+  renamer.undo_last
+elsif options[:template]
+  files = ARGV.empty? ? Dir['*'] : ARGV
+  renamer.run(files, nil, nil)
+elsif ARGV.length >= 2
+  pattern = ARGV[0]
+  replacement = ARGV[1]
+  files = ARGV[2..].empty? ? Dir['*'] : ARGV[2..]
+  renamer.run(files, pattern, replacement)
+else
+  puts "Usage: renamer [options] <pattern> <replacement> [files...]"
+  puts "       renamer --template <template> [files...]"
+  puts "       renamer --undo"
+  puts "\nExamples:"
+  puts "  renamer 's/old/new/' *.txt"
+  puts "  renamer --template 'img_{n:03d}.{ext}' *.jpg"
+  puts "  renamer --lowercase *.PNG"
+  exit 1
+end

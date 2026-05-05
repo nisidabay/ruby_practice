@@ -1,7 +1,9 @@
 #!/usr/bin/env ruby
+# frozen_string_literal: true
 
-# Problem: You want methods public on the module, but PRIVATE when included in classes.
-# Example: Calculator.add() works, but obj.add() should fail (internal helper only).
+# Problem: You want methods public on the module, but PRIVATE when included in
+# classes.
+# Example: Calculator.add(5, 3) works, but obj.add(5, 3) should fail.
 #
 # Solution: Use module_function.
 # Visibility: PUBLIC on module, PRIVATE when mixed in.
@@ -19,9 +21,9 @@ module Calculator
     a * b
   end
 
-  module_function :add
-  module_function :subtract
-  module_function :multiply
+  module_function :add       # Makes :add callable on the module, private in mix-ins
+  module_function :subtract  # Makes :subtract callable on the module, private in mix-ins
+  module_function :multiply  # Makes :multiply callable on the module, private in mix-ins
 end
 
 # Works on the module (public API)
@@ -33,31 +35,12 @@ class MathOperations
 
   # But we CAN call it internally from other methods
   def calculate(a, b)
-    add(a, b)  # Works! Internal use is allowed
+    add(a, b) # Works! Internal use is allowed
   end
 end
 
 obj = MathOperations.new
-puts obj.calculate(10, 5)  # Works (internal call)
+puts obj.calculate(10, 5) # Works (internal call)
 
 # This fails (external call to private method):
 # obj.add(10, 5)           # NoMethodError!
-
-# This could also be done like this:
-# If you want methods to stay PUBLIC when included,
-# use extend self instead:
-#
-# module Calculator
-#   extend self
-#   def add(a, b)
-#     a + b
-#   end
-# end
-#
-# class MathOperations
-#   include Calculator
-# end
-#
-# Calculator.add(10, 5)     # Works
-# obj = MathOperations.new
-# obj.add(10, 5)            # Also works (public)

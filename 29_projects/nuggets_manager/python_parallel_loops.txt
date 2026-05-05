@@ -1,0 +1,48 @@
+
+••• Concurrency: The ability of a program to deal with multiple tasks seemingly
+    simultaneously. This doesn't necessarily mean they are executing at the
+    exact same moment.
+
+••• Parallelism: A form of concurrency where multiple tasks are executed at the
+    exact same time, typically on multiple CPU cores.
+
+••• Thread: A lightweight unit of execution within a process. Multiple threads
+    can run concurrently within the same process and share the same memory
+    space.
+
+••• Process: An independent unit of execution with its own memory space.
+    Processes are typically heavier than threads.
+
+••• I/O-bound Task: A task where the primary bottleneck is waiting for
+    input/output operations to complete (e.g., reading files, network requests).
+
+••• CPU-bound Task: A task where the primary bottleneck is the processing power
+    of the CPU (e.g., complex calculations, data encoding).
+
+••• Global Interpreter Lock (GIL): A mutex (lock) in CPython that prevents
+    multiple native threads from executing Python bytecode at the same time
+    within a single process.
+
+••• Thread Pool: A collection of worker threads that are created and managed to
+    execute tasks concurrently. This avoids the overhead of creating new threads
+    for each task.
+
+••• Process Pool: A collection of worker processes that are created and managed
+    to execute tasks in parallel.
+
+••• Executor: An object that manages the execution of asynchronous tasks. The
+    concurrent.futures module provides ThreadPoolExecutor and
+    ProcessPoolExecutor.
+
+••• Future Object: An object returned by an executor's submit() method. It
+    represents the result of an asynchronous operation and provides methods to
+    check its status, retrieve the result, or handle exceptions.
+
+••• Pickling (Serialization): The process of converting Python objects into a
+    byte stream so that they can be stored or transmitted across a network or
+    between processes.
+
+••• Context Manager: An object that defines methods to be executed at the start
+    and end of a controlled block (e.g., using the with statement). This is
+    often used for resource management, like ensuring a thread or process pool
+    is properly closed.

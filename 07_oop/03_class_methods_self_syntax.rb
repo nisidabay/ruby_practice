@@ -8,44 +8,49 @@
 # Visibility: PUBLIC on the class only (not on instances).
 
 class Vehicle
-  attr_reader :wheels, :passengers
+  attr_reader :wheels, :passengers, :type
 
-  def initialize(wheels, passengers)
-    @wheels = wheels
+  def initialize(wheels, passengers, type = 'vehicle')
+    @wheels = validate_wheels(wheels)
     @passengers = passengers
+    @type = type
   end
 
-  # Class method using def self.method_name
-  def self.car
-    new(4, 6)
+  def wheels=(wheels)
+    @wheels = validate_wheels(wheels)
   end
 
-  def self.truck
-    new(18, 2)
+  # Accept optional overrides
+  def self.car(wheels: 4, passengers: 6)
+    new(wheels, passengers)
+  end
+
+  def self.truck(wheels: 8, passengers: 2)
+    new(wheels, passengers)
   end
 
   def to_s
-    "Created vehicle with #{wheels} wheels and #{passengers} passengers"
+    "Created new #{type} with #{wheels} wheels and #{passengers} passengers"
+  end
+
+  private
+
+  def validate_wheels(wheels)
+    raise ArgumentError, 'Wrong number of wheels!' unless wheels.is_a?(Integer) && wheels.between?(2, 12)
+
+    wheels
   end
 end
 
-# Usage: Call methods directly on the class
-motorcycle = Vehicle.new(2, 1)
-puts motorcycle.to_s
+motorcycle = Vehicle.new(2, 1, 'motorcycle')
+puts motorcycle
 
 car = Vehicle.car
-puts car.to_s
+puts car
 
 truck = Vehicle.truck
-puts truck.to_s
+puts truck
 
-# This could also be done like this:
-# Using the class << self block syntax (see next file):
-#
-# class Vehicle
-#   class << self
-#     def car
-#       new(4, 6)
-#     end
-#   end
-# end
+# Now works correctly and consistently. Proper error handling!
+# truck.wheels = 16
+# puts truck

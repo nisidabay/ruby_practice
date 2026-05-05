@@ -1,157 +1,58 @@
 #!/usr/bin/env ruby
+# frozen_string_literal: true
 
-# Problem: You need to create families of related objects without specifying their concrete classes.
-# Example: A cross-platform GUI that creates Windows, Mac, or Linux buttons/checkboxes/menus together.
-#
-# Solution: Use an abstract factory that defines methods for creating each object in the family.
-# Visibility: Client uses the factory interface, doesn't know which concrete factory it's using.
+# abstract_factory_pattern.rb — create families of related objects
+
+class Button
+  def render; end
+  def click; end
+end
+
+class Checkbox
+  def render; end
+  def toggle; end
+end
+
+class WindowsButton < Button
+  def render = puts("  [WinButton] Rendering...")
+  def click  = puts("  [WinButton] Clicked!")
+end
+
+class WindowsCheckbox < Checkbox
+  def render = puts("  [WinCheckbox] Rendering...")
+  def toggle = puts("  [WinCheckbox] Toggled!")
+end
+
+class MacButton < Button
+  def render = puts("  [MacButton] Rendering...")
+  def click  = puts("  [MacButton] Clicked!")
+end
+
+class MacCheckbox < Checkbox
+  def render = puts("  [MacCheckbox] Rendering...")
+  def toggle = puts("  [MacCheckbox] Toggled!")
+end
 
 class GUIFactory
   def create_button; end
   def create_checkbox; end
 end
 
-class WindowsButton
-  def render
-    puts "  [WindowsButton] Rendering Windows-style button"
-  end
-
-  def click
-    puts "  [WindowsButton] Clicked with Windows animation"
-  end
-end
-
-class WindowsCheckbox
-  def render
-    puts "  [WindowsCheckbox] Rendering Windows-style checkbox"
-  end
-
-  def toggle
-    puts "  [WindowsCheckbox] Toggled with Windows style"
-  end
-end
-
-class MacButton
-  def render
-    puts "  [MacButton] Rendering Mac-style button"
-  end
-
-  def click
-    puts "  [MacButton] Clicked with Mac animation"
-  end
-end
-
-class MacCheckbox
-  def render
-    puts "  [MacCheckbox] Rendering Mac-style checkbox"
-  end
-
-  def toggle
-    puts "  [MacCheckbox] Toggled with Mac style"
-  end
-end
-
 class WindowsFactory < GUIFactory
-  def create_button
-    WindowsButton.new
-  end
-
-  def create_checkbox
-    WindowsCheckbox.new
-  end
+  def create_button = WindowsButton.new
+  def create_checkbox = WindowsCheckbox.new
 end
 
 class MacFactory < GUIFactory
-  def create_button
-    MacButton.new
-  end
-
-  def create_checkbox
-    MacCheckbox.new
-  end
+  def create_button = MacButton.new
+  def create_checkbox = MacCheckbox.new
 end
 
-class Application
-  def initialize(factory)
-    @factory = factory
-  end
-
-  def render
-    puts "[Application] Creating UI components:"
-    @button = @factory.create_button
-    @checkbox = @factory.create_checkbox
-    @button.render
-    @checkbox.render
-  end
-
-  def interact
-    puts "\n[Application] User interactions:"
-    @button.click
-    @checkbox.toggle
-  end
-end
-
-# Usage: Choose a factory based on platform, create consistent UI family
-os = "mac"  # Could be: "windows", "mac"
-
-factory = case os
-          when "windows" then WindowsFactory.new
-          when "mac" then MacFactory.new
-          end
-
-app = Application.new(factory)
-app.render
-app.interact
-
-# Alternative: Parameterized factory for simple cases
-# For simple cases, use a parameterized factory:
-
-class SimpleUIFactory
-  def self.create_component(type, os)
-    case [type, os]
-    when [:button, "windows"]
-      puts "  [Factory] Creating WindowsButton"
-      WindowsButton.new
-    when [:button, "mac"]
-      puts "  [Factory] Creating MacButton"
-      MacButton.new
-    when [:checkbox, "windows"]
-      puts "  [Factory] Creating WindowsCheckbox"
-      WindowsCheckbox.new
-    when [:checkbox, "mac"]
-      puts "  [Factory] Creating MacCheckbox"
-      MacCheckbox.new
-    when [:menu, "windows"]
-      puts "  [Factory] Creating WindowsMenu"
-      WindowsMenu.new
-    when [:menu, "mac"]
-      puts "  [Factory] Creating MacMenu"
-      MacMenu.new
-    else
-      raise ArgumentError, "Unknown component: #{type} for #{os}"
-    end
-  end
-end
-
-class WindowsMenu
-  def render
-    puts "  [WindowsMenu] Rendering Windows-style menu"
-  end
-end
-
-class MacMenu
-  def render
-    puts "  [MacMenu] Rendering Mac-style menu"
-  end
-end
-
-puts "\n--- Parameterized Abstract Factory ---"
-
-button = SimpleUIFactory.create_component(:button, "windows")
+factory = MacFactory.new
+button = factory.create_button
+checkbox = factory.create_checkbox
 button.render
-
-checkbox = SimpleUIFactory.create_component(:checkbox, "mac")
 checkbox.render
+button.click
+checkbox.toggle
 
-menu = SimpleUIFactory.create_component(:menu, "windows")
-menu.render

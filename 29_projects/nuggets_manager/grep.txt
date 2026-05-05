@@ -1,0 +1,115 @@
+••• grep -  Options:
+    * -A Show number of lines after the match
+    * -B Show number of lines before the match
+    * -b Print the position of the match
+    * -C Show number of lines around the match
+    * -c Show the files and number of matches
+    * --color Display matched patterns in colors
+    * -e Use the following pattern; useful for multiple strings and special
+    * -E Use regexp
+    * -F Match exact word
+    * -H Print filename
+    * -h Suppress the Unix file name prefix on output
+    * -i Case insensitive
+    * -I Ignore binary files
+    * -l Show what files contain the match
+    * -L Show what files do not contain the match
+    * -m Limit the printed lines of the match
+    * -n Print line number
+    * -P Perform a Perl compatible regexp
+    * -o Print only the matched string in separate line
+    * -q Quiet output
+    * -r Recursive search in directories
+    * -R Just like -r but follow all symlinks
+    * -v Invert match. Lines that don't match
+    * -w Match whole words
+    * -x Match the expression in the whole line
+
+••• grep -  search recusively ignoring binary files and printing line number
+grep -RIn pattern path
+
+••• grep -  uses regexp (`?`, `+`, `{}`, `()` y `|`)
+grep -Ei pattern path
+
+••• grep -  print lines before and after the match
+grep -C|B|A pattern path
+
+••• grep -  print the name of the files and the line number of the match
+grep -Hn pattern path
+
+••• grep -  get the stdio as input
+cat file | grep pattern
+
+••• grep -  lines that do not match
+grep -v pattern
+
+••• grep -  search for "pig" or "dog" recusively ignoring case
+grep -i -e pig -e dog -r .
+
+••• grep -  whole word file
+$ grep -w debian samplefile.txt
+
+••• Searching for a specific string in multiple files
+$ grep "debian" *.txt
+
+••• Recursively searching the string in the entire directory
+$ grep -r sample *
+
+••• Performing a case-insensitive search
+$ grep -i search_string filename
+
+••• Searching for a string as a full word and not as a sub-string
+$ grep -i "on" samplefile.txt
+
+••• Printing only the filenames that contain the string
+$ grep -l sample *.txt
+
+••• Printing only the search string from a file
+$ grep -o This samplefile_.txt
+
+••• N number of lines After the search string 
+$ grep -A 2 sample samplefile.txt
+
+••• N number of lines Before the search string
+$ grep -B 2 sample samplefile.txt
+
+••• N number of lines Around the search string
+$ grep -C 2 sample samplefile.txt
+
+••• Matching regular expression in files
+$ grep "RegularExpressions" filename
+
+Let us explain how you can use Regular Expressions in your egrep search:
+
+| Repet operator | Use                                                                  |
+| ---------------|-------------------------------------------------------------         |
+| ?              | The preceding item before ? is optional and matched maximum one time |
+| *              | The preceding item before * will be matched zero or more times       |
+| +              | The preceding item before + will be matched one or more times        |
+| {n}            | The preceding item is exactly matched n number of times.             |
+| {n,}           | The preceding item is matched n or more times                        |
+| {,m}           | The preceding item is matched maximum m times                        |
+| {n,m}          | The preceding item is matched at least n but not more than m times   |
+
+••• Highlighting the search string
+$ sudo export GREP_OPTIONS='--color=auto' GREP_COLOR='100;8'
+
+••• Performing Invert search in a file
+$ grep -v "two" samplefile_.txt
+
+••• Performing invert search based on multiple criteria/search pattern
+$ grep -v -e "one" -e "two" samplefile_.txt
+
+••• Printing the number of lines that match the search string
+$ grep -c "This" filename
+
+••• Printing the number of lines that don't match the search string
+$ grep -v -c "search_string" filename
+
+••• Displaying the line number where the string is matched
+$ grep -n "This" samplefile_.txt
+
+••• Displaying the position in the file where the search string matches
+$ grep -o -b "This" samplefile_.txt
+
+

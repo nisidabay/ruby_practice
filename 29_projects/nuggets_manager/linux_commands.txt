@@ -1,0 +1,120 @@
+••• Linux -  udf console colors
+expand_bg="\e[K"
+blue_bg="\e[0;104m${expand_bg}"
+red_bg="\e[0;101m${expand_bg}"
+green_bg="\e[0;42m${expand_bg}"
+green="\e[0;32m\033[1m"
+red="\e[0;31m\033[1m"
+turquoise="\e[0;36m\033[1m"
+gray="\e[0;37m\033[1m"
+yellow="\e[1;93m\033[1m"
+reset="\033[0m\e[0m"
+
+••• Linux -  list hardware
+lshw
+
+••• Linux -  list all PCI devices
+lspci -tv
+
+••• Linux -  Show memory
+free -h
+
+••• Linux -  Show swap state
+swapon -s
+
+••• Linux -  Show virtual memory state *
+vmstat
+memstat
+
+••• Linux -  Show memory informaction
+cat /proc/swaps
+cat /proc/meminfo
+sudo dmidecode --type memory
+
+••• Linux -  Show cd/dvd information
+dmesg | egrep -i --color "cdrom|dvd|cd|rw|writer"
+less /proc/sys/dev/cdrom/info
+cd-drive
+
+••• Linux -  Show block devices
+lsblk
+
+••• Linux -  Show scsi devices
+lsscsi
+
+••• Linux -  Show usb devices
+lsusb -tv
+
+••• Linux -  Mount cdrom
+mount -t iso 9660 -o ro /dev/device /path/to_mount_point
+
+••• Linux -  Extract the contents of a cd/dvd
+dd if=/dev/cdrom of=/tmp/cd.iso
+
+••• Linux -  Show system architecture
+arch
+
+••• Linux -  Show kernel version
+uname -r
+
+••• Linux -  Show cpu info
+cat /proc/cpuinfo
+
+••• Linux -  Show network adapters and features
+cat /proc/net/dev
+
+••• Linux -  Show mounted filesystems
+cat /proc/mounts
+
+••• Linux -  Shutdown and related commands
+shutdown -h 18:55 &
+shutdown -r now
+shutdown -c
+reboot
+last reboot
+
+••• Linux -  Locate files in databases
+locate file
+
+••• Linux -  Report a snapshot of the current process
+ps -ef
+
+••• Linux -  Find local ip address
+hostname -i
+ifconfig
+ip addr show
+
+••• Linux -  Find public ip address
+curl ifconfig.me
+curl icanhazip.com
+curl ipecho.net/plain
+curl ident.me
+curl bot.whatismyipaddress.com
+
+••• Linux -  Delete disks
+sudo dd if=/dev/zero of=/dev/sdx
+sudo dd if=/dev/urandom of=/dev/sdx
+
+••• Linux -  Format usb
+sudo mkfs.vfat /dev/sdx1
+
+••• Linux -  copy iso image to a device
+dd bs=rm if=*.iso of=/dev/sdx & sync
+
+••• Linux -  change timezone
+sudo timedatectl set-timezone Europe/Madrid
+
+••• Linux -  Bash terminal commands
+
+**Navigation**
+   + Ctrl + A: Move cursor to the beginning of the line.
+   + Ctrl + E: Move cursor to the end of the line.
+**Cutting and Deleting**
+   + Ctrl + K: Cut everything from the cursor to the end of the line.
+   + Ctrl + U: Cut everything from the cursor to the beginning of the line.
+   + Alt + W: Delete the word before the cursor.
+**Pasting and Movement**
+   + Alt + B: Move cursor backward by one word.
+   + Alt + F: Move cursor forward by one word.
+   + Ctrl + Y: Paste the last cut text.
+

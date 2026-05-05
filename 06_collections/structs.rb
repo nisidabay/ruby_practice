@@ -1,43 +1,60 @@
 #!/usr/bin/env ruby
 # frozen_string_literal: true
 
-# Structs
-# This file contains Ruby code for structs.
+# structs.rb — Struct reference (lightweight data class)
 
-# We define the Struct with three attributes
+# Basic
 Person = Struct.new(:first_name, :last_name, :age) do
-  # 1. A method to get the full name
   def full_name
     "#{first_name} #{last_name}"
   end
 
-  # 2. A check (Predicate method) - Ruby convention uses '?'
   def adult?
     age >= 18
   end
 
-  # 3. A method to modify the data "!" modifies the data, it's a convention
   def celebrate_birthday!
     self.age += 1
     puts "Happy Birthday, #{first_name}! You are now #{age}."
   end
 
-  # 4. A method to get initials
   def initials
     "#{first_name[0]}#{last_name[0]}".upcase
   end
 end
 
-# --- Using the expanded Struct ---
-
 user = Person.new('Jane', 'Doe', 17)
+puts user.full_name    # => Jane Doe
+puts user.adult?       # => false
+user.celebrate_birthday!
+puts user.adult?       # => true
+puts user.initials     # => JD
 
-puts user.full_name # -> "Jane Doe"
-puts user.adult?    # -> false (17 is less than 18)
+# Access
+p user[:first_name]    # => "Jane" (by key)
+p user[0]              # => "Jane" (by index)
+p user.first_name      # => "Jane" (dot notation)
+p Person.members       # => [:first_name, :last_name, :age]
+p user.values          # => ["Bob", "Smith", 26]
+p user.to_a            # => ["Bob", "Smith", 26]
+p user.to_h            # => {:first_name=>"Bob", :last_name=>"Smith", :age=>26}
 
-# Time passes...
-user.celebrate_birthday! # -> "Happy Birthday, Jane! You are now 18."
+# Iteration
+user.each_pair { |attr, value| puts "#{attr}: #{value}" }
+user.each_with_index { |val, i| puts "#{user.members[i]}[#{i}] = #{val}" }
 
-puts user.adult? # -> true (Now she is 18!)
+# Equality (values, not identity)
+user2 = Person.new('Bob', 'Smith', 26)
+p user == user2   # => true
+p user.eql?(user2) # => true
 
-puts user.initials # -> "JD"
+# Dig (nested structs)
+Address = Struct.new(:city, :country)
+Company = Struct.new(:name, :address)
+hq = Company.new('Acme', Address.new('Madrid', 'Spain'))
+p hq.dig(:address, :city)     # => "Madrid"
+
+# keyword_init (Ruby 3.0+)
+Point = Struct.new(:x, :y, keyword_init: true)
+p1 = Point.new(x: 10, y: 20)
+p p1.inspect  # => #<struct Point x=10, y=20>

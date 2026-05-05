@@ -1,11 +1,10 @@
 #!/usr/bin/env ruby
 # frozen_string_literal: true
 
-# Video
-# This file contains Ruby code for video.
+# video.rb — imported class for require_relative demos
 
 class Video
-  attr_accessor :time, :title
+  attr_accessor :title, :time
 
   def initialize(title: nil, time: nil)
     @title = title
@@ -13,26 +12,25 @@ class Video
   end
 
   def play
-    validate_title!
-    puts "video playing #{@title}"
+    validate!
+    puts "▶ Playing: #{@title}"
   end
 
   def pause
-    validate_title!
-    puts "video paused #{@title}"
+    validate!
+    puts "⏸ Paused: #{@title}"
   end
 
   def stop
-    validate_title!
-    puts "video stopped #{@title}"
+    validate!
+    puts "⏹ Stopped: #{@title}"
   end
 
   private
 
-  def validate_title!
-    # Tip: Using .to_s handles nil and strings in one go
+  def validate!
     return unless @title.to_s.strip.empty?
-
-    raise ArgumentError, 'Video title cannot be nil or empty'
+    raise ArgumentError, 'Title cannot be empty'
   end
 end
+

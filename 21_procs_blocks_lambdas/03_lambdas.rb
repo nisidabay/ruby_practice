@@ -1,93 +1,47 @@
-# Ruby Lambdas - Strict Procs
-# Lambdas are Procs with strict argument checking and safe return behavior
+#!/usr/bin/env ruby
+# frozen_string_literal: true
 
-# Creating Lambdas - stabby syntax (Ruby 1.9+)
-my_lambda = ->(x) { x * 2 }
-puts my_lambda.call(5)
+# lambdas.rb — strict argument checking, safe return behavior
 
-# Alternative syntax using lambda keyword
-my_lambda2 = lambda { |x| x * 2 }
-puts my_lambda2.call(5)
+# Creation: stabby syntax or lambda keyword
+l1 = ->(x) { x * 2 }
+l2 = lambda { |x| x * 2 }
+p l1.call(5), l2.call(5)  # => 10 10
 
-# Multi-line lambda
+# Multi-line
 greet = ->(name) do
   puts "Hello, #{name}!"
   puts "Welcome!"
 end
 greet.call("Alice")
 
-# Argument Strictness - lambdas enforce argument count
+# Argument STRICTNESS (unlike procs)
 strict = ->(a, b) { a + b }
+p strict.call(1, 2)  # => 3
+# strict.call(1)     # => ArgumentError!
+# strict.call(1,2,3) # => ArgumentError!
 
-puts strict.call(1, 2)  # 3
-
-begin
-  strict.call(1)
-rescue ArgumentError => e
-  puts "Error: #{e.message}"
-end
-
-begin
-  strict.call(1, 2, 3)
-rescue ArgumentError => e
-  puts "Error: #{e.message}"
-end
-
-# Return Behavior - safe, returns to caller not enclosing method
+# return is SAFE — returns from lambda only, method continues
 def test_lambda
-  my_lambda = -> { return "From Lambda" }
-  my_lambda.call
-  "Method ended"  # This IS reached
+  l = -> { return "From Lambda" }
+  l.call
+  "Method ended"  # reached
 end
+p test_lambda  # => "Method ended"
 
-puts test_lambda
-
-# Lambdas for functional-style code
-add = ->(a, b) { a + b }
-multiply = ->(a, b) { a * b }
-
-[add, multiply].each do |fn|
-  puts fn.call(2, 3)
-end
-
-# Higher-Order Functions with Lambdas
+# Higher-order: function composition
 def compose(f, g)
   ->(x) { f.call(g.call(x)) }
 end
-
 double = ->(x) { x * 2 }
 increment = ->(x) { x + 1 }
+p compose(increment, double).call(5)  # => 11 (5*2 + 1)
 
-double_then_increment = compose(increment, double)
-puts double_then_increment.call(5)  # 11 (5 * 2 + 1)
-
-# Proc Composition (Ruby 2.6+)
-increment2 = ->(x) { x + 1 }
-double2 = ->(x) { x * 2 }
-
-# << means "pipe right to left" (increment first, then double)
-puts (double2 << increment2).call(5)  # 12 (5+1=6, then 6*2=12)
-
-# >> means "pipe left to right" (double first, then increment)
-puts (double2 >> increment2).call(5)  # 11 (5*2=10, then 10+1=11)
-
-# Lazy Evaluation
-def lazy_eval
-  -> { expensive_computation }
-end
-
-def expensive_computation
-  puts "Computing..."
-  42
-end
-
-lazy = lazy_eval
-puts "Not computed yet"
-puts lazy.call
+# Proc composition operators (Ruby 2.6+): << and >>
+p (double << increment).call(5)  # 12 (increment first, then double)
+p (double >> increment).call(5)  # 11 (double first, then increment)
 
 # Check type
-my_proc = Proc.new { |x| x * 2 }
-my_lambda3 = ->(x) { x * 2 }
+p proc {}.lambda?    # => false
+p ->() {}.lambda?    # => true
 
-puts "Proc is lambda?: #{my_proc.lambda?}"
-puts "Lambda is lambda?: #{my_lambda3.lambda?}"

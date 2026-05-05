@@ -1,0 +1,375 @@
+#!/usr/bin/env ruby
+# frozen_string_literal: true
+
+require 'optparse'
+require 'json'
+require 'fileutils'
+require 'time'
+require 'date'
+
+class Tasks
+  DATA_DIR = File.expand_path('~/.tasks')
+  DATA_FILE = File.join(DATA_DIR, 'tasks.json')
+
+  PRIORITIES = { 'high' => 1, 'medium' => 2, 'low' => 3 }.freeze
+
+  def initialize
+    FileUtils.mkdir_p(DATA_DIR)
+    @tasks = load_tasks
+  end
+
+  def run(args)
+    command = args.shift || 'list'
+    
+    case command
+    when 'add', 'a' then add_task(args)
+    when 'list', 'ls', 'l' then list_tasks(args)
+    when 'done', 'd' then complete_task(args)
+    when 'remove', 'rm' then remove_task(args)
+    when 'edit', 'e' then edit_task(args)
+    when 'note' then add_note(args)
+    when 'show' then show_task(args)
+    when 'tag' then tag_task(args)
+    when 'clean' then clean_completed
+    when 'undo' then undo_complete(args)
+    else
+      list_tasks(args)
+    end
+
+    save_tasks
+  end
+
+  private
+
+  def load_tasks
+    return [] unless File.exist?(DATA_FILE)
+    JSON.parse(File.read(DATA_FILE))
+  rescue JSON::ParserError
+    []
+  end
+
+  def save_tasks
+    File.write(DATA_FILE, JSON.pretty_generate(@tasks))
+  end
+
+  def next_id
+    @tasks.empty? ? 1 : @tasks.map { |t| t['id'] }.max + 1
+  end
+
+  def add_task(args)
+    options = parse_task_options(args)
+    title = args.join(' ')
+    return puts "Usage: tasks add <title> [options]" if title.empty?
+
+    task = {
+      'id' => next_id,
+      'title' => title,
+      'priority' => options[:priority] || 'medium',
+      'status' => 'pending',
+      'tags' => options[:tags] || [],
+      'notes' => [],
+      'due' => options[:due],
+      'recur' => options[:recur],
+      'created_at' => Time.now.iso8601,
+      'updated_at' => Time.now.iso8601
+    }
+
+    @tasks << task
+    puts "\e[32mAdded task ##{task['id']}: #{title}\e[0m"
+  end
+
+  def list_tasks(args)
+    options = parse_list_options(args)
+
+    filtered = @tasks.select do |t|
+      status_ok = options[:all] || (options[:completed] ? t['status'] == 'completed' : t['status'] == 'pending')
+      tag_ok = options[:tag].nil? || t['tags']&.include?(options[:tag])
+      priority_ok = options[:priority].nil? || t['priority'] == options[:priority]
+      due_ok = due_filter(t, options[:due])
+      status_ok && tag_ok && priority_ok && due_ok
+    end
+
+    if filtered.empty?
+      puts "No tasks found"
+      return
+    end
+
+    grouped = filtered.group_by { |t| t['priority'] }
+
+    PRIORITIES.keys.each do |priority|
+      tasks_in_group = grouped[priority]
+      next unless tasks_in_group&.any?
+
+      color = case priority
+              when 'high' then 31
+              when 'medium' then 33
+              else 34
+              end
+
+      puts "\n\e[#{color}m\e[1m[#{priority.upcase}]\e[0m"
+
+      tasks_in_group.sort_by { |t| t['id'] }.each do |task|
+        display_task(task)
+      end
+    end
+
+    summary
+  end
+
+  def display_task(task)
+    status = task['status'] == 'completed' ? "\e[32m✓\e[0m" : " "
+    id = task['id'].to_s.rjust(3)
+    title = task['status'] == 'completed' ? "\e[9m#{task['title']}\e[0m" : task['title']
+    tags = task['tags']&.any? ? " \e[36m[#{task['tags'].join(', ')}]\e[0m" : ""
+    due = task['due'] ? " \e[35m(#{format_due(task['due'])})\e[0m" : ""
+    recur = task['recur'] ? " \e[33m[#{task['recur']}]\e[0m" : ""
+
+    puts "  #{status} #{id}#{due} #{title}#{tags}#{recur}"
+  end
+
+  def format_due(due_str)
+    return due_str unless due_str.match?(/^\d{4}-\d{2}-\d{2}/)
+
+    due = Date.parse(due_str)
+    today = Date.today
+
+    days = (due - today).to_i
+
+    case days
+    when -1 then "yesterday"
+    when 0 then "today"
+    when 1 then "tomorrow"
+    when 2..7 then "#{days} days"
+    else due.strftime('%m/%d')
+    end
+  end
+
+  def due_filter(task, filter)
+    return true unless filter
+    return true unless task['due']
+
+    due = Date.parse(task['due']) rescue nil
+    return true unless due
+
+    case filter
+    when 'today' then due == Date.today
+    when 'tomorrow' then due == Date.today + 1
+    when 'week' then due >= Date.today && due <= Date.today + 7
+    when 'overdue' then due < Date.today
+    else true
+    end
+  end
+
+  def complete_task(args)
+    ids = args.select { |a| a.match?(/^\d+$/) }.map(&:to_i)
+    return puts "Usage: tasks done <id>" if ids.empty?
+
+    ids.each do |id|
+      task = @tasks.find { |t| t['id'] == id }
+      if task
+        task['status'] = 'completed'
+        task['completed_at'] = Time.now.iso8601
+        puts "\e[32mCompleted task ##{id}\e[0m"
+
+        if task['recur']
+          create_recurring(task)
+        end
+      else
+        puts "\e[31mTask ##{id} not found\e[0m"
+      end
+    end
+  end
+
+  def create_recurring(parent)
+    due = calculate_next_due(parent['due'], parent['recur'])
+    task = parent.dup
+    task['id'] = next_id
+    task['status'] = 'pending'
+    task['due'] = due
+    task.delete('completed_at')
+    task['created_at'] = Time.now.iso8601
+    task['updated_at'] = Time.now.iso8601
+    @tasks << task
+    puts "\e[33mCreated recurring task ##{task['id']}\e[0m"
+  end
+
+  def calculate_next_due(current_due, recur)
+    return nil unless current_due
+
+    date = Date.parse(current_due)
+    case recur
+    when 'daily' then (date + 1).to_s
+    when 'weekly' then (date + 7).to_s
+    when 'monthly' then (date >> 1).to_s
+    when 'yearly' then (date >> 12).to_s
+    else current_due
+    end
+  end
+
+  def remove_task(args)
+    ids = args.select { |a| a.match?(/^\d+$/) }.map(&:to_i)
+    return puts "Usage: tasks remove <id>" if ids.empty?
+
+    ids.each do |id|
+      idx = @tasks.index { |t| t['id'] == id }
+      if idx
+        @tasks.delete_at(idx)
+        puts "\e[31mRemoved task ##{id}\e[0m"
+      else
+        puts "\e[31mTask ##{id} not found\e[0m"
+      end
+    end
+  end
+
+  def edit_task(args)
+    id = args.find { |a| a.match?(/^\d+$/) }&.to_i
+    return puts "Usage: tasks edit <id> <title>" unless id
+
+    task = @tasks.find { |t| t['id'] == id }
+    return puts "\e[31mTask ##{id} not found\e[0m" unless task
+
+    options = parse_task_options(args)
+    title = args.reject { |a| a.match?(/^(-|--)/) || a.match?(/^\d+$/) }.join(' ')
+
+    task['title'] = title unless title.empty?
+    task['priority'] = options[:priority] if options[:priority]
+    task['due'] = options[:due] if options[:due]
+    task['updated_at'] = Time.now.iso8601
+
+    puts "\e[32mUpdated task ##{id}\e[0m"
+  end
+
+  def add_note(args)
+    id = args.shift&.to_i
+    return puts "Usage: tasks note <id> <note>" unless id
+
+    task = @tasks.find { |t| t['id'] == id }
+    return puts "\e[31mTask ##{id} not found\e[0m" unless task
+
+    note = args.join(' ')
+    task['notes'] ||= []
+    task['notes'] << { 'text' => note, 'created_at' => Time.now.iso8601 }
+
+    puts "\e[32mAdded note to task ##{id}\e[0m"
+  end
+
+  def show_task(args)
+    id = args.shift&.to_i
+    return puts "Usage: tasks show <id>" unless id
+
+    task = @tasks.find { |t| t['id'] == id }
+    return puts "\e[31mTask ##{id} not found\e[0m" unless task
+
+    puts "\e[1mTask ##{id}: #{task['title']}\e[0m"
+    puts "Status: #{task['status']}"
+    puts "Priority: #{task['priority']}"
+    puts "Due: #{task['due'] || 'none'}" if task['due']
+    puts "Tags: #{task['tags']&.join(', ')}" if task['tags']&.any?
+    puts "Recurring: #{task['recur']}" if task['recur']
+
+    if task['notes']&.any?
+      puts "\nNotes:"
+      task['notes'].each do |note|
+        date = Time.parse(note['created_at']).strftime('%Y-%m-%d %H:%M')
+        puts "  [#{date}] #{note['text']}"
+      end
+    end
+  end
+
+  def tag_task(args)
+    id = args.shift&.to_i
+    return puts "Usage: tasks tag <id> <tag>..." unless id
+
+    task = @tasks.find { |t| t['id'] == id }
+    return puts "\e[31mTask ##{id} not found\e[0m" unless task
+
+    tags = args.reject { |a| a.match?(/^(-|--)/) }
+    task['tags'] = (task['tags'] || []) + tags
+    task['tags'].uniq!
+
+    puts "\e[32mTagged task ##{id} with: #{tags.join(', ')}\e[0m"
+  end
+
+  def clean_completed
+    before = @tasks.size
+    @tasks.reject! { |t| t['status'] == 'completed' }
+    after = @tasks.size
+    puts "\e[32mRemoved #{before - after} completed tasks\e[0m"
+  end
+
+  def undo_complete(args)
+    ids = args.select { |a| a.match?(/^\d+$/) }.map(&:to_i)
+    return puts "Usage: tasks undo <id>" if ids.empty?
+
+    ids.each do |id|
+      task = @tasks.find { |t| t['id'] == id }
+      if task && task['status'] == 'completed'
+        task['status'] = 'pending'
+        task.delete('completed_at')
+        puts "\e[33mRestored task ##{id}\e[0m"
+      else
+        puts "\e[31mTask ##{id} not found or not completed\e[0m"
+      end
+    end
+  end
+
+  def summary
+    pending = @tasks.count { |t| t['status'] == 'pending' }
+    completed = @tasks.count { |t| t['status'] == 'completed' }
+    today = @tasks.count { |t| t['status'] == 'pending' && due_filter(t, 'today') }
+
+    puts "\n\e[90m#{pending} pending, #{completed} completed, #{today} due today\e[0m"
+  end
+
+  def parse_task_options(args)
+    options = {}
+
+    args.each_with_index do |arg, idx|
+      case arg
+      when '-p', '--priority' then options[:priority] = args[idx + 1]
+      when '-d', '--due' then options[:due] = parse_due(args[idx + 1])
+      when '-t', '--tags' then options[:tags] = args[idx + 1].split(',').map(&:strip)
+      when '-r', '--recur' then options[:recur] = args[idx + 1]
+      end
+    end
+
+    options
+  end
+
+  def parse_list_options(args)
+    options = {}
+
+    args.each_with_index do |arg, idx|
+      case arg
+      when '-a', '--all' then options[:all] = true
+      when '-c', '--completed' then options[:completed] = true
+      when '-t', '--tag' then options[:tag] = args[idx + 1]
+      when '-p', '--priority' then options[:priority] = args[idx + 1]
+      when '--today' then options[:due] = 'today'
+      when '--week' then options[:due] = 'week'
+      when '--overdue' then options[:due] = 'overdue'
+      end
+    end
+
+    options
+  end
+
+  def parse_due(str)
+    return nil unless str
+
+    case str.downcase
+    when 'today' then Date.today.to_s
+    when 'tomorrow' then (Date.today + 1).to_s
+    when /^mon|tue|wed|thu|fri|sat|sun/i
+      days = %w[sun mon tue wed thu fri sat]
+      target = days.index { |d| str.downcase.start_with?(d) }
+      today = Date.today.wday
+      offset = (target - today) % 7
+      (Date.today + offset).to_s
+    when /^\d+$/ then Date.today + str.to_i
+    else str
+    end
+  end
+end
+
+Tasks.new.run(ARGV)

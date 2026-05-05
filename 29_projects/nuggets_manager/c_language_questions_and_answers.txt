@@ -1,0 +1,549 @@
+••• C_language_questions_and_answers: If I want to give someone a program I
+wrote, which files do I need to give him?
+
+One of the nice things about C is that it is a compiled language. This means
+that after the source code is compiled, you have an executable program. This
+executable program is a stand-alone program. If you wanted to give hello to
+all your friends with computers, you can. All you need to give them is the
+executable program, hello.exe. They don’t need the source file, hello.c, or
+the object file, hello.  obj. They don’t need to own a C compiler, either. Your
+friends or those people you give the executable need to use the same type of
+machine as you —such as a PC, Macintosh, Linux machine, and so on.
+
+••• C_language_questions_and_answers: After I create an executable file, do I
+need to keep the source file (.c) or object file (.obj)?
+
+If you get rid of the source file, you have no way to make changes to the
+program in the future, so you should keep this file. The object files are a
+different matter. For now, you can get rid of your object files after you have
+your executable file. If you need the object file, you can recompile the source
+file.
+
+Most IDEs create files in addition to the source file (.c), the object file
+(.obj or .o), and the executable file. As long as you keep the source file (.c),
+you can always re-create the other files.
+
+••• C_language_questions_and_answers:  If my compiler came with an editor, do I
+have to use it?
+ 
+Definitely not. You can use any editor, as long as it saves the source code in
+text format. If the compiler came with an editor, you should try to use it. If
+you like a different editor better, use it. I use an editor that I purchased
+separately, even though all my compilers have their own editors. The editors
+that come with compilers are getting better. Some of them automatically format
+your C code. Others color-code different parts of your source file to make it
+easier to find errors.
+
+••• C_language_questions_and_answers:  What do I do if I have only a C++
+compiler and not a C compiler?
+ 
+C++ is a superset of C. This means that you can use a C++ compiler to compile C
+programs.
+
+••• C_language_questions_and_answers:  Can I ignore warning messages?
+ 
+Some warning messages don’t affect how the program runs, and some do. If the
+compiler gives you a warning message, it’s a signal that something isn’t right.
+Most compilers let you set the warning level. By setting the warning level, you
+can get only the most serious warnings, or you can get all the warnings,
+including the most minute. Some compilers even offer various levels in-between.
+In your programs, you should look at each warning and make a determination.
+It’s always best to try to write all your programs with absolutely no warnings
+or errors. (With an error, your compiler won’t create the executable file.)
+
+••• C_language_questions_and_answers: What effect do comments have on a program?
+ 
+Comments are for programmers. When the compiler converts the source code to
+object code, it throws the comments and the white space away. This means that
+they have no effect on the executable program. A program with a lot of comments
+executes just as fast as a program with few comments. Comments do make your
+source file bigger, but this is usually of little concern. To summarize, you
+should use comments and white space to make your source code as easy to
+understand and maintain as possible.
+
+••• C_language_questions_and_answers: What is the difference between a statement
+and a block?
+ 
+A block is a group of statements enclosed in braces ({}). A block can be used in 
+most places that a statement can be used.
+
+••• C_language_questions_and_answers: How can I find out what library functions
+are available?
+ 
+Many compilers come with online documentation dedicated specifically to docu-
+menting the library functions. They are usually in alphabetical order. Appendix
+C, “Common C Functions,” lists many of the available functions. After you begin
+to understand more of C, it would be a good idea to read that appendix so that
+you don’t rewrite a library function. (There’s no use reinventing the wheel!)
+
+••• C_language_questions_and_answers: Why not always use the larger variables,
+such as long int and double instead of int and float variables so that you can
+hold bigger numbers?
+ 
+A long int variable takes up more RAM than the smaller int. In smaller pro-
+grams, this doesn’t pose a problem. As programs get bigger, however, you should
+try to be efficient with the memory you use. If you believe users will be enter-
+ing numbers larger than the maximum size of an int or long, make the necessary
+adjustments, remembering that even if the numbers entered by the users fall into
+the range of the smaller variable size, any math you do, including addition or
+multiplication, could create an out-of-range number.
+
+••• C_language_questions_and_answers: What happens if I assign a number with a
+decimal to an integer?
+ 
+You can assign a number with a decimal to an int variable. If you use a
+constant variable, your compiler probably will give you a warning. The value
+assigned will have the decimal portion truncated. For example, if you assign
+3.14 to an integer variable called pi, pi will contain only 3. The .14 will be
+chopped off and thrown away.
+
+••• C_language_questions_and_answers: What happens if I put a number into a type
+that isn’t big enough to hold it?
+
+A Many compilers allow this without signaling any errors. The number is wrapped
+to fit and therefore won’t be correct. For example, if you assign 32768 to a
+2-byte signed variable of type short, the variable would actually contain the
+value –32768.  If you assign the value 65535 to this variable, it actually
+contains the value –1.  Subtracting the maximum value that the field can hold
+generally gives you the value that will be stored.
+
+••• C_language_questions_and_answers: What happens if I put a negative number
+into an unsigned variable?
+
+As the preceding answer indicated, your compiler might not signal any errors if
+you do this. The compiler does the same wrapping as if you assigned a number
+that was too big. For instance, if you assign –1 to an unsigned int variable
+that is 2 bytes long, the compiler puts the highest number possible in the
+variable (65535).  
+
+••• C_language_questions_and_answers:  What are the practical differences
+between symbolic constants created with the #define directive and those created
+with the const keyword?
+
+* Scope: #define has file scope; const is block-scoped.  
+* Type Safety: #define lacks type safety; const is type-safe.  
+* Storage: #define doesn't allocate storage; const does.  
+* Debugging: #define constants aren't in debug info; const variables are.  
+* Use Case: #define for preprocessor directives; const for typed, scoped
+  constants.
+
+••• C_language_questions_and_answers: What effect do spaces and blank lines have
+on how a program runs?
+ 
+White space (lines, spaces, and tabs) makes the code listing more readable. When
+the program is compiled, white space is stripped and thus has no effect on the
+executable program. For this reason, you should use white space to make your
+pro- gram easier to read.
+
+••• C_language_questions_and_answers: Is it better to code a compound if
+statement or to nest multiple if statements?
+ 
+There's no one-size-fits-all answer. The best choice depends on the specific
+scenario, including the complexity of the conditions and the need for clarity
+and maintainability in your code. For simple, related conditions, a compound if
+might be better for conciseness. For more complex logic, nested ifs can enhance
+understandability. Always prioritize readability and the clear expression of
+intent in your code.
+
+••• C_language_questions_and_answers: What is the difference between unary and
+binary operators?
+ 
+As the names imply, unary operators work with one variable, and binary operators
+work with two.
+
+••• C_language_questions_and_answers: Is the subtraction operator (-) binary or
+unary?
+ 
+It’s both! The compiler is smart enough to know which one you’re using. It
+knows which form to use based on the number of variables in the expression that
+is used.  
+
+The following statement, it is unary: x = -y;
+The following statement is binary: x = a - b;
+
+••• C_language_questions_and_answers: Are negative numbers considered true or
+false?
+ 
+Remember that 0 is false, and any other value is true. This includes negative 
+numbers.
+
+while 0 is considered false in logical expressions, its use as a return value
+for indicating success in main() and other functions stems from historical
+conventions and practical reasons for inter-process communication and
+error handling.
+
+••• C_language_questions_and_answers: What if I need to return more than one
+value from a function?
+ 
+You can use different strategies:
+* Pointers are ideal for simple cases where you need to return a small, fixed
+  number of additional values.
+
+* Structures are great for returning multiple related values, improving code
+  readability and maintainability.
+
+* Global Variables should be avoided in most cases due to their impact on code
+  quality.
+
+* Dynamic Memory Allocation is powerful but requires careful memory management
+  to avoid leaks.
+
+••• C_language_questions_and_answers:  How do I know what a good function name
+is?
+ 
+A Effective function naming is similar to effective variable naming. A good
+function name describes as specifically as possible what the function does.
+
+••• C_language_questions_and_answers:  When variables are declared at the top of
+the listing, before main(), they can be used anywhere, but local variables can
+be used only in the specific function. 
+Why not just declare everything before main() as global?
+ 
+While global variables can be useful for certain cases, such as sharing state
+across multiple functions or storing constants that are truly global, their
+overuse can lead to code that is harder to maintain, debug, and reason about.
+Favoring local variables encourages better software design principles, such as
+encapsulation, modularity, and separation of concerns, leading to more reliable
+and maintainable code.
+
+••• C_language_questions_and_answers: What other ways are there to use
+recursion?
+ 
+The factorial function is a prime example of using recursion. The factorial
+number is needed in many statistical calculations. Recursion is just a loop;
+however, it has one difference from other loops. With recursion, each time a
+recursive function is called, a new set of variables is created. This is not
+true using loops.
+
+••• C_language_questions_and_answers:  Does main() have to be the first function
+in a program?
+ 
+No. It is a standard in C that the main() function is the first function to
+execute; however, it can be placed anywhere in your source file. Most people
+place it either first or last so that it’s easy to locate.
+
+••• C_language_questions_and_answers: How do I know which programming control
+statement to use: for, while, or do...while?
+
+* for statement is best when you know that you need to initialize and increment
+  in your loop. 
+
+* If you have a condition that you only want to meet, and you aren’t dealing
+  with a specific number of loops, while is a good choice.
+
+* If you know that a set of statements needs to be executed at least once, a
+  do...while might be best.  
+
+••• C_language_questions_and_answers: How deep can I nest my loops?
+
+You can nest as many loops as you want. If your program requires you to nest
+more than two loops deep, consider using a function instead. You might find
+sort ing through all those braces difficult, so perhaps a function would be
+easier to fol- low in code.
+
+••• C_language_questions_and_answers:  Can I nest different loop commands?
+
+You can nest if, for, while, do...while, or any other command. You will find
+that many of the programs you try to write require that you nest at least a few
+of these.
+
+••• C_language_questions_and_answers: Why should I use puts() if printf() does
+everything puts() does and more?
+ 
+Because printf() does more, it has additional overhead. When you try to write a
+small, efficient program, or when your programs get big and resources are valu-
+able, you should take advantage of the smaller overhead of puts(). In general,
+you should use the simplest available resource.
+
+••• C_language_questions_and_answers: Why do I need to include stdio.h when I
+use printf(), puts(), or scanf()?
+ 
+stdio.h contains the prototypes for the standard input/output functions.
+printf(), puts(), and scanf() are three of these standard functions. Try running
+a program without the stdio.h header and see the errors and warnings.
+
+••• C_language_questions_and_answers: What happens if I leave the address-of
+operator (&) off a scanf() variable?
+ 
+This is an easy mistake to make. Unpredictable results can occur if you forget
+the address-of operator.  Know that if you omit the address-of operator, scanf()
+doesn’t place the entered information in your variable but in some other place
+in memory. This could do anything from apparently having no effect to locking
+up your computer so that you must reboot.
+
+••• C_language_questions_and_answers: What happens if I use a subscript on an
+array that is larger than the number of elements in the array?
+
+If you use a subscript that is out of bounds with the array declaration, the
+program will probably compile and even run. However, the results of such a
+mistake can be unpredictable. This can be a difficult error to find after it
+starts causing problems, so make sure you’re careful when initializing and
+accessing array elements.
+
+••• C_language_questions_and_answers: What happens if I use an array without
+initializing it?
+
+This mistake doesn’t produce a compiler error. If you don’t initialize an array,
+there can be any value in the array elements. You might get unpredictable results.
+You should always initialize variables and arrays so that you know exactly what’s
+in them. 
+
+••• C_language_questions_and_answers: How many dimensions can an array have?
+
+You can have as many dimensions as you want. As you add more dimensions, you use
+more data storage space. You should declare an array only as large as you need
+to avoid wasting storage space.
+
+••• C_language_questions_and_answers: Is there an easy way to initialize an
+entire array at once?
+
+Each element of an array must be initialized. The safest way for a beginning C
+programmer to initialize an array is either with a declaration or with a for
+statement using rand() function. 
+
+••• C_language_questions_and_answers: Can I add two arrays together (or
+multiply, divide, or subtract them)?
+
+If you declare two arrays, you can’t add the two together. Each element must be
+added individually. You could, however, create a function that could add the
+two arrays together. Such a function will still be required to add the
+individual elements.
+
+••• C_language_questions_and_answers: Why is it better to use an array instead
+of individual variables?
+
+With arrays, you can group like values with a single name.  Creating 1,000
+variable names and initializing each to a random number would have taken a
+tremendous amount of typing. By using an array, you made the task easy.
+
+••• C_language_questions_and_answers: What do you do if you don’t know how big
+the array needs to be when you write the program?
+ 
+There are functions within C that enable you to allocate space for variables and
+arrays on-the-fly.
+
+••• C_language_questions_and_answers: Why are pointers so important in C?
+ 
+Pointers give you more control over the computer and your data. When used with
+functions, pointers enable you to change the values of variables that were
+passed, regardless of where they originated. 
+
+••• C_language_questions_and_answers: How does the compiler know the difference
+between * for multiplication, for dereferencing, and for declaring a pointer?
+ 
+The compiler interprets the different uses of the asterisk based on the context
+in which it is used. If the statement being evaluated starts with a variable
+type, it can be assumed that the asterisk is for declaring a pointer. If the
+asterisk is used with a variable that has been declared as a pointer, but not in
+a variable declaration, the asterisk is assumed to dereference. If it is used in
+a mathematical expression, but not with a pointer variable, the asterisk can be
+assumed to be the multiplication operator.
+
+••• C_language_questions_and_answers: What happens if I use the address-of
+operator on a pointer?
+ 
+You get the address of the pointer variable. Remember, a pointer is just another 
+variable that holds the address of the variable to which it points.
+
+••• C_language_questions_and_answers: Are variables always stored in the same
+location?
+ 
+No. Each time a program runs, its variables can be stored at different addresses
+within the computer. You should never assign a constant address value to a
+pointer.
+
+••• C_language_questions_and_answers: What is the difference between a string
+and an array of characters?
+ 
+* String vs. Character Array: A string in C is a null-terminated array of
+  characters, essential for string manipulation functions, whereas a
+  character array may not necessarily be null-terminated.
+* Fixed Size: Character arrays have a fixed size defined at declaration,
+  requiring one position for the null terminator to be treated as a string.
+* Memory Allocation: Declaring a char array allocates fixed memory upfront,
+  potentially leading to waste or overflow.
+* Pointer Flexibility: Char pointers can reference strings of any length,
+  offering flexibility without fixed-size constraints, but require careful
+  memory management.
+* Usage: Choose between fixed-size char arrays for known, limited strings,
+  or char pointers for dynamic strings with variable length.
+
+••• C_language_questions_and_answers: Why shouldn’t I just declare big arrays to
+hold values instead of using a memory allocation function such as malloc()?
+
+Although it might seem easier to declare large arrays, this isn’t an effective
+use of memory. When you write small programs, it might seem trivial to use a
+function such as malloc() instead of arrays, but as your pro- grams get bigger,
+you want to allocate memory only as needed. When you’re done with memory, you
+can put it back by freeing it. When you free memory, some other variable or
+array in a different part of the program can use it. 
+
+••• C_language_questions_and_answers: Do all computers support the extended
+ASCII character set?
+
+No. Most PCs support the extended ASCII set. Some older PCs don’t, but the num-
+ber of older PCs lacking this support is diminishing. Most programmers use the
+line and block characters of the extended set.
+
+In addition, many international character sets contain more characters than
+avail- able in ASCII. These characters are usually stored in wchar_t type
+variables instead of variables of type char. wchar_t is defined in the stddef.h
+header file. It can be used to hold larger characters. Check the ANSI documents
+for more infor- mation on using wchar_t and other character sets.
+
+••• C_language_questions_and_answers:  What happens if I put a string into a
+character array that is bigger than the array?
+
+This can cause a hard-to-find error. You can do this in C, but anything stored
+in the memory directly after the character array is overwritten. This could be
+an area of memory not used, some other data, or some vital system information.
+Your results depend on what you overwrite. Often, nothing happens for a while.
+You don’t want to do this.
+
+••• C_language_questions_and_answers: Is there any reason to declare a structure
+without an instance?
+ 
+The first is to declare a structure body, tag, and instance all at once. The
+second is to declare a structure body and tag without an instance. An instance
+can then be declared later by using the struct keyword, the tag, and a name for
+the instance. It’s common programming practice to use the second method. Many
+programmers declare the structure body and tag without any instances. The
+instances are then declared later in the program. 
+
+••• C_language_questions_and_answers: Is it more common to use a typedef or a
+structure tag?
+
+A structure tag is used to define a new structure type.
+struct Point {
+    int x;
+    int y;
+};
+struct Point p1, p2;
+Cons: Requires the struct keyword every time you declare a variable of that
+type.
+
+Typedef
+A typedef is used to create an alias for a type. 
+typedef struct {
+    int x;
+    int y;
+} Point;
+Point p1, p2;
+Cons: The connection to the struct type is less explicit, which might slightly
+reduce readability for those who prefer to see struct explicitly.
+
+••• C_language_questions_and_answers: Can I simply assign one structure to
+another with the assignment operator?
+
+Yes and no. Newer versions of C compilers let you assign one structure to
+another, but older versions might not. In older versions of C, you might need to
+assign each member of the structure individually. This is true of unions, also.
+
+••• C_language_questions_and_answers: How big is a union?
+
+Because each member in a union is stored in the same memory location, the amount
+of room required to store the union is equal to that of its largest member.
+
+••• C_language_questions_and_answers: What's the difference between the name of
+a struct and its tag?
+
+* The tag of a structure is the identifier that follows the struct keyword
+  in the definition. It's used for declaring variables of that type.
+
+* A structure name might informally refer to the tag or to variable names of
+  the structure type. The precise term "name" isn't officially used to
+  denote the structure's identifier in standard C terminology.
+
+* To create a convenient "name" for a structure type that doesn't require
+  using the struct keyword, use typedef to define an alias.
+
+
+••• C_language_questions_and_answers: If global variables can be used anywhere
+in the program, why not make all variables global?
+ 
+As your programs get bigger, they will contain more and more variables. Global
+variables take up memory as long as the program is running, whereas automatic
+local variables take up memory only while the function they are defined in is
+executing. Hence, use of local variables reduces memory usage. More important,
+however, is that the use of local variables greatly decreases the chance of
+unwanted interactions between different parts of the program, hence lessening
+program bugs and following the principles of structured programming.
+
+
+••• C_language_questions_and_answers: scope affect the structure tag or body?
+
+When you declare a structure without instances, you are creating a template, or
+definition, but not actually declaring any variables. It isn’t until you create
+an instance of the structure that you declare a variable that occupies memory
+and has scope. For this reason, you can leave a structure body external to any
+functions with no real effect on memory. Many programmers put commonly used
+structure bodies with tags into header files and then include these header files
+when they need to create an instance of the structure. 
+
+••• C_language_questions_and_answers: How does the computer know the difference
+between a global variable and a local variable that have the same name?
+
+The important thing to know is that when a local variable is declared with the
+same name as a global variable, the program temporarily ignores the global
+variable when the local variable is in scope (inside the function where it is
+defined). It continues to ignore the global variable until the local variable
+goes out of scope.
+
+••• C_language_questions_and_answers: Can I declare a local variable and a
+global variable that have the same name, as long as they have different variable
+types?
+
+Yes. When you declare a local variable with the same name as a global variable,
+it is a completely different variable. This means that you can make it whatever
+type you want. You should be careful, however, when declaring global and local
+vari- ables that have the same name. Some programmers prefix all global variable
+names with “g” (for example, gCount instead of Count). This makes it clear in
+the source code which variables are global and which are local.
+
+••• C_language_questions_and_answers:  Can I use drives and paths with filenames
+when using remove(), rename(), fopen(), and the other file functions?
+ 
+Yes. You can use a full filename with a path and a drive or just the filename by
+itself. If you use the filename by itself, the function looks for the file in
+the current directory. Remember, when using a backslash (\), you need to use the
+escape sequence. Also remember that UNIX uses the forward slash (/) as a direc-
+tory separator.
+
+••• C_language_questions_and_answers: Can I read beyond the end of a file?
+
+Yes. You can also read before the beginning of a file. Results from such reads
+can be disastrous. Reading files is just like working with arrays. You’re
+looking at off- sets within memory. If you’re using fseek(), you should check to
+make sure that you don’t go beyond the end of the file.
+
+••• C_language_questions_and_answers: What happens if I don’t close a file?
+
+It’s good programming practice to close any files you open. By default, the file
+should be closed when the program exits; however, you should never count on
+this. If the file isn’t closed, you might not be able to access it later
+because the operating system will think that the file is already in use.
+
+••• C_language_questions_and_answers: How many files can I open at once?
+
+This question can’t be answered with a simple number. The limitation on the num-
+ber of files that can be opened is based on variables set within your operating
+system. Consult your operating system manuals for more information.
+
+ ••• C_language_questions_and_answers: Can I read a file sequentially with
+ random-access functions?
+
+When reading a file sequentially, there is no need to use such functions as
+fseek(). Because the file pointer is left at the last position it occupied, it
+is always where you want it for sequential reads. You can use fseek() to read a
+file sequentially; however, you gain nothing.
+
+••• C_language_questions_and_answers: Pointer Size
+
+The size of an array depends on both the number of elements and the size of each
+element. An array is a contiguous block of memory where each element has a
+specific type, and therefore, a specific size.
+
+In C, pointers are always the same size because they just represent memory
+addresses. The size of a pointer is determined by the architecture of the system
+(e.g., 32-bit or 64-bit). A pointer's size doesn't depend on the type of data it
+points to; it just holds the address of a memory location.

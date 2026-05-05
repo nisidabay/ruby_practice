@@ -1,10 +1,9 @@
 #!/usr/bin/env ruby
+# frozen_string_literal: true
 
-# Mixins are a beautiful way to achieve something similar to multiple inheritance
-# in Ruby. They allow us to include methods defined in a module into a class.
-# These methods can be included as either instance or class methods. The example
-# below demonstrates this design pattern:
+# mixins.rb — share instance AND class methods from one module
 
+# Non-idiomatic: explicit extend
 module SampleModule
   module ClassMethods
     def method_static
@@ -22,20 +21,11 @@ class SampleClass
   extend SampleModule::ClassMethods
 end
 
-# Usage examples
-SampleClass.method_static        # Calls the class method from ClassMethods
-SampleClass.new.instance_method  # Calls the instance method
+SampleClass.method_static
+SampleClass.new.instance_method
 
-### 💡 Pro-Tip: The Standard Ruby Idiom
-# While the code above works perfectly, in idiomatic Ruby, you will rarely see
-# `extend` called explicitly inside the class. Instead, Ruby developers usually
-# use a hook method called `self.included` inside the module to automatically
-# extend the class methods whenever the module is included. It looks like this:
-# This makes the class definition much cleaner and encapsulates the mixin logic
-# entirely inside the module.
-
+# Idiomatic Ruby: self.included hook auto-extends ClassMethods
 module SampleModule
-  # This block runs automatically when a class includes SampleModule
   def self.included(base)
     base.extend(ClassMethods)
   end
@@ -51,6 +41,10 @@ module SampleModule
   end
 end
 
-class SampleClass
-  include SampleModule # This single line now handles BOTH include and extend!
+class SampleClass2
+  include SampleModule  # single line handles both!
 end
+
+SampleClass2.method_static
+SampleClass2.new.instance_method
+

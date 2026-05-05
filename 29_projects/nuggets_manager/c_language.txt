@@ -1,0 +1,693 @@
+••• C: Ignore newline when prompting the user
+
+#include <stdio.h>
+
+int main(void) {
+    char answer;
+    do {
+        printf("Continue? (y/n): ");
+        answer = getchar();
+        while (getchar() != '\n'); // Consume the newline character
+    } while (answer != 'y' && answer != 'n');
+
+    return 0;
+}
+••• C: Capturing error when opening a file
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <errno.h>
+#include <string.h>
+
+int main(void) {
+    FILE *fp;
+    char *filename = "example.txt";
+
+    if ((fp = fopen(filename, "r")) == NULL) {
+        fprintf(stderr, "Cannot open file [%s]: %s\n", filename, strerror(errno));
+        exit(EXIT_FAILURE);
+    }
+
+    fclose(fp);
+    return 0;
+}
+••• C: fprintf output to a file
+
+#include <stdio.h>
+#include <stdlib.h>
+
+int main(void) {
+    FILE *fp;
+    char *filename = "output.txt";
+    char *account = "user123";
+    char *password = "pass123";
+
+    if ((fp = fopen(filename, "a")) != NULL) {
+        fprintf(fp, "account: %s - password: %s\n", account, password);
+        fclose(fp); // Correct use of fclose
+    } else {
+        perror("Error opening file");
+        return EXIT_FAILURE;
+    }
+
+    return 0;
+}
+
+••• C: Size of an array 
+
+#include <stdio.h>
+
+int main(void) {
+    int array[] = {1, 2, 3, 4, 5}; // Correct array initialization
+    int length;
+
+    length = sizeof(array) / sizeof(array[0]);
+    printf("Array has %d elements\n", length);
+    return 0;
+}
+
+••• C: Write characters to a string with sprintf
+
+#include <stdio.h>
+
+int main(void) {
+    const char *cadena = "This is a test";
+    char string[50];
+
+    sprintf(string, "The value of cadena is: %s\n", cadena);
+    printf("%s", string);
+    return 0;
+}
+
+••• C: Read the contents of a file
+void read_file(const char *file_name) {
+  FILE *fp;
+  size_t length;
+  char *buffer;
+
+  fp = fopen(file_name, "rb");
+
+  if (fp) {
+    fseek(fp, 0, SEEK_END);
+    length = ftell(fp);
+    fseek(fp, 0, SEEK_SET);
+
+    buffer = (char *)malloc(length + 1);
+    if (buffer) {
+      size_t read_length = fread(buffer, 1, length, fp);
+      buffer[read_length] = '\0';  // Null-terminate the buffer
+
+      if (read_length != length) {
+        perror("Failed to read the entire file");
+        free(buffer);
+        fclose(fp);
+        exit(EXIT_FAILURE);
+      }
+
+      fprintf(stdout, "%s", buffer);
+      free(buffer);
+    } else {
+      perror("Failed to allocate memory for reading file");
+      fclose(fp);
+      exit(EXIT_FAILURE);
+    }
+    fclose(fp);
+  } else {
+    perror("Failed to open the file");
+    exit(EXIT_FAILURE);
+  }
+}
+••• C: Use of malloc and realloc
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+int main(void) {
+    char *str;
+
+    // Initial memory allocation. Always allocate one byte more for the null terminator with strings.
+    str = malloc(15 * sizeof(char)); // No need to cast the result of malloc in C.
+    if (str == NULL) {
+        fprintf(stderr, "Memory allocation failed\n");
+        return 1; // Return an error code if memory allocation fails.
+    }
+    strcpy(str, "tutorialspoint");
+    printf("String = %s, Address = %p\n", str, str);
+
+    // Reallocating memory
+    char *temp = realloc(str, 25 * sizeof(char)); // Use a temporary pointer when reallocating.
+    if (temp == NULL) {
+        fprintf(stderr, "Memory reallocation failed\n");
+        free(str); // Free the original block of memory if realloc fails.
+        return 1; // Return an error code if memory reallocation fails.
+    }
+    str = temp; // Only update str if realloc was successful.
+    strcat(str, ".com");
+    printf("String = %s, Address = %p\n", str, str);
+
+    free(str); // Free the allocated memory.
+    return 0;
+}
+
+••• C: Use of calloc and realloc
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+int main(void) {
+    char *str;
+
+    // Initial memory allocation with calloc. Memory is zero-initialized.
+    str = calloc(15, sizeof(char)); 
+    if (str == NULL) {
+        fprintf(stderr, "Memory allocation failed\n");
+        return 1; // Return an error code if memory allocation fails.
+    }
+    strcpy(str, "tutorialspoint");
+    printf("String = %s, Address = %p\n", str, str);
+
+    // Reallocating memory
+    char *temp = realloc(str, 25 * sizeof(char)); // Adjusted size for clarity and added error checking.
+    if (temp == NULL) {
+        fprintf(stderr, "Memory reallocation failed\n");
+        free(str); // It's important to free the original block if realloc fails to prevent memory leaks.
+        return 1; // Return an error code if memory reallocation fails.
+    }
+    str = temp; // Update str with the new memory address returned by realloc.
+    strcat(str, ".com");
+    printf("String = %s, Address = %p\n", str, str);
+
+    free(str); // Free the allocated memory before exiting.
+    return 0;
+}
+
+••• C: Use of memcpy
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+int main(void) {
+    const char *original_name = "Carlos Lacaci Moya"; // Use const with string literals
+    char *new_name = "Sergio Lacaci Cortina";
+    char old_name[50];
+
+    // Correctly copy the original_name to old_name
+    memcpy(old_name, original_name, strlen(original_name) + 1);
+    printf("old_name: %s\n", old_name);
+
+    // Allocate memory for the new name and copy it
+    char *name = calloc(strlen(new_name) + 1, sizeof(char)); // Correct calloc usage
+    if (name == NULL) {
+        fprintf(stderr, "Memory allocation failed.\n");
+        return 1; // Proper error handling
+    }
+
+    if (name){
+        memcpy(name, new_name, strlen(new_name) + 1);
+        printf("name: %s\n", name); // Changed from new_name to name to reflect the copied name
+    }
+    free(name); // Free the dynamically allocated memory
+    return 0;
+}
+
+••• C: Use of fscanf 
+
+#include <stdio.h>
+
+int main() {
+  char first_name[10];
+  printf("Enter the first name: ");
+  if (fscanf(stdin, "%s", first_name) != -1)
+    printf("You entered: %s\n", first_name);
+
+  return 0;
+}
+
+••• C: Use of fgets 
+
+#include <stdio.h>
+#include <stdlib.h>
+
+int main(void) {
+  char *ptr_char = malloc(50);
+
+  if (char == NULL){
+    fprintf(stderr, "Memory allocation failed.\n");
+    return 1; // Proper error handling
+    }
+
+  printf("Enter a random text: ");
+  fgets(ptr_char, 50, stdin);
+
+  printf("You entered: %s", ptr_char);
+
+  free(ptr_char);
+  return 0;
+}
+
+••• C: Use of fclose 
+
+#include <stdio.h>
+
+int main () {
+  FILE *fp;
+ 
+  fp = fopen("file.txt", "w");
+  if (fp == NULL) {
+    perror("Error in opening file");
+    return (-1);
+  }
+
+   fprintf(fp, "%s", "This is tutorialspoint.com");
+   fclose(fp);
+   
+   return(0);
+}
+
+••• C: Use of feof 
+
+#include <stdio.h>
+
+int main() {
+  FILE *fp;
+  int c;
+
+  fp = fopen("file.txt", "r");
+  if (fp == NULL) {
+    perror("Error in opening file");
+    return (-1);
+  }
+
+  while (1) {
+    c = fgetc(fp);
+    if (feof(fp)) {
+      break;
+    }
+    printf("%c", c);
+  }
+  fclose(fp);
+
+  return (0);
+}
+
+••• C: Capitalizes a string
+
+#include <ctype.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+int main(void) {
+    // Get a string
+    char first_string[4096];
+
+    printf("Enter a string to copy: ");
+    if (fgets(first_string, 4096, stdin) == NULL) {
+        printf("No input read.\n");
+        return 1;
+    }
+
+    // Remove possible newline character
+    $ first_string[strcspn(first_string, "\n")] = 0; $
+
+    // Allocate memory for another string
+    char *second_string = malloc(strlen(first_string) + 1);
+    if (second_string == NULL) {
+        printf("Memory allocation failed.\n");
+        return 1;
+    }
+
+    // Copy string into memory
+    strcpy(second_string, first_string);
+
+    // Capitalize copy
+    second_string[0] = toupper(second_string[0]);
+
+    // Print strings
+    printf("first string: %s\n", first_string);
+    printf("string copy: %s\n", second_string);
+
+    free(second_string);
+    return 0;
+}
+••• C: Saves data to a CSV file
+
+#include <stdio.h>
+#include <string.h>
+
+int main(void) {
+    char name[25];
+    char number[25];
+
+    // Open CSV file
+    FILE *file = fopen("phonebook.csv", "a");
+    if (!file) {
+        printf("Failed to open file\n");
+        return 1;
+    }
+
+    // Get name and remove newline character
+    printf("Enter name: ");
+    if (fgets(name, 25, stdin) == NULL) {
+        printf("Failed to read name\n");
+        fclose(file); // Ensure the file is closed even if there's an error
+        return 1;
+    }
+    `name[strcspn(name, "\n")] = 0; // Remove newline`
+
+    // Get number and remove newline character
+    printf("Enter number: ");
+    if (fgets(number, 25, stdin) == NULL) {
+        printf("Failed to read number\n");
+        fclose(file); // Ensure the file is closed even if there's an error
+        return 1;
+    }
+    `number[strcspn(number, "\n")] = 0; // Remove newline`
+
+    // Print to file in CSV format
+    fprintf(file, "%s,%s\n", name, number);
+
+    // Close file
+    fclose(file);
+
+    return 0;
+}
+
+••• C: Generate random numbers
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <time.h>
+
+int main() {
+    // Seed the random number generator
+    srand(time(NULL));
+
+    // Generate a random number between 0 and 99
+    int randomNumber = rand() % 100;
+
+    printf("Random Number: %d\n", randomNumber);
+
+    // If you need more random numbers, just call rand() again
+    int anotherRandomNumber = rand() % 100;
+    printf("Another Random Number: %d\n", anotherRandomNumber);
+
+    return 0;
+}
+
+••• C: Prints address of a string
+
+#include <stdio.h>
+
+int main(void) {
+  char *s = "HI!";
+  char *p = &s[0];
+  printf("%p\n", (void *)p); // Cast p to void* for the %p format specifier
+  return 0;
+}
+}
+
+••• C: Prints an array 
+
+#include <stdio.h>
+
+int main(void) {
+  int numbers[] = {4, 6, 8, 2, 7, 5, 0};
+
+  size_t length = (sizeof(numbers) / sizeof(numbers[0]));
+
+  for (int i = 0; i < length; i++) {
+    printf("%i\n", *(numbers + i));
+  }
+  return 0;
+}
+
+
+••• C: Swaps two integers 
+
+#include <stdio.h>
+
+void swap(int *a, int *b);
+
+int main(void) {
+  int x = 1;
+  int y = 2;
+
+  printf("x is %i, y is %i\n", x, y);
+  swap(&x, &y);
+  printf("x is %i, y is %i\n", x, y);
+}
+
+void swap(int *a, int *b) {
+  int tmp = *a;
+  *a = *b;
+  *b = tmp;
+}
+
+••• C: Free linked list
+
+void free_all(*head){
+    node_t *ptr = head;
+        
+    while(ptr != NULL){
+        ptr = head->next;
+        free(head);
+        head = ptr;
+    }
+
+
+••• C: Append element at the head of the linked list
+
+void push(node_t **head, int val) {
+    node_t *new_node;
+    new_node = (node_t *) calloc(sizeof(node_t));
+
+    new_node->val = val;
+    new_node->next = *head;
+    *head = new_node;
+}
+
+••• C: Remove the last item of the linked list
+
+int remove_last(node_t *head) {
+    int retval = 0;
+    /* if there is only one item in the list, remove it */
+    if (head->next == NULL) {
+        retval = head->val;
+        free(head);
+        return retval;
+    }
+
+    /* get to the second to last node in the list */
+    node_t * current = head;
+    while (current->next->next != NULL) {
+        current = current->next;
+    }
+
+    /* now current points to the second to last item of the list, so let's remove current->next */
+    retval = current->next->val;
+    free(current->next);
+    current->next = NULL;
+    return retval;
+
+}
+••• C: Removing a specific item of the linked list
+
+void remove_by_value(node_t **head, int val) {
+  node_t *current = *head;
+  node_t *previous = NULL;
+
+  if (*head == NULL)
+    return;
+
+  if ((*head)->val == val) {
+    node_t *temp = *head;
+    *head = (*head)->next;
+    free(temp);
+    return;
+  }
+  while (current != NULL && current->val != val) {
+    previous = current;
+    current = current->next;
+  }
+  if (current == NULL)
+    return;
+
+  previous->next = current->next;
+  free(current);
+  return;
+}
+
+••• C: Append element at the tail of the linked list
+
+void push(node_t * head, int val) {
+    node_t * current = head;
+    while (current->next != NULL) {
+        current = current->next;
+    }
+
+    /* now we can add a new variable */
+    current->next = (node_t *) malloc(sizeof(node_t));
+    current->next->val = val;
+    current->next->next = NULL;
+}
+
+
+••• C: Get last element in the list
+
+node_t *get_last_element(node_t *head) {
+  node_t *last_element = head;
+
+  while (last_element != NULL) {
+    if (element->next == NULL) break;
+    last_element = last_element->next;
+  }
+  return last_element;
+}
+
+••• C: Remove the first item
+
+int pop(node_t ** head) {
+    int retval = -1;
+    node_t * next_node = NULL;
+
+    if (*head == NULL) {
+        return -1;
+    }
+
+    next_node = (*head)->next;
+    retval = (*head)->val;
+    free(*head);
+    *head = next_node;
+
+    return retval;
+}
+
+••• C: Print all elements in the list
+
+void print_nodes(node_t *head) {
+  while (head != NULL) {
+    printf("Student name: %s, age %d\n", head->name, head->age);
+    head = head->next;
+  }
+}
+
+••• C: Pointers
+int a = 5;
+int *ptr = &a;
+
+The value of "a" thru pointers: *ptr
+The address of "a" thru pointers: &*ptr
+The address of "a" thru pointers: ptr
+The address of "a" thru direct access: &a
+The pointer memory address: &ptr
+
+••• C: variadic function
+#include <stdarg.h> 
+#include <stdio.h>
+
+int sum(int args, ...);
+
+int main(void) {
+  printf("Addition 1: %d\n", sum(4, 12, 23, 44, 55));
+  return 0;
+}
+
+int sum(int args, ...) {
+  va_list list; 
+  int sum = 0; 
+
+  // Early return if no arguments are passed
+  if (args == 0)
+    return 0;
+
+  printf("Num of argument passed: %d\n", args);
+
+  // Initialize 'list' to retrieve the additional arguments
+  va_start(list, args);
+
+  // Retrieve the next argument as an integer
+  for (int i = 0; i < args; i++) {
+    sum += va_arg(list, int);
+  }
+  va_end(list); // Clean up the variable argument list
+
+  return sum; // Return the sum of the arguments
+}
+
+••• C: Safely read and integer with scanf
+...
+int random_value;
+  printf("Enter an integer value: ");
+  if (scanf("%d", &random_value) != 1) {
+      printf("Failed to read integer. Exiting.\n");
+      return 1; // Return non-zero value to indicate error
+  }
+
+••• C: Pointers to Arrays
+
+int main() {
+    int array[12] = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12};  // An array of 12 integers
+    int (*ptrToArray)[12] = &array;  // Pointer to an array of 12 integers
+
+    // Access the first element of the array via the pointer
+    printf("First element: %d\n", (*ptrToArray)[0]);  // Outputs: 1
+    return 0;
+}
+
+••• C: Arrays of pointers 
+
+int main() {
+    int num1 = 10, num2 = 20, num3 = 30;  // Some integers
+    int *arrayOfPointers[3];  // Array of pointers to integers
+    arrayOfPointers[0] = &num1;
+    arrayOfPointers[1] = &num2;
+    arrayOfPointers[2] = &num3;
+
+    // Access the integers via pointers
+    printf("First integer: %d\n", *arrayOfPointers[0]);  // Outputs: 10
+    printf("Second integer: %d\n", *arrayOfPointers[1]);  // Outputs: 20
+    printf("Third integer: %d\n", *arrayOfPointers[2]);  // Outputs: 30
+    return 0;
+}
+
+••• C: Leap year algorithm
+
+bool leap_year(int year){
+        return (year % 4 == 0 && year % 100 != 0) || (year % 400 == 0);
+}
+
+••• C: Get environmental variable
+
+#include <stdio.h>
+#include <stdlib.h>
+
+int main() {
+    char *env_var;
+    env_var = getenv("HOME"); // get the "HOME" environment variable
+
+    if (env_var == NULL) {
+        printf("'%s' environment variable not found\n", "HOME");
+    } else {
+        printf("'%s' = %s\n", "HOME", env_var);
+    }
+
+    return 0;
+}
+
+••• C: Set environmental variable
+
+#include <stdio.h>
+#include <stdlib.h>
+
+int main() {
+    const char* command = "export NEW_VARIABLE=Hello World";
+    system(command);
+
+    return 0;
+}
+
+

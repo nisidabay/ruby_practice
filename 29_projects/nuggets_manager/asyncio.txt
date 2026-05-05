@@ -1,0 +1,78 @@
+••• Python - Asyncio - With await the coroutines are running one after the other
+
+import asyncio
+import timeit
+
+
+async def waiter() -> None:
+    await cook("pasta", 5)
+    await cook("Caesar Saladad", 3)
+    await cook("Lamb Chops", 6)
+
+
+async def cook(order: str, time_to_prepare: int) -> None:
+    print(f"Getting {order} order")
+    await asyncio.sleep(time_to_prepare)
+    print(order, "ready")
+
+
+if __name__ == "__main__":
+    t = timeit.timeit("asyncio.run(waiter())", globals=globals(), number=1)
+    print(t)
+
+••• Python - Asyncio - With Tasks the coroutines are running concurrently
+
+import asyncio
+import timeit
+
+
+async def waiter() -> None:
+    task1 = asyncio.create_task(cook("Pasta", 5))
+    task2 = asyncio.create_task(cook("Caesar Saladad", 3))
+    task3 = asyncio.create_task(cook("Lamb Chops", 6))
+
+    await task1
+    await task2
+    await task3
+
+
+async def cook(order: str, time_to_prepare: int) -> None:
+    print(f"Getting {order} order")
+    await asyncio.sleep(time_to_prepare)
+    print(order, "ready")
+
+
+if __name__ == "__main__":
+    t = timeit.timeit("asyncio.run(waiter())", globals=globals(), number=1)
+    print(t)
+
+••• Python - Asyncio - With asyncio.gather() tasks run concurrently
+
+import asyncio
+import timeit
+
+
+async def waiter() -> None:
+    task1 = asyncio.create_task(cook("Pasta", 5))
+    task2 = asyncio.create_task(cook("Caesar Saladad", 3))
+    task3 = asyncio.create_task(cook("Lamb Chops", 6))
+
+    await asyncio.gather(task1, task2, task3)
+
+
+async def cook(order: str, time_to_prepare: int) -> None:
+    print(f"Getting {order} order")
+    await asyncio.sleep(time_to_prepare)
+    print(order, "ready")
+
+
+if __name__ == "__main__":
+    t = timeit.timeit("asyncio.run(waiter())",
+                      globals=globals(),
+                      number=1)
+    print(t)
+
+••• Python - Asyncio - Coroutine
+
+A coroutine is a method that can be paused when we have a potentially 
+long-running task and then resumed when that task is finished.

@@ -1,0 +1,36 @@
+••• Bash - Convert array to string 
+function arrayToString()
+{
+    -Get all command line parameters
+    local -r array=("${@}")
+
+    arrayToStringWithDelimiter ',' "${array[@]}"
+}
+
+function arrayToStringWithDelimiter()
+{
+    -Parameter one
+    local -r delimiter="${1}"
+    -Rest of parameters
+    local -r list=("${@:2}")
+
+    -delimiter = args separator
+    local -r string="$(printf "%s${delimiter}" "${list[@]}")"
+
+    -print all except last delimiter
+    echo "${string:0:${#string} - ${#delimiter}}"
+}
+arrayToString "1,23,4,5" "a,b,c"
+>>> 1,23,4,5,a,b,c
+
+••• Bash - Convert list of arguments to parameters 
+function arrayToParameters()
+{
+    local -r array=("${@}")
+
+    local -r string="$(printf "'%s' " "${array[@]}")"
+
+    echo "${string:0:${#string} - 1}"
+}
+arrayToParameters ab lc 1 2 3
+>>> 'ab' 'lc' '1' '2' '3'

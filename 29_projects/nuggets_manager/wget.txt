@@ -1,0 +1,53 @@
+••• wget - Download a file/s
+wget - URL
+
+••• wget - Download files from a list
+wget - -i files.txt
+
+••• wget - Resume a download
+wget - -c URL
+
+••• wget - Save a log file
+wget - URL -o log.txt
+
+••• wget - Limit bandwidth
+wget - URL --limit-rate=50k
+
+••• wget - Use username and password
+wget - URL --http-user=name --http-password=secret
+
+••• wget - Increase retry attempts
+wget - URL -t num (default 20)
+
+••• wget - Infinite retries
+wget - URL -t inf
+
+••• wget - Download an entire page
+wget - www.linuxtotal.com.mx
+
+••• wget - Download stylesheets, images ...
+wget - www.linuxtotal.com.mx -p
+
+••• wget - Recursively download 5 levels
+wget - URL -r
+
+••• wget - Increase recursion depth
+wget - -r -l10 URL
+wget - -r -linf URL
+
+••• wget - Convert links to local
+wget - --convert-links -r URL
+wget - -k -r URL
+
+••• wget - Change download directory
+wget - -P /dir
+
+••• wget - Download a full mirror of the site
+wget - --mirror URL
+
+••• wget - Convert download to html format
+wget - --convert-links --html-extension
+wget - -K -E URL
+
+••• wget - Recursion with external pages
+wget - -H -r -l3 -E -p URL

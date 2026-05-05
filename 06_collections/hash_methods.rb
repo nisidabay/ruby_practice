@@ -1,63 +1,74 @@
 #!/usr/bin/env ruby
 # frozen_string_literal: true
-# Method Examples
-# This file demonstrates Ruby method definitions and usage.
-# Shows parameter handling, blocks, and method chaining.
 
+# hash_methods.rb — Hash reference
 
-# Creates a hash, a dict in Python
-contacts = { carlos: 1, alicia: 2, sergio: 3, clara: 4, daniele: 5 }
+# Creation
+h = { carlos: 1, alicia: 2, sergio: 3 }
+h = Hash.new(0)                  # default value for missing keys
+count = Hash.new { |hash, key| hash[key] = 0 }  # default_proc
 
-# Display the hash
-puts "Contacts: #{contacts}"
+# Access
+p h.fetch(:carlos)               # => 1
+p h.fetch(:unknown, 'none')      # => 'none'
+p h.fetch_values(:carlos, :unknown) { |k| "#{k}?" }
+p h.key(3)                       # => :sergio
+p h.keys                         # => [:carlos, :alicia, :sergio]
+p h.values                       # => [1, 2, 3]
+p h.key?(:carlos)                # => true
+p h.value?(3)                    # => true
 
-# Fetch specific values
-puts "Fetch value for :alicia: #{contacts.fetch(:alicia)}"
+# Modifying
+h.delete(:sergio)
+h[:clara] = 4
+h.merge!(daniele: 5)
 
-# Display all values
-puts "Values: #{contacts.values}"
+# Iteration
+h.each { |k, v| puts "#{k}: #{v}" }
+h.each_key { |k| puts k }
+h.each_value { |v| puts v }
 
-# Display all keys
-puts "Keys: #{contacts.keys}"
+# Filtering
+p h.select { |k, v| v > 2 }
+p h.reject { |k, v| v > 2 }
 
-# Check if a key exists
-puts "Has key :carlos? #{contacts.key?(:carlos)}"
+# Transformation
+p h.transform_keys { |k| k.to_s.upcase }
+p h.transform_values { |v| v * 2 }
 
-# Check if a value exists
-puts "Has value 3? #{contacts.value?(3)}"
+# Merging
+p h.merge(maria: 6)
+p ({ a: 1, b: 2 }.merge({ b: 20, c: 30 }) { |k, o, n| o + n })  # => {a:1, b:22, c:30}
 
-# Invert keys and values
-puts "Inverted: #{contacts.invert}"
+# Slice & Except
+p h.slice(:carlos, :alicia)
+p h.except(:carlos)
 
-# Merge with another hash
-additional_contacts = { juan: 6, maria: 7 }
-puts "Merged: #{contacts.merge(additional_contacts)}"
+# Invert, Flatten, Compact, Sort
+p h.invert                       # swap keys/values
+p h.flatten                      # => [:carlos, 1, :alicia, 2, ...]
+p h.compact                      # remove nil values
+p h.sort                         # sort by key
 
-# Delete a key-value pair
-contacts.delete(:sergio)
-puts "After deleting :sergio: #{contacts}"
+# Dig (nested access)
+nested = { user: { name: 'Carlos', address: { city: 'Madrid' } } }
+p nested.dig(:user, :address, :city) # => "Madrid"
+p nested.dig(:user, :phone)          # => nil
 
-# Iterate over each key-value pair
-puts 'Iterating over contacts:'
-contacts.each do |key, value|
-  puts "#{key}: #{value}"
-end
+# Comparison
+small = { a: 1, b: 2 }
+big   = { a: 1, b: 2, c: 3 }
+p small <= big   # => true (subset)
+p small < big    # => true (proper subset)
+p big >= small   # => true (superset)
 
-# Clear the hash
-contacts.clear
-puts "After clearing: #{contacts}"
-
-# Recreate hash for additional methods
-contacts = { carlos: 1, alicia: 2, sergio: 3, clara: 4, daniele: 5 }
-
-# Iterate over keys only
-puts 'All keys:'
-contacts.each_key { |key| puts key }
-
-# Iterate over values only
-puts 'All values:'
-contacts.each_value { |value| puts value }
-
-# Select/filters pairs based on condition
-puts "Selected (value > 2): #{contacts.select { |_key, value| value > 2 }}"
-puts "Rejected (value > 2): #{contacts.reject { |_key, value| value > 2 }}"
+# Other
+temp = { x: 1, y: 2 }; temp.clear; p temp   # => {}
+p h.size                                     # => 4
+p h.empty?                                   # => false
+p h.to_a                                     # convert to array of pairs
+p h.assoc(:carlos)                           # => [:carlos, 1]
+p h.rassoc(2)                                # => [:alicia, 2]
+# identity hash: keys compared by object_id, not value
+h = {}.compare_by_identity
+h['hello'] = 1; h['hello'] = 2; p h          # => {"hello"=>1, "hello"=>2}

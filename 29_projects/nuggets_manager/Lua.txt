@@ -1,0 +1,440 @@
+••• Lua __index Metamethod
+-- Suggested Snippet for Scripting (Default Values):
+local config_meta = {
+  __index = function(table, key)
+    local defaults = {
+      timeout = 10, -- Default timeout in seconds
+      output_dir = os.getenv("HOME") .. "/tmp", -- Default output directory
+      verbose = false -- Default verbosity
+    }
+    return defaults[key]
+  end
+}
+
+local config = {}
+setmetatable(config, config_meta)
+
+print("Timeout:", config.timeout)
+print("Output Directory:", config.output_dir)
+print("Verbose:", config.verbose)
+
+config.timeout = 30
+print("Updated Timeout:", config.timeout)
+
+••• Lua __newindex Metamethod
+-- Suggested Snippet for Scripting (Logging Configuration Changes):
+local logged_config = {}
+local log_meta = {
+  __newindex = function(table, key, value)
+    print(string.format("Configuration changed: %s = %s", key, tostring(value)))
+    rawset(table, key, value)
+  end
+}
+setmetatable(logged_config, log_meta)
+
+logged_config.log_level = "INFO"
+logged_config.max_retries = 5
+
+••• All the variables will point to nil until they are assigned.
+-- Suggestion: Be mindful of uninitialized variables. Initialize explicitly.
+local filename
+if some_condition then
+  filename = "output.txt"
+end
+-- Ensure filename is not nil before using it
+if filename then
+  -- process filename
+  print("Filename:", filename)
+else
+  print("Filename not set!")
+end
+
+••• Zero and empty strings are considered to be True.
+-- Correction Snippet:
+-- In Lua, only false and nil are false. 0 and "" are true.
+local value1 = 0
+local value2 = ""
+local value3 = nil
+local value4 = false
+
+if value1 then print("0 is true") end
+if value2 then print("\"\" is true") end
+if not value3 then print("nil is false") end
+if not value4 then print("false is false") end
+
+••• String indexes start at 1.
+-- Suggestion: Remember 1-based indexing when working with substrings.
+local text = "example"
+print(string.sub(text, 1, 3)) -- Output: exa (from index 1 to 3)
+
+••• Read a whole line of input. local input = io.read("*line")
+-- Suggested Snippet for Interactive Scripts:
+print("Enter a command:")
+local command = io.read("*line")
+if command then
+  print("You entered:", command)
+  -- You can now process the 'command' variable
+else
+  print("No input received.")
+end
+
+••• A function will ignore the extra arguments.
+-- Suggestion: Be careful not to accidentally pass extra arguments.
+local function process(arg1, arg2)
+  print("Arg1:", arg1)
+  print("Arg2:", arg2)
+end
+
+process("one", "two", "three") -- "three" will be ignored
+
+••• Missing arguments in a function declaration will have a nil value.
+-- Suggestion: Handle nil arguments gracefully.
+local function greet(name, greeting)
+  greeting = greeting or "Hello" -- Default to "Hello" if greeting is nil
+  print(greeting .. ", " .. name .. "!")
+end
+
+greet("User") -- greeting will be nil, so "Hello" is used
+greet("Admin", "Greetings")
+
+••• Arguments must be concatenated using tostring(arg) to avoid errors.
+-- Suggestion: Always use tostring() for non-string concatenation.
+local count = 10
+local message = "Processed " .. tostring(count) .. " items."
+print(message)
+
+••• Lua is not object-oriented. It uses tables and metatables.
+-- Correction Snippet (Supporting OO through tables and metatables):
+-- Lua supports object-oriented programming through tables and metatables.
+-- Example of a simple "class" and "method":
+local Counter = { value = 0 }
+
+function Counter:increment()
+  self.value = self.value + 1
+end
+
+function Counter:getValue()
+  return self.value
+end
+
+local myCounter = { value = 5 }
+setmetatable(myCounter, { __index = Counter })
+
+myCounter:increment()
+print(myCounter:getValue()) -- Output: 6
+
+••• Tables are stored by reference
+-- Suggestion: Be aware of reference semantics when assigning tables.
+local table1 = { a = 1 }
+local table2 = table1 -- table2 now refers to the same table as table1
+table2.a = 10
+print(table1.a) -- Output: 10 (table1 is also modified)
+
+-- To create a copy:
+local table3 = {}
+for k, v in pairs(table1) do
+  table3[k] = v
+end
+table3.a = 20
+print(table1.a) -- Output: 10 (table1 remains unchanged)
+print(table3.a) -- Output: 20 (table3 is a separate copy)
+
+••• Function to print the whole matrix in matrix format
+-- Suggestion: Consider how to extract data from matrix-like output of commands.
+-- Example: Parsing output of 'ps aux' (simplified)
+local ps_output = [[
+user pid cpu mem command
+root 1 0.0 0.1 init
+user1 123 0.5 1.0 bash
+]]
+
+local lines = {}
+for line in ps_output:gmatch("[^\n]+") do
+  table.insert(lines, line:split("%s+"))
+end
+
+-- Accessing data:
+for i, row in ipairs(lines) do
+  for j, cell in ipairs(row) do
+    io.write(cell .. "\t")
+  end
+  io.write("\n")
+end
+
+••• Returning multiple values
+-- Suggested Snippet for Command Execution:
+local function execute_and_get_status(cmd)
+  local success, output = os.execute(cmd)
+  return success, output
+end
+
+local ok, message = execute_and_get_status("ls -l")
+if ok then
+  print("Command executed successfully.")
+  -- process message (which will likely be true/false and an exit code)
+else
+  print("Command failed:", message)
+end
+
+local function get_command_output(cmd)
+  local handle = io.popen(cmd)
+  local output = handle:read("*a")
+  local exit_code = handle:close()
+  return output, exit_code
+end
+
+local output, code = get_command_output("pwd")
+print("Current directory:", output:match("^%s*(.-)%s*$")) -- Trim whitespace
+
+••• Lua Module
+-- Example (my_module.lua):
+-- local M = {}
+--
+-- function M.greet(name)
+--   print("Hello, " .. name .. " from the module!")
+-- end
+--
+-- return M
+
+-- Example (main_script.lua):
+-- local my_module = require("my_module")
+-- my_module.greet("Lua User")
+
+-- Suggestion: Organize your automation tasks into modules for better structure.
+
+••• Lua Plugin
+-- Suggestion: Focus on Lua scripts and modules for general Linux automation, not Neovim-specific plugins.
+
+••• Lua get the path to a file
+-- Suggestion: Use os.getenv() for portable path construction.
+local log_file = os.getenv("HOME") .. "/.local/share/my_script.log"
+local config_dir = os.getenv("XDG_CONFIG_HOME") or os.getenv("HOME") .. "/.config"
+
+print("Log file path:", log_file)
+print("Config directory:", config_dir)
+
+••• Lua get the computer name
+-- Suggestion: Use for conditional behavior based on the system.
+local hostname = io.popen("hostname"):read("*l"):match("^%s*(.-)%s*$")
+print("Hostname:", hostname)
+
+if hostname == "my-desktop" then
+  -- Do something specific for this machine
+  print("Running on my desktop.")
+end
+
+••• Lua get a directory based on the computer name
+-- Suggestion: Use a configuration table for more complex mappings.
+local host_dirs = {
+  ["msi"] = "/mnt/sata/Pictures/wallpaper",
+  ["another-host"] = "/data/wallpapers",
+  ["default"] = os.getenv("HOME") .. "/Pictures/wallpaper"
+}
+
+local current_host = io.popen("hostname"):read("*l"):match("^%s*(.-)%s*$")
+local wallpaper_dir = host_dirs[current_host] or host_dirs["default"]
+print("Wallpaper directory:", wallpaper_dir)
+
+••• Lua execute a command
+-- Suggestion: Use io.popen() to capture output.
+local function run_command(cmd)
+  local handle = io.popen(cmd)
+  local output = handle:read("*a")
+  local exit_code = handle:close()
+  return output, exit_code
+end
+
+local output, code = run_command("ls -l")
+if code == 0 then
+  print("Command output:\n", output)
+else
+  print("Command failed with exit code:", code)
+end
+
+••• Lua execute a subprocess
+-- Suggestion: Use string patterns or external tools for more robust output parsing.
+local function find_files(dir, patterns)
+  local cmd = 'find "' .. dir .. '" -type f '
+  for _, pattern in ipairs(patterns) do
+    cmd = cmd .. '-o -iname "' .. pattern .. '" '
+  end
+  local handle = io.popen(cmd)
+  local output = handle:read("*a")
+  handle:close()
+  local files = {}
+  for file in output:gmatch("[^\n]+") do
+    table.insert(files, file)
+  end
+  return files
+end
+
+local image_files = find_files(wallpaper_dir, {"*.jpg", "*.jpeg", "*.png"})
+print("Found image files:", #image_files)
+for _, file in ipairs(image_files) do
+  print(file)
+end
+
+••• Lua create a file
+-- Suggestion: Simplify for overwriting or appending.
+local function write_to_file(file_path, content, append)
+  local mode = append and "a" or "w"
+  local file, err = io.open(file_path, mode)
+  if not file then
+    return false, "Failed to open file: " .. file_path .. ": " .. err
+  end
+  file:write(content .. "\n")
+  file:close()
+  return true
+end
+
+write_to_file("output.log", "Script started", false) -- Overwrite
+write_to_file("output.log", "Step 1 completed", true)  -- Append
+
+••• Lua create a symlink
+-- Suggestion: Consider error handling and portability.
+local function create_symlink_lua(target, link)
+  local cmd = string.format('ln -sf "%s" "%s"', target, link)
+  local ok, _, code = os.execute(cmd)
+  if not ok or code ~= 0 then
+    return false, string.format("Failed to create symlink: %s -> %s (exit code: %s)", target, link, code)
+  end
+  return true
+end
+
+local success, err = create_symlink_lua("/path/to/original", "/path/to/link")
+if not success then
+  print("Error:", err)
+end
+
+••• Lua Pattern Syntax
+-- Suggestion: Use patterns for simple string matching in command output.
+local log_line = "ERROR: File not found on line 15"
+local error_line = log_line:match("ERROR: .* on line (%d+)")
+if error_line then
+  print("Error occurred on line:", error_line)
+end
+
+local filename = "my_document_v2.txt"
+local version = filename:match("_(v%d+)")
+if version then
+  print("Version found:", version)
+end
+
+••• Lua format a string
+-- Suggestion: Use string.format() for creating structured output and command strings.
+local user = "john_doe"
+local script_name = "backup.sh"
+local formatted_log = string.format("User '%s' executed script '%s' at %s", user, script_name, os.date())
+print(formatted_log)
+
+local target_dir = "/tmp/backup"
+local create_dir_cmd = string.format("mkdir -p '%s'", target_dir)
+print("Command to execute:", create_dir_cmd)
+
+••• Lua returns the reverse of a string
+-- Suggestion: Could be useful for specific string manipulations.
+local reversed_text = string.reverse("dlrow olleH")
+print("Reversed:", reversed_text)
+
+••• Lua returns a substring from a string
+-- Suggestion: Essential for parsing specific parts of command output.
+local full_path = "/home/user/documents/report.pdf"
+local filename_only = full_path:match(".*/(.-)$")
+if filename_only then
+  print("Filename:", filename_only)
+end
+
+••• Lua returns a string iterator
+-- Suggestion: Iterate over words or patterns in command output.
+local output_list = "apple banana cherry date"
+for word in output_list:gmatch("%a+") do
+  print("Word:", word)
+end
+
+••• Lua returns a string with a specific character replaced
+-- Suggestion: Useful for cleaning up or modifying text output.
+local messy_path = "//home//user///documents//"
+local clean_path = string.gsub(messy_path, "//+", "/")
+print("Clean path:", clean_path)
+
+local log_message = "Warning: Low disk space"
+local error_message = string.gsub(log_message, "Warning", "Error")
+print("Error message:", error_message)
+
+••• Lua look for the first match of a string
+-- Suggestion: Check if a specific pattern exists in command output.
+local process_info = "PID: 1234, User: alice, Command: long_running_task"
+local pid = process_info:match("PID: (%d+)")
+if pid then
+  print("Process ID:", pid)
+end
+
+••• Lua support for languages
+-- Suggestion: For terminal scripting, focus on Lua's built-in capabilities and external command execution.
+
+••• Lua tables
+-- Suggestion: Use tables for configuration, storing command results, and more complex data structures.
+local script_config = {
+  log_file = "/var/log/my_script.log",
+  backup_dirs = {"/home/user/data", "/etc/config"},
+  retries = 3
+}
+
+print("Log file:", script_config.log_file)
+for _, dir in ipairs(script_config.backup_dirs) do
+  print("Backup directory:", dir)
+end
+print("Retries:", script_config.retries)
+
+••• Lua tables mutability
+-- Suggestion: Be aware when passing tables to functions that modify them in place.
+
+••• Lua tables (colon syntax)
+-- Suggestion: Organize related data and functions using table methods.
+local FileUtil = {}
+
+function FileUtil:fileExists(path)
+  local file = io.open(path, "r")
+  if file then file:close(); return true else return false end
+end
+
+function FileUtil:getFileSize(path)
+  local attr = os.stat(path)
+  return attr and attr.size
+end
+
+local util = FileUtil
+if util:fileExists("/tmp/my_file.txt") then
+  print("File exists. Size:", util:getFileSize("/tmp/my_file.txt"))
+end
+
+••• Lua Table constructor
+-- Suggestion: Use for creating simple lists or key-value pairs quickly.
+local important_paths = {"/bin", "/usr/bin", "/opt/local/bin"}
+local error_codes = { [404] = "Not Found", [500] = "Internal Server Error" }
+
+for _, path in ipairs(important_paths) do
+  print("Important path:", path)
+end
+print("Error 404:", error_codes[404])
+
+••• Lua metatables
+-- Suggestion: Use for advanced table behaviors like default values or read-only configurations.
+local read_only_config = {
+  api_key = "your_secret_key",
+  server_url = "https://api.example.com"
+}
+
+local readonly_meta = {
+  __newindex = function(table, key, value)
+    error("Attempt to modify read-only table: " .. key, 2)
+  end,
+  __index = function(table, key)
+    return rawget(table, key)
+  end
+}
+
+setmetatable(read_only_config, readonly_meta)
+
+print("API Key:", read_only_config.api_key)
+-- read_only_config.api_key = "new_key" -- This will cause an error

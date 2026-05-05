@@ -1,21 +1,15 @@
 #!/usr/bin/env ruby
 # frozen_string_literal: true
 
-# Method Examples
-# This file demonstrates Ruby method definitions and usage.
-# Shows parameter handling, blocks, and method chaining.
+# methods.rb — method definitions: splat, defaults
 
-# Undefined number of parameters
-def undefined_parameters(*testdata)
-  puts "Number of parameters: #{testdata.length}"
-  for n in 0..testdata.length - 1
-    puts "Parameter [#{n}] = #{testdata[n]}"
-  end
+def undefined_parameters(*data)
+  puts "Number of parameters: #{data.length}"
+  data.each_with_index { |d, i| puts "Parameter [#{i}] = #{d}" }
 end
 
 undefined_parameters 'carlos', 57, 'male'
 
-# Default parameters
 def default_parameters(name = 'Carlos', age = 57)
   puts "#{name}, #{age}"
 end

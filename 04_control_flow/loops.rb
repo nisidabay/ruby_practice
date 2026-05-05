@@ -1,115 +1,73 @@
 #!/usr/bin/env ruby
 # frozen_string_literal: true
 
-# Object-Oriented Programming Examples
-# This file demonstrates Ruby OOP concepts including classes and modules.
-# Shows inheritance, polymorphism, and encapsulation.
+# loops.rb — iteration patterns: while, until, for, modifiers
 
-# Looping
-
-# Using times
+# Numeric iterators
 5.times { puts 'Test' }
-puts
+1.upto(5) { |n| puts n }
+10.downto(5) { |n| puts n }
+0.step(50, 5) { |n| puts n }
 
-1.upto(5) { |number| puts number }
-puts
-
-10.downto(5) { |number| puts number }
-puts
-
-0.step(50, 5) { |number| puts number }
-puts
-#
-# You can spread the code multiple lines
-1.upto(5) do |number|
-  puts number
-end
-
-# Using loop
-number = 100
+# loop do with break
 counter = 0
 loop do
   puts "Counter is #{counter}"
-  if counter == number
-    puts 'Boom! from loop do'
-    break
-  end
+  break if counter == 5
 
   counter += 1
 end
 
-# Using while
-number = 100
+# while
 counter = 0
-while counter <= number
+while counter <= 5
   puts "Counting ...#{counter}"
-  if counter == number
-    puts 'Boom! from while'
-    break
-  end
+  break if counter == 5
+
   counter += 1
 end
 
-# Using until
-number = 100
+# until
 counter = 0
-until counter == number
+until counter == 5
   counter += 1
   puts "Counting ...#{counter}"
 end
-puts 'Boom! from until'
 
-# Using each
-nums = Array.new(10) { |n| n * 2 }
-nums.each do |n|
-  puts n
-end
+# each over ranges and hashes
+nums = Array.new(5) { |n| n * 2 }
+nums.each { |n| puts n }
 
-contacts = { carlos: 57, alicia: 54, sergio: 27, clara: 22, dani: 19 }
-contacts.each do |key, value|
-  puts "Key #{key} = Value #{value}"
-end
+contacts = { carlos: 57, alicia: 54, sergio: 27 }
+contacts.each { |key, value| puts "Key #{key} = Value #{value}" }
 
-'Carlos'.each_char do |char|
-  puts char
-end
+# each_char
+'Carlos'.each_char { |char| puts char }
 
-# While modifier
-# $ means global variable
-$j = 1
-$n = 5
+# While modifier (runs body once, then checks condition)
+j = 1
 begin
-  puts("While modifier statement number #{$j}")
-  $j += 1
-end while $j < $n
+  puts "While modifier: #{j}"
+  j += 1
+end while j < 3
 
 # Until modifier
-# $ means global variable
-$j = 1
-$n = 5
+j = 1
 begin
-  puts("Until modifier statement number #{$j}")
-  $j += 1
-end until $j > $n
+  puts "Until modifier: #{j}"
+  j += 1
+end until j > 3
 
-# For statement
-for j in 1..10
-  puts "This is a for loop number #{j}"
+# For loop (prefer .each in practice)
+for j in 1..5
+  puts "For loop #{j}"
 end
 
-# Iterator similar to for loop
-(1..10).each do |n|
-  puts "Iterator as for loop #{n}"
-end
-
-# Using until in a single line
-puts 'Using until in a single line'
+# Single-line modifier forms
 i = 1
 i *= 2 until i > 100
-puts i
+puts i  # => 128
 
-# Using while in a single line
-puts 'Using while in a single line'
 i = 1
 i *= 2 while i < 100
-puts i
+puts i  # => 128

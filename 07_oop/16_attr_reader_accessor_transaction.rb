@@ -1,11 +1,7 @@
 #!/usr/bin/env ruby
 # frozen_string_literal: true
 
-# Problem: You want a mix of read-only and read-write attributes.
-# Example: @to, @from, @amount are read-only, but @completed can be changed.
-#
-# Solution: Use attr_reader for read-only, attr_accessor for read-write.
-# Visibility: PUBLIC - readers for all, writer only for completed.
+# attr_reader_accessor_transaction.rb — mix read-only + read-write
 
 class FinancialTransaction
   attr_reader :to, :from, :amount
@@ -19,26 +15,10 @@ class FinancialTransaction
   end
 end
 
-# Usage: Read all attributes, modify only completed
-my_rent = FinancialTransaction.new("Landlord", "Boris", 1000, false)
-puts my_rent.to
-puts my_rent.from
-puts my_rent.amount
-puts my_rent.completed
+tx = FinancialTransaction.new("Landlord", "Boris", 1000, false)
+puts tx.to, tx.from, tx.amount, tx.completed
+tx.completed = true
+puts tx.completed
 
-my_rent.completed = true
-puts my_rent.completed
+# tx.to = "Someone"  # NoMethodError — attr_reader has no setter
 
-# This will fail (no setter for to, from, amount):
-# my_rent.to = "Someone"  # Error: undefined method `to='
-
-# This could also be done like this:
-# If you want validation on completed:
-#
-# class FinancialTransaction
-#   attr_reader :to, :from, :amount, :completed
-#
-#   def completed=(value)
-#     @completed = value if [true, false].include?(value)
-#   end
-# end

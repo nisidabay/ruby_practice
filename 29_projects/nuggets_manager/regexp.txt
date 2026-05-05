@@ -1,0 +1,94 @@
+••• Regex - Literal characters
+Matches the exact characters: hello -> "hello" in "hello world"
+
+••• Regex - Wildcard (any character except newline)
+.  -> "c" in "cat", "at" in "at "
+
+••• Regex - Zero or more of preceding element
+*  -> "cat", "caat", "caaat", "ct"
+
+••• Regex - One or more of preceding element
++  -> "caat", "caaat" but NOT "ct"
+
+••• Regex - Zero or one of preceding element
+?  -> "cat", "ct" but NOT "caat"
+
+••• Regex - Anchors
+^  -> Start of line: ^hello
+$  -> End of line: world$
+
+••• Regex - Character classes
+[abc]  -> a, b, or c
+[^abc] -> NOT a, b, or c
+[a-z]  -> any lowercase letter
+[0-9]  -> any digit
+\w     -> word character [a-zA-Z0-9_]
+\W     -> NOT word character
+\d     -> digit [0-9]
+\D     -> NOT digit
+\s     -> whitespace
+\S     -> NOT whitespace
+
+••• Regex - Quantifiers (explicit)
+{n}    -> exactly n: a{3} matches "aaa"
+{n,}   -> n or more: a{2,} matches "aa", "aaa"
+{n,m}  -> between n and m: a{2,4} matches "aa", "aaa", "aaaa"
+
+••• Regex - Groups and alternation
+(abc)  -> capture group: stores "abc" for backreference
+(?:abc) -> non-capturing group
+a|b    -> alternation: a or b
+
+••• Regex - Escaping special characters
+\.
+\*
+\+
+\?
+\^
+\$
+\[
+\]
+\(
+\)
+\|
+\\
+\/
+Matches the literal character instead of its special meaning.
+
+••• Regex - Backreferences
+\1, \2, etc. refer back to previously captured groups.
+Example: (abc)\1 matches "abcabc"
+
+••• Regex - Lookahead and lookbehind
+(?=pattern)  -> positive lookahead: foo(?=bar) matches "foo" only if followed by "bar"
+(?!pattern)  -> negative lookahead: foo(?!bar) matches "foo" only if NOT followed by "bar"
+(?<=pattern) -> positive lookbehind: (?<=foo)bar matches "bar" only if preceded by "foo"
+(?<!pattern) -> negative lookbehind: (?<!foo)bar matches "bar" only if NOT preceded by "foo"
+
+••• Regex - Practical: Match email
+[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}
+
+••• Regex - Practical: Match URL
+https?://[^\s/$.?#].[^\s]*
+
+••• Regex - Practical: Match IP address
+\b(?:\d{1,3}\.){3}\d{1,3}\b
+
+••• Regex - Practical: Match date formats
+\d{4}[-/]\d{2}[-/]\d{2}   -> 2024-01-15 or 2024/01/15
+\d{2}[-/]\d{2}[-/]\d{4}   -> 15/01/2024 or 01-15-2024
+
+••• Regex - Practical: Extract words
+\b\w+\b
+
+••• Regex - Practical: Strip whitespace
+^\s+  -> leading whitespace
+\s+$  -> trailing whitespace
+^\s+|\s+$ -> both (using alternation)
+
+••• Regex - Flags (modifiers)
+/i -> case insensitive
+/g -> global (all matches, not just first)
+/m -> multiline (^ and $ match line boundaries)
+/s -> dotall (. matches newlines too)
+/x -> extended (allow whitespace and comments in pattern)

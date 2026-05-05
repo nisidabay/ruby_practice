@@ -1,15 +1,14 @@
 #!/usr/bin/env ruby
 # frozen_string_literal: true
 
-# String Operations
-# This file demonstrates string manipulation techniques.
-# Shows interpolation, concatenation, and various string methods.
+# string_theory.rb — predicates with ||
 
 def string_theory(value)
-  value.include?('B') || value.length > 4 ? true : false
+  value.include?('B') || value.length > 4
 end
-puts string_theory('Big Mac')
-puts string_theory('Bank')
-puts string_theory('refrigerator')
-puts string_theory('boy')
-puts string_theory('car')
+
+puts string_theory('Big Mac')     # => true (has B)
+puts string_theory('Bank')        # => true (has B)
+puts string_theory('refrigerator') # => true (length > 4)
+puts string_theory('boy')         # => false (no B, length 3)
+puts string_theory('car')         # => false (no B, length 3)

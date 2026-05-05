@@ -1,0 +1,110 @@
+••• zenity -  Color selecion
+color=$(zenity --color-selection --show-palette)
+echo $color
+
+set initial color
+zenity --color=hashtag40AEBF --color-selection --show-palette
+
+
+••• zenity -  Entry dialog
+zenity --entry --entry-text="Write here" --text="Bang on the keyboard"
+zenity --entry --entry-text="Write here" --text="Bang on the keyboard" --hide-text
+
+
+••• zenity -  Entry file selection
+zenity --file-selection --multiple --separator="+++"
+
+••• zenity -  Directories file selection
+zenity --file-selection --multiple --directory --separator="+++"
+
+••• zenity -  Message dialogs
+zenity --title="Title goes here" --info --text="Info message"
+zenity --question --text="Question message?"
+zenity --warning --text="Warning message"
+zenity --error --text="Error message"
+
+••• zenity -  Lists
+zenity --list \
+    --title="Choose your OS" \
+    --column="OS" --column="Desktop Manager" \
+    Ubuntu Unity \
+    "OS X" Marble \
+    FreeBSD "Command line" \
+    Fedora GNOME
+
+
+••• zenity -  Entry notification
+zenity --notification --text="Download completed"
+
+
+••• zenity -  Password dialog
+
+PRIVATE=$(zenity --password --username)
+echo $PRIVATE
+
+
+••• zenity -  Progress bar 
+(
+echo 25
+echo "hashtag Setting up..."
+sleep 1
+
+echo 30
+echo "hashtag Reading files..."
+sleep 1
+
+echo 70
+echo "hashtag Creating content..."
+sleep 1
+
+echo 100
+echo "hashtag Done..."
+) | zenity --title "Progress bar example" --progress --auto-kill
+
+(echo "40";sleep 1; echo "60";sleep 1; echo "100";sleep 1) \
+| zenity --title="auto-kill" --progress --text="Working hard or hardly working" \
+    --percentage=25 --auto-kill
+
+(echo "40";sleep 1; echo "60";sleep 1; echo "100";sleep 1) \
+| zenity --title="auto-close" --progress --text="Working hard or hardly working" \
+    --percentage=25 --auto-close
+
+
+••• zenity -  Scale
+msg=$(zenity --title="Adjust the scale value" --scale --text="Select a number" \
+    --value="20" --min-value="0" --max-value="200" --step="5")
+
+
+••• zenity -  Zenity demo
+
+zenity --info --title="Welcome"  --text="My hostname is $HOSTNAME"
+
+zenity --question --text="Is it correct?" --width=300 --height=300
+if [[ $? -eq 0 ]];then
+    zenity --list \
+        hashtag--title="Installed software" \
+        hashtag--column="Software" --column="Version" \
+        hashtag "git" "version 2" 
+fi
+
+(
+echo 25
+echo "Setting up..."
+sleep 1
+
+echo 30
+echo "Reading files..."
+sleep 1
+
+echo 70
+echo "Creating content..."
+sleep 1
+
+echo 100
+echo "Done..."
+) | zenity --title "Progress bar example" --progress --auto-kill
+
+
+••• zenity -  text-info
+msg=$(zenity --title="License terms" --editable --text-info --checkbox="I Agree" --filename="file.txt")
+$msg > /dev/null 2>&1

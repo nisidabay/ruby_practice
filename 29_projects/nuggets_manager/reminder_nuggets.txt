@@ -1,0 +1,183 @@
+•••C: Ignore newline when prompting the user
+
+#include <stdio.h>
+
+int main(void) {
+    char answer;
+    do {
+        printf("Continue? (y/n): ");
+        answer = getchar();
+        while (getchar() != '\n'); // Consume the newline character
+    } while (answer != 'y' && answer != 'n');
+
+    return 0;
+}
+
+•••C: Read the contents of a file
+
+#include <stdio.h>
+#include <stdlib.h>
+
+void read_file(const char *filename) {
+    FILE *fp;
+    char *buffer;
+    long length;
+
+    fp = fopen(filename, "rb"); // Open the file in binary mode
+    if (fp) {
+        fseek(fp, 0, SEEK_END);
+        length = ftell(fp);
+        fseek(fp, 0, SEEK_SET);
+        buffer = malloc(length + 1);
+        if (buffer) {
+            fread(buffer, 1, length, fp);
+            buffer[length] = '\0'; // Null-terminate the string
+        }
+        fclose(fp);
+        printf("%s\n", buffer);
+        free(buffer);
+    } else {
+        fprintf(stderr, "File not found: %s\n", filename);
+    }
+}
+
+
+•••C: fprintf output to a file
+
+#include <stdio.h>
+#include <stdlib.h>
+
+int main(void) {
+    FILE *fp;
+    char *filename = "output.txt";
+    char *account = "user123";
+    char *password = "pass123";
+
+    if ((fp = fopen(filename, "a")) != NULL) {
+        fprintf(fp, "account: %s - password: %s\n", account, password);
+        fclose(fp); // Correct use of fclose
+    } else {
+        perror("Error opening file");
+        return EXIT_FAILURE;
+    }
+
+    return 0;
+}
+
+
+•••Bash - Delete files from a file
+
+cat todelete.txt | xargs -p -I % sh -c 'ls %; rm%'
+
+
+•••Bash - Redirections, stderr, stdout
+
+cmd > out.txt
+cmd >> out.txt
+cmd 2> error.log
+cmd >& "equivalent to cmd 2>&1"
+cmd &>/dev/null "equivalent to cmd 2>&1 /dev/null"
+
+
+•••Generate a random password
+
+import random as r
+from string import ascii_lowercase, ascii_uppercase, digits
+
+p = ascii_lowercase + ascii_uppercase + digits + "%^*(-_=+)"
+print(''.join([p[r.randint(0, len(p) - 1)] for _ in range(10)]))
+
+
+•••c_language_tips: Stack
+
+The stack is a structured region of memory that stores variables created by each
+function (including the main function) during its execution. The stack operates
+in a last-in, first-out manner, meaning the most recently allocated block will
+be the first to be freed.
+
+
+•••C: Pointers to Arrays
+
+int main() {
+    int array[12] = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12};  // An array of 12 integers
+    int (*ptrToArray)[12] = &array;  // Pointer to an array of 12 integers
+
+    // Access the first element of the array via the pointer
+    printf("First element: %d\n", (*ptrToArray)[0]);  // Outputs: 1
+    return 0;
+}
+
+
+•••C_language_tips: Linked list on the heap
+
+Data structures tend to be created on the heap, with dynamically allocated
+memory.
+
+Operations to create, delete, insert and otherwise manipulate the data
+structure at runtime require dynamic memory allocation, freeing memory, ...
+
+
+•••C: Use of feof 
+
+#include <stdio.h>
+
+int main() {
+  FILE *fp;
+  int c;
+
+  fp = fopen("file.txt", "r");
+  if (fp == NULL) {
+    perror("Error in opening file");
+    return (-1);
+  }
+
+  while (1) {
+    c = fgetc(fp);
+    if (feof(fp)) {
+      break;
+    }
+    printf("%c", c);
+  }
+  fclose(fp);
+
+  return (0);
+}
+
+
+•••C: fprintf output to a file
+
+#include <stdio.h>
+#include <stdlib.h>
+
+int main(void) {
+    FILE *fp;
+    char *filename = "output.txt";
+    char *account = "user123";
+    char *password = "pass123";
+
+    if ((fp = fopen(filename, "a")) != NULL) {
+        fprintf(fp, "account: %s - password: %s\n", account, password);
+        fclose(fp); // Correct use of fclose
+    } else {
+        perror("Error opening file");
+        return EXIT_FAILURE;
+    }
+
+    return 0;
+}
+
+
+
+•••Linux -  Find: Show matches before removing files
+find /path/to/directory -type f -name '._*' -print
+
+
+•••Bits manipulation
+| --------- | ---------    | ---- |
+| operator  | operation    | mask |
+| --------- | ---------    | ---- |
+| AND       | Bit clearing | 0    |
+| AND       | Bit testing  | 1    |
+| OR        | Bit setting  | 1    |
+| XOR       | Bit toggling | 1    |
+| --------- | ---------    | ---- |

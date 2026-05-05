@@ -1,0 +1,294 @@
+•••  Git -  initial project configuration from the command line
+
+git config --global user.name "name"
+
+git config --global "user.email"
+
+git config --global color.ui auto
+
+git config --system core.editor vim --input
+
+•••  Git -  Setting up a  Git -  repository
+
+git init [project_name]
+
+•••  Git -  open and edit the global configuration file in the text editor
+
+git config --global --edit
+
+•••  Git -  see who is responsible for this repository
+
+git config user.name
+git config user.email
+
+•••  Git -  see configuration parameters
+
+cat .git/config
+
+git config --list
+
+•••  Git -  Check the version
+
+git --version
+
+•••  Git -  Getting help about a command
+
+git help status
+man git-status
+
+•••  Git -  See all the help
+
+git help --all
+
+
+•••  Git -  Downloads a project from a remote service an its entire version history
+
+git clone repo URL
+
+•••  Git -  Clones a repository to a specific folder
+
+git glone repo URL folder
+
+•••  Git -  Removes a remote repository
+
+git rm remote repo name
+
+•••  Git -  fetching from a repository without merging them into your own branches
+
+Manually decide which one to merge
+git fetch
+
+•••  Git -  Retrieve the most recent changes from origin and merge
+
+git pull
+
+•••  Git -  Create a remote repository from command line 
+
+Previously we have created and empty repo at  Git - Hub called: 
+https://github.com/nisidabay/pysync.git
+
+Then we type:
+echo "pysync project" > README.md
+git init
+git add README.md
+git commit -m "first commit"
+git remote add origin https://github.com/nisidabay/pysync.git
+git push -u origin main
+
+•••  Git -  pushing an existing repository from command line
+
+git remote add origin https://github.com/nisidabay/pysync.git
+git push -u origin main
+
+•••  Git -  Update a remote repository
+
+git push https://github.com/nisidabay/pysync main 
+git push -u origin main
+
+•••  Git -  show remote repositories
+
+git remote -v
+
+•••  Git -  adds file changes to staging. 
+
+Snapshots the file in preparation for versioning
+
+git add (file name)
+
+•••  Git -  adds all directory changes to staging
+
+git add
+
+•••  Git -  adds new and modified files to staging
+
+git add -A
+
+•••  Git -  removes a file and stops tracking it. 
+
+Deletes the file from the working directory and stages the deletion
+
+git rm (file name)
+
+•••  Git -  unstage a file from the staging area
+
+git rm --cached (filename)
+
+•••  Git -  recovers a deleted file and prepares it for commit
+
+git checkout <deleted file name>
+
+•••  Git -  displays the status of modified files
+
+git status
+
+•••  Git -  shows the differences that are not yet staged with the ones that are staged
+
+git diff
+
+•••  Git -  shows file differences between staging and the last file version
+
+git diff --staged
+
+•••  Git -  unstages the file but preserves its contents
+
+git reset [file]
+
+•••  Git -  records file snapshots permanently in version history
+
+git commit -m "descriptive message" [file name]
+
+•••  Git -  changes the file name and prepares it for commit
+
+git mv [file-original] [file-renamed]
+
+•••  Git -  undo all commits after [commit], preserving changes locally
+
+git reset [commit]
+
+•••  Git -  delete the commit from the log 
+
+Leaving the file with the latest changes in the staging area.
+
+git reset --soft <commit_number>
+
+•••  Git -  delete the commit from the log 
+
+Leaving the file with the latest changes in the working directory.
+
+git reset --mixed <commit_number>
+
+•••  Git -  leave the log with the first commit 
+
+Leaving the file commited with the first change.
+
+git reset --hard <commit_number>
+
+•••  Git -  discards all history and changes back to the specified commit
+
+git reset --hard [commit]
+
+•••  Git -  lists all local branches in the current repository
+
+git  branch
+
+•••  Git -  creates a new branch
+
+git branch [branch-name]
+git branch - b [branch-name]
+
+•••  Git -  switches to the specified branch and updates the working directory
+
+git checkout [branch-name]
+
+•••  Git -  combines the specified branch's history into your current branch
+
+git merge [branch-name]
+
+•••  Git -  deletes the specified branch
+
+git branch -d [branch-name]
+
+•••  Git -  fetches a branch form the repository
+
+git fech remote [branch-name]
+
+•••  Git -  pushes all local branches to a designated remote respository
+
+git push --all
+
+•••  Git -  stash command 
+
+Removes changes from your staging area and saves them away for later. 
+It is useful if you wish to pause what your doing and work on
+something else for a while. You cannot stash more than one set of changes at a
+time
+
+•••  Git -  temporarily stores all modified tracked files
+
+git stash
+
+•••  Git -  restores the most recently stashed files
+
+git stash pop
+
+•••  Git -  list all stashed changesets
+
+git stash list
+
+•••  Git -  discards the most recently stashed changeset
+
+git stash drop
+
+•••  Git -  list version history of the current branch
+
+git log
+
+•••  Git -  list version history for a file, including renames
+
+git log --follow  [file]
+
+•••  Git -  shows content differences and conflicts between two branches
+
+git diff [first-branch] [second-branch]
+
+•••  Git -  outputs metadata and content changes of the specified commit
+
+git show [commit]
+
+•••  Git -  abbreviated log
+
+git log --oneline
+git log-pretty=oneline
+git log --graph --oneline
+
+•••  Git -  renaming an existing repository from master to main
+
+git branch -m master main
+
+•••  Git -  renaming an existing remote repository from master to main
+
+git push -u origin main
+git symbolic-ref refs/remotes/origin/HEAD refs/remotes/origin/main
+
+•••  Git -  remove a file from the working directory and the index
+
+git rm myfile
+
+•••  Git -  restore a removed file before doing git commit
+
+git status
+git restore file
+
+•••  Git -  rename files
+
+git mv oldfile newfile
+
+•••  Git -  show files in the index and working tree
+
+git ls-files
+
+•••  Git -  show untracked files ignoring .gitignore files
+
+git ls-files --others --exclude-standard
+
+•••  Git -  commit all files in the working directory
+
+git commit -am "Bugs fixed"
+
+•••  Git -  see history of commits
+
+git log | grep "^commit" | head [[-10]]
+
+•••  Git -  adding tag to a certain commit
+
+git tag ver_10 commit_number
+
+•••  Git -  changes the last commit <commit_number> and message. 
+
+Produces a new commit_number
+
+git commit --ammend -m "Message changed"
+
+•••  Git -  modify content of last commit without modifying the message
+
+git commit --amend --no-edit

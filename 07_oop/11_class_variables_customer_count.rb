@@ -1,52 +1,33 @@
 #!/usr/bin/env ruby
 # frozen_string_literal: true
 
-# Problem: You want to track data that's shared across all instances of a class.
-# Example: Counting how many customers have been created, regardless of which customer.
-#
-# Solution: Use class variables (@@variable) that are shared among all instances.
-# Visibility: Class variables are accessible from instance methods and class methods.
+# class_variables_customer_count.rb — @@class_var shared across instances
 
 class Customer
-  @@total_customers = 0
+  @@total = 0
 
   def initialize(id, name, addr)
-    @@total_customers += 1
+    @@total += 1
     @id = id
     @name = name
     @addr = addr
   end
 
   def display
-    puts "Customer ##{@id}: #{@name}"
-    puts "  Address: #{@addr}"
+    puts "Customer ##{@id}: #{@name} (#{@addr})"
   end
 
   def self.total
-    @@total_customers
+    @@total
   end
 end
 
-# Usage: Create instances, class variable tracks the count
-cust1 = Customer.new(1, "Carlos", "Calle Hortensia, Granada")
-cust1.display
-puts "Total customers: #{Customer.total}"
+c1 = Customer.new(1, "Carlos", "Hortensia, Granada")
+c2 = Customer.new(2, "Alicia", "Topete, Madrid")
+c1.display
+c2.display
+puts "Total: #{Customer.total}"  # => 2
 
-cust2 = Customer.new(2, "Alicia", "Calle Topete, Madrid")
-cust2.display
-puts "Total customers: #{Customer.total}"
+# Note: @@vars are shared across entire hierarchy (gotcha!)
+# Prefer class instance variables (@total inside the class body) for most cases.
 
-# This could also be done like this:
-# For simpler cases, use a class instance variable instead of @@:
-#
-# class Customer
-#   @total = 0
-#
-#   def self.total
-#     @total
-#   end
-#
-#   def initialize
-#     self.class.instance_variable_set(:@total, @total.to_i + 1)
-#   end
-# end

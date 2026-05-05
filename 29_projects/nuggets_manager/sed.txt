@@ -1,0 +1,118 @@
+••• Sed - inplace editing with backup••
+sed -i.bkp 's/blue/green/' file1 file2
+
+••• Sed - inplace editing
+sed -i 's/blue/green/' file1 file2
+
+••• Sed - inplace editing with prefix backup name
+sed -i'bkp.*' 's/blue/green/' file
+
+••• Sed - place backups in different directory
+sed -i'backups/*' 's/blue/green/' file
+
+••• Sed - conditional execution. Only lines containing 2
+sed '/2/ s/,/-/g' file
+
+••• Sed - conditional execution. Lines not containing 2
+sed '/2/! s/,/-/g' file
+
+••• Sed - delete lines containing 'at'
+sed '/at/d' file
+
+••• Sed - delete lines not containig 'at'
+sed '/at/!d' file
+
+••• Sed - print lines containing 'at'
+sed -n '/at/p' file
+
+••• Sed - print replaced lines
+sed -n 's/1/one/gp' file
+
+••• Sed - print lines not containing 'at'
+Equivalent to "d" command
+sed -n '/at/!p' file
+
+••• Sed - quit without further proccessing printing the matching line
+sed '/at/q' file
+
+••• Sed - quit without further processing without printing the maching line
+sed '/at/Q' file
+
+••• Sed - transliterate characters
+echo "Carlos" | sed 'y/os/xx/'
+
+••• Sed - group commands
+printf 'sea\neat\ndrop\n' | sed -n '/at/{p; s/at/AT/p}'
+
+••• Sed - remove spaces, comments and empty lines
+sed -i.bak '/^\s*#/d;/^$/d' <filename>
+
+••• Sed - replace only the first occurrence on each line
+sed 's/blue/green/' file
+
+••• Sed - replace only the second occurrence on each line
+sed 's/blue/green/2' file
+
+••• Sed - replace from the second occurrence to the end of the line
+sed 's/blue/green/2g' file
+
+••• Sed - insert text after a specific line number
+sed '3a\
+Inserted text after line 3' file
+
+••• Sed - insert text before a specific line number
+sed '3i\
+Inserted text before line 3' file
+
+••• Sed - append text to the end of a specific line
+sed '/pattern/a\
+Appended text after line containing pattern' file
+
+••• Sed - prepend text to the beginning of a specific line
+sed '/pattern/i\
+Prepended text before line containing pattern' file
+
+••• Sed - delete lines between two patterns (inclusive)
+sed '/start/,/end/d' file
+
+••• Sed - print lines between two patterns (inclusive)
+sed -n '/start/,/end/p' file
+
+••• Sed - negate address range, print lines outside of a range
+sed -n '/start/,/end/!p' file
+
+••• Sed - append a line after the last line
+sed '$a\
+Appended text after the last line' file
+
+••• Sed - prepend a line before the first line
+sed '1i\
+Prepended text before the first line' file
+
+••• Sed - delete the last line
+sed '$d' file
+
+••• Sed - delete lines matching a regular expression pattern
+sed '/^pattern/d' file
+
+••• Sed - print only specific columns of a file
+sed -n 's/\([^,]*,[^,]*\),.*/\1/p' file.csv
+
+••• Sed - substitute using a capture group
+sed 's/\(pat\).*\(tern\)/\1\2/' file
+
+••• Sed - perform multiple substitutions in one go
+sed -e 's/pattern1/replacement1/g' -e 's/pattern2/replacement2/g' file
+
+••• Sed - delete empty lines
+sed '/^$/d' file
+
+••• Sed - delete trailing whitespace from lines
+sed 's/[[:space:]]*$//' file
+
+••• Sed - remove all lines containing only whitespace
+sed '/^[[:space:]]*$/d' file
+
+••• Sed - implementing cat command
+sed -n 'p' '/etc/passwd' | less
+

@@ -1,18 +1,12 @@
 #!/usr/bin/env ruby
 # frozen_string_literal: true
 
-# Comments
-# This file demonstrates different types of comments in Ruby.
+# comments.rb — single-line, multi-line, and inline comments
 
-# The puts method prints text to the console.
-# Text after a # symbol is a comment and won't be executed.
-puts # "Here are comments that you won't see"
+# Single-line comment
 
-# This is a single-line comment explaining the code below.
+# Multi-line
+# comment using
+# multiple # lines
 
-# This is a multiline
-# comment, explaining
-# everything you need
-# to know.
-# Use multiple single-line comments for longer explanations.
-
+puts 'Hello' # inline comment — text after # is ignored

@@ -1,0 +1,77 @@
+••• Python - Typings -  Mappings
+For mappings, we need the types of both keys and values
+
+x: dict[str, float] = ["field": 2.0]
+
+••• Python - Typings -  Tuples of fixed size
+We specify the types of all the elements
+
+x: tuple [int, str, float] = (3, "yes", 7.5)
+
+••• Python - Typings -  Tuples of variable size
+For tuples of variable size, we use one type and ellipsis
+
+x: tuple[int, ...] = (1,2,3)
+
+
+••• Python - Typings -  Optional
+Use Optional[] for values that could be None
+
+x: Optional[str] = some_function()
+
+••• Python - Typings -  Callables
+def f(num:int, my_float:float)->float:
+    return int + my_float
+
+x: Callable[[int, float], float] = f
+
+••• Python - Typings -  Union
+Use Union when something could be one of a few types
+
+x: list[Union [int, str]] = [3, 5, "text", "fun"]
+
+••• Python - Typings -  Any
+Use Any if you don know the type of something 
+
+x: Any = mystery_function()
+
+••• Python - Typings -  Empty containter or None
+You need to provide a type annotation
+
+x: list[str] = []
+x: Optional[str] = None
+
+••• Python - Typings -  Type inferred by mypy
+reveal_type(type)
+
+••• Python - Typings -  Suppress errors on a given line
+
+x: confusing_function() - type: ignore 
+
+
+••• Python - Typings -  Standard duck types
+from typing import Mapping, MutableMapping, Sequence, Iterable
+
+Use Iterable for generic iterables (anything usable in "for"),
+and Sequence where a sequence (supporting "len" and "__getitem__") is
+required
+
+def f(ints: Iterable[int]) -> list[str]:
+    return [str(x) for x in ints]
+
+f(range(1, 3))
+
+Mapping describes a dict-like object (with "__getitem__") that we won't
+mutate, and MutableMapping one (with "__setitem__") that we might
+
+def f(my_mapping: Mapping[int, str]) -> list[int]:
+    my_mapping[5] = 'maybe'  - if we try this, mypy will throw an error...
+    return list(my_mapping.keys())
+
+f({3: 'yes', 4: 'no'})
+
+def f(my_mapping: MutableMapping[int, str]) -> set[str]:
+    my_mapping[5] = 'maybe'  - ...but mypy is OK with this.
+    return set(my_mapping.values())
+
+f({3: 'yes', 4: 'no'})

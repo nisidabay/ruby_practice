@@ -1,0 +1,52 @@
+••• docker info
+Show information about the Docker environment
+
+••• docker ps -a
+List all containers, including those not currently running
+
+••• docker images
+List all images in the Docker environment
+
+••• docker image build
+Build an image from a Dockerfile
+
+••• docker container run
+Run a container from an image
+
+••• docker container rm
+Remove a container
+
+••• docker container stop
+Stop a running container
+
+••• docker container start
+Start a stopped container
+
+••• docker --help
+Show help
+
+••• docker command help
+Show help for a specific command
+
+••• docker version
+Show the Docker version information
+
+••• docker -it
+Run a container interactively
+docker run -it ubuntu bash
+
+••• docker --name
+Create a container with a name
+docker run --name my_container -it ubuntu bash
+
+••• docker --rm
+Remove a container when it is stopped
+docker run --rm -it ubuntu bash
+
+••• docker --detach
+Run a container in the background
+docker run --detach -it ubuntu bash
+
+••• docker --interactive --cpus="0.7" --cpuset-cpus="0" debian
+Run a container interactively using 70% of a single CPU "0"
+
