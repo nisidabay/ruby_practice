@@ -1,9 +1,7 @@
 #!/usr/bin/env ruby
-# A great way to grow your Ruby skills is to implement methods
-# built into the language. Of course, the goal is to NOT use the
-# original method in your solution; instead, come up with an alternate
-# implementation using other methods/approaches.
-#
+# frozen_string_literal :true
+# From Udemy Course
+
 # Define a custom_max method that accepts an array.
 # The method should return the largest value in the array.
 # If the array is empty, the method should return nil.
