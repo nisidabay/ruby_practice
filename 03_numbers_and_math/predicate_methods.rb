@@ -1,13 +1,18 @@
 #!/usr/bin/env ruby
 # frozen_string_literal: true
 
-# predicate_methods.rb — boolean query methods on numbers
+# predicate_methods.rb — boolean queries: odd?/even?/positive?/negative?
 
-puts 'odd' if 10.odd?         # nothing
-puts 'odd' if 11.odd?         # odd
+# WITHOUT predicate methods — write comparisons by hand:
+#
+#   status = 500
+#   puts "Server error" if status >= 500 && status < 600
+#   # every range check is two comparisons
+#
+# WITH predicate methods — one word:
 
-puts 'even' if 1.even?        # nothing
-puts 'even' if 2.even?        # even
-
-puts 'positive' if 10.positive?      # positive
-puts 'negative' if (-8).negative?    # negative (need parens on negative literal)
+p 404.even?       # => true  (client error range starts at 400)
+p 301.odd?        # => true  (redirect range starts at 300)
+p 200.positive?   # => true  (success response)
+p (-1).negative?  # => true  (exit code -1 means error)
+p 0.zero?         # => true  (exit 0 = success)
