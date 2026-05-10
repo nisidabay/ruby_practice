@@ -1,37 +1,31 @@
 #!/usr/bin/env ruby
 # frozen_string_literal: true
 
-# public_send_dynamic_calls.rb — call methods by symbol, safer than send
+# 10_public_send_dynamic_calls.rb — send() calls methods by string/symbol
 
-class Robot
-  attr_accessor :arms, :eyes, :feet
+# WITHOUT send — hardcode method names, can't be dynamic:
+#
+#   if field == "host" then config.host
+#   elsif field == "port" then config.port
+#   # adds a branch every time you add a field
+#
+# WITH send — one call for any method name:
+
+class Config
+  attr_accessor :host, :port, :ssl
 
   def initialize
-    @arms = 'Robot Arms'
-    @eyes = 'Camera Eyes'
-    @feet = 'Metal Feet'
-  end
-
-  private
-
-  def secret_code
-    'SECRET-123'
+    @host = "localhost"
+    @port = 5432
+    @ssl  = true
   end
 end
 
-robot = Robot.new
-
-# Static calls
-puts robot.arms, robot.eyes
-
-# Dynamic calls
-%i[arms eyes feet].each { |part| puts "#{part}: #{robot.public_send(part)}" }
-
-# public_send blocks private methods (unlike send)
-robot.send(:secret_code)       # works, but bypasses encapsulation
-begin
-  robot.public_send(:secret_code) # raises NoMethodError
-rescue NoMethodError
-  puts "public_send blocked private method ✓"
+cfg = Config.new
+%w[host port ssl].each do |field|
+  puts "#{field} = #{cfg.send(field)}"
 end
 
+# public_send is safer — refuses private methods:
+# cfg.public_send(:host)   # works
+# cfg.public_send(:puts)   # NoMethodError — puts is private here
