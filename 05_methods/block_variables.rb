@@ -1,11 +1,14 @@
 #!/usr/bin/env ruby
 # frozen_string_literal: true
 
-# block_variables.rb — block parameters
+# block_variables.rb — block parameters eliminate manual index arithmetic
 
-def increment_of_two
-  6.times { |count| print count * 2 }
-end
+# WITHOUT block params — manage the counter yourself:
+#
+#   3.times do
+#     puts "Job #{$counter}"  # what counter? where? messy with globals
+#   end
+#
+# WITH block params — Ruby hands you the index:
 
-increment_of_two  # => 0 2 4 6 8 10
-puts
+3.times { |i| puts "Worker #{i} starting..." }
