@@ -1,4 +1,7 @@
+#!/usr/bin/env ruby
 # frozen_string_literal: true
+
+# Exercise from Udemy Course
 # Define a reverse_all method that accepts an array of strings.
 # The method should return an array with all the strings in reversed order.
 #
@@ -23,9 +26,8 @@ p reverse_all([])
 # words_with_letter(["cat", "bat", "tub"], "a") => ["cat", "bat"]
 # words_with_letter(["cat", "bat", "tub"], "u") => ["tub"]
 # words_with_letter(["cat", "bat", "tub"], "z") => []
+
 def words_with_letter(str_array, letter)
-  # good, = str_array.partition { |e| e.downcase.include?(letter.downcase) }
-  # good
   str_array.select { |e| e.downcase.include?(letter.downcase) }
 end
 p words_with_letter(%w[cat bat tub], 'a')
@@ -38,6 +40,12 @@ p words_with_letter(%w[cat bat tub], 'z')
 # The second array should contain the odd numbers.
 # Return an array consisting of the two arrays.
 #
+# Examples:
+# The => indicates the expected return value
+# evens_and_odds([1, 2, 3, 4, 5])   => [[2, 4], [1, 3, 5]]
+# evens_and_odds([2, 4, 6, 8])      => [[2, 4, 6, 8],[]]
+# evens_and_odds([])                => [[], []]
+
 def evens_and_odds(num_array)
   # even = num_array.select { |e| e.even? }
   # odd = num_array.select { |e| e.odd? }
@@ -47,9 +55,3 @@ end
 p evens_and_odds([1, 2, 3, 4, 5])
 p evens_and_odds([2, 4, 6, 8])
 p evens_and_odds([])
-
-# Examples:
-# The => indicates the expected return value
-# evens_and_odds([1, 2, 3, 4, 5])   => [[2, 4], [1, 3, 5]]
-# evens_and_odds([2, 4, 6, 8])      => [[2, 4, 6, 8],[]]
-# evens_and_odds([])                => [[], []]
