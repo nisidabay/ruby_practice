@@ -1,12 +1,8 @@
 #!/usr/bin/env ruby
 # frozen_string_literal: true
 
-# comments.rb — single-line, multi-line, and inline comments
+# comments.rb — comments explain WHY, not what
 
-# Single-line comment
-
-# Multi-line
-# comment using
-# multiple # lines
-
-puts 'Hello' # inline comment — text after # is ignored
+balance = 500      # cents — integer avoids float rounding
+balance -= 100     # subtract withdrawn amount
+puts balance       # => 400
