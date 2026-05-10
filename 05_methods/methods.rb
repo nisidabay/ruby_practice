@@ -1,18 +1,37 @@
 #!/usr/bin/env ruby
 # frozen_string_literal: true
 
-# methods.rb — method definitions: splat, defaults
+# methods.rb — splat (*) and default arguments eliminate boilerplate
 
-def undefined_parameters(*data)
-  puts "Number of parameters: #{data.length}"
-  data.each_with_index { |d, i| puts "Parameter [#{i}] = #{d}" }
+# WITHOUT splat — fixed parameter list, fragile:
+#
+#   def config(host, port)
+#     puts "Connecting to #{host}:#{port}"
+#   end
+#   config("db.internal", 5432)
+#   # config("db.internal", 5432, "ssl")  => ArgumentError!
+#
+# WITH splat — any number of arguments, discover them inside:
+
+def config(*args)
+  puts "#{args.length} arguments: #{args.join(', ')}"
 end
 
-undefined_parameters 'carlos', 57, 'male'
+config("db.internal", 5432)
+config("db.internal", 5432, "ssl", "timeout=5")
 
-def default_parameters(name = 'Carlos', age = 57)
-  puts "#{name}, #{age}"
+# WITHOUT defaults — callers must always pass every argument:
+#
+#   def bill(amount, tip)
+#     amount + amount * tip
+#   end
+#   bill(20, 0.20)  # must repeat 0.20 every time
+#
+# WITH defaults — sensible values built in:
+
+def bill(amount, tip = 0.20)
+  amount + amount * tip
 end
 
-default_parameters
-default_parameters 'Peter', 45
+p bill(20, 0.05)  # => 21.0  (override)
+p bill(20)        # => 24.0  (uses default 0.20)
