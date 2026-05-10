@@ -1,36 +1,19 @@
 #!/usr/bin/env ruby
 # frozen_string_literal: true
 
-# Include
-# This file contains Ruby code for include.
+# include.rb — check membership without a loop
 
-# The include? method in Ruby checks if an array contains a specific value
-# Returns true if the value is found, false otherwise
+# WITHOUT include? — write your own check every time:
+#
+#   endpoints = %w[/api/v1 /api/v2 /admin]
+#   path = "/admin"
+#   found = false
+#   endpoints.each { |e| found = true if e == path }
+#   puts found  # true — but 5 lines for a yes/no question
+#
+# WITH include? — one method call:
 
-fruits = %w[apple banana cherry date]
+endpoints = %w[/api/v1 /api/v2 /admin]
 
-# Check if array includes a value
-puts fruits.include?('apple')     # true
-puts fruits.include?('banana')    # true
-puts fruits.include?('grape')     # false
-puts fruits.include?('APPLE')     # false (case sensitive)
-
-# Using include? in conditional statements
-birth_year = 2014
-years = [2014, 2015, 2016]
-
-if years.include?(birth_year)
-  puts "#{birth_year} is in the array"
-else
-  puts "#{birth_year} is not in the array"
-end
-
-# Works with any data types
-numbers = [1, 2, 3, 4, 5]
-puts numbers.include?(3)      # true
-puts numbers.include?(10)     # false
-
-mixed = [1, 'hello', true, nil]
-puts mixed.include?(1)        # true
-puts mixed.include?('hello')  # true
-puts mixed.include?(nil)      # true
+p endpoints.include?("/admin")       # => true
+p endpoints.include?("/api/v3")      # => false
