@@ -1,4 +1,7 @@
 #!/usr/bin/env ruby
+# frozen_string_literal :true
+
+# From Udemy Course
 # Define a has_greater_than_seven_characters method that
 # accepts an array of strings. It should return a Boolean reflecting
 # whether any array element has more than 7 characters.
