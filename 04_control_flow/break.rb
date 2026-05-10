@@ -3,12 +3,19 @@
 
 # break.rb — break exits a loop immediately
 
-sentence = 'I love $ in the morning, $ in the afternoon, and $ at night'
+# Find the first error in a log without reading the whole file.
+# WITHOUT break — you'd scan the entire log every time.
 
-i = 0
-while i < sentence.length
-  break if sentence[i] == '$'
-
-  i += 1
+def first_error(log)
+  log.each do |line|
+    break line if line.include?("ERROR")
+  end
 end
-puts i  # => 7 (index of first $)
+
+log = [
+  "INFO  Started service",
+  "INFO  Connected to DB",
+  "ERROR Connection timeout",
+  "INFO  Retrying...",
+]
+puts first_error(log)  # => "ERROR Connection timeout" (stops at line 3)
