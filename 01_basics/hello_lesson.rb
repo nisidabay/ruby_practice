@@ -1,11 +1,21 @@
 #!/usr/bin/env ruby
 # frozen_string_literal: true
 
-# hello_lesson.rb — arrays, blocks, string interpolation
+# hello_lesson.rb — #each replaces index loops
 
-guests = %w[Alice Bob Charlie David Eve Frank Grace]
+# WITHOUT #each — you track the index yourself:
+#
+#   orders = ["ORD-001", "ORD-002", "ORD-003"]
+#   i = 0
+#   while i < orders.length
+#     puts "Processing #{orders[i]}..."
+#     i += 1
+#   end
+#
+# WITH #each — Ruby handles the iteration:
 
-guests.each do |guest|
-  puts "Hello, #{guest.upcase}!" if guest.length > 3
-  puts "Hello, #{guest}!"
+orders = ["ORD-001", "ORD-002", "ORD-003"]
+
+orders.each do |order|
+  puts "Processing #{order}..."
 end
