@@ -1,17 +1,16 @@
 #!/usr/bin/env ruby
 # frozen_string_literal: true
 
-# times.rb — using Integer#times
+# times.rb — repeat without a while loop
 
-def print_five_times
-  5.times { print 'Hello' }
-end
+# WITHOUT #times — explicit counter:
+#
+#   i = 0
+#   while i < 5
+#     puts "Ping #{i + 1}..."
+#     i += 1
+#   end
+#
+# WITH #times — Ruby handles the counter:
 
-def money_printer(amount)
-  amount.times { print 'Money' }
-end
-
-print_five_times  # => HelloHelloHelloHelloHello
-puts
-money_printer(3)  # => MoneyMoneyMoney
-puts
+5.times { |i| puts "Ping #{i + 1}..." }
