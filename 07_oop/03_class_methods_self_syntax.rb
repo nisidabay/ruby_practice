@@ -1,56 +1,36 @@
 #!/usr/bin/env ruby
 # frozen_string_literal: true
 
-# Problem: You want to create methods that are called on the class itself, not instances.
-# Example: Vehicle.car() returns a new Vehicle with 4 wheels and 6 passengers.
+# 03_class_methods_self_syntax.rb — factory methods on the class itself
+
+# WITHOUT class methods — callers construct every object manually:
 #
-# Solution: Use def self.method_name to define class-level methods.
-# Visibility: PUBLIC on the class only (not on instances).
+#   dev  = Config.new("localhost", 5432)
+#   prod = Config.new("prod-db.internal", 5432)
+#   # callers must know the internal values — brittle
+#
+# WITH class methods — the class knows its own sensible defaults:
 
-class Vehicle
-  attr_reader :wheels, :passengers, :type
+class Config
+  attr_reader :host, :port
 
-  def initialize(wheels, passengers, type = 'vehicle')
-    @wheels = validate_wheels(wheels)
-    @passengers = passengers
-    @type = type
+  def initialize(host, port)
+    @host = host
+    @port = port
   end
 
-  def wheels=(wheels)
-    @wheels = validate_wheels(wheels)
+  def self.development
+    new("localhost", 5432)
   end
 
-  # Accept optional overrides
-  def self.car(wheels: 4, passengers: 6)
-    new(wheels, passengers)
-  end
-
-  def self.truck(wheels: 8, passengers: 2)
-    new(wheels, passengers)
+  def self.production
+    new("prod-db.internal", 5432)
   end
 
   def to_s
-    "Created new #{type} with #{wheels} wheels and #{passengers} passengers"
-  end
-
-  private
-
-  def validate_wheels(wheels)
-    raise ArgumentError, 'Wrong number of wheels!' unless wheels.is_a?(Integer) && wheels.between?(2, 12)
-
-    wheels
+    "postgres://#{host}:#{port}"
   end
 end
 
-motorcycle = Vehicle.new(2, 1, 'motorcycle')
-puts motorcycle
-
-car = Vehicle.car
-puts car
-
-truck = Vehicle.truck
-puts truck
-
-# Now works correctly and consistently. Proper error handling!
-# truck.wheels = 16
-# puts truck
+puts Config.development  # => postgres://localhost:5432
+puts Config.production   # => postgres://prod-db.internal:5432
