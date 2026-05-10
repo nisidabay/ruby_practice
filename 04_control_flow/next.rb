@@ -1,16 +1,16 @@
 #!/usr/bin/env ruby
 # frozen_string_literal: true
 
-# next.rb — skip to next iteration with next
+# next.rb — skip this iteration, go to the next one
 
-sentence = 'I love $ in the morning, $ in the afternoon, and $ at night'
-
-i = 0
-while i < sentence.length
-  if sentence[i] != '$'
-    i += 1
-    next
+def healthy_endpoints(services)
+  ok = []
+  services.each do |name, status|
+    next if status != 200  # skip unhealthy, don't add them
+    ok << name
   end
-  puts "Found $ at index: #{i}"
-  i += 1
+  ok
 end
+
+services = [["api", 200], ["db", 500], ["cache", 200], ["queue", 503]]
+p healthy_endpoints(services)  # => ["api", "cache"]
