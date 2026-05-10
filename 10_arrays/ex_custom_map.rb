@@ -1,4 +1,7 @@
 #!/usr/bin/env ruby
+# frozen_string_literal :true
+# Exercise from Udemy Course
+
 # Define a custom_map method that accepts an array.
 # The method should emulate the functionality of the array's map method.
 # The block that we pass to custom_map will specify what to do to
@@ -12,6 +15,7 @@
 # custom_map(["Hello", "Goodbye"]) { |text| text.length }  => [5, 7]
 # custom_map([]) { |text| text.length }                    => []
 
+# NOTE: yield send the element to the "block"
 def custom_map(elements)
   counter = 0
   results = []
