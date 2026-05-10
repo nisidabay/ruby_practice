@@ -1,50 +1,49 @@
 #!/usr/bin/env ruby
 # frozen_string_literal: true
 
-# mixins.rb — share instance AND class methods from one module
+# 08_mixins.rb — share instance AND class methods from one module
 
 # Non-idiomatic: explicit extend
-module SampleModule
+module Loggable
   module ClassMethods
-    def method_static
-      puts 'This is a static method'
+    def log_prefix
+      "[SERVICE]"
     end
   end
 
-  def instance_method
-    puts 'This is an instance method'
+  def log(message)
+    puts "#{self.class.log_prefix} #{message}"
   end
 end
 
-class SampleClass
-  include SampleModule
-  extend SampleModule::ClassMethods
+class PaymentService
+  include Loggable
+  extend Loggable::ClassMethods
 end
 
-SampleClass.method_static
-SampleClass.new.instance_method
+PaymentService.log_prefix           # => "[SERVICE]"
+PaymentService.new.log("Charged")   # => "[SERVICE] Charged"
 
 # Idiomatic Ruby: self.included hook auto-extends ClassMethods
-module SampleModule
+module Loggable
   def self.included(base)
     base.extend(ClassMethods)
   end
 
   module ClassMethods
-    def method_static
-      puts 'This is a static method'
+    def log_prefix
+      "[SERVICE]"
     end
   end
 
-  def instance_method
-    puts 'This is an instance method'
+  def log(message)
+    puts "#{self.class.log_prefix} #{message}"
   end
 end
 
-class SampleClass2
-  include SampleModule  # single line handles both!
+class NotificationService
+  include Loggable  # single line handles both!
 end
 
-SampleClass2.method_static
-SampleClass2.new.instance_method
-
+NotificationService.log_prefix          # => "[SERVICE]"
+NotificationService.new.log("Sent")     # => "[SERVICE] Sent"
