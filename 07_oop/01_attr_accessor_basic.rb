@@ -1,27 +1,35 @@
 #!/usr/bin/env ruby
 # frozen_string_literal: true
 
-# Problem: You want to quickly create getter and setter methods for instance variables.
-# Example: dog.name = "Fido" and dog.name to read it back.
+# 01_attr_accessor_basic.rb — auto-generate getters/setters
+
+# WITHOUT attr_accessor — 6 lines of boilerplate per attribute:
 #
-# Solution: Use attr_accessor to auto-generate both methods.
-# Visibility: PUBLIC read and write access.
-# Warning: NO validation - any value can be assigned!
+#   class Order
+#     def total
+#       @total
+#     end
+#     def total=(value)
+#       @total = value
+#     end
+#     # repeat for status, customer...
+#   end
+#
+# WITH attr_accessor — one line:
 
-class Dog
-  attr_accessor :name, :age
+class Order
+  attr_accessor :total, :status
 
-  def report_age
-    puts "#{@name} is #{@age} years old"
+  def summary
+    "#{@status} order: $#{@total}"
   end
 end
 
-# Usage: Create instance and set attributes directly
-dog = Dog.new
-dog.name = 'Fido'
-dog.age = 2
-dog.report_age
+order = Order.new
+order.total = 149.99
+order.status = :pending
+puts order.summary  # => pending order: $149.99
 
-# Invalid values are accepted without error:
-dog.age = -1 # This runs without complaint (bad!)
-dog.report_age
+# attr_accessor has NO validation — anything gets through:
+order.total = -50   # silently accepted (bad!)
+puts order.summary  # => pending order: $-50
