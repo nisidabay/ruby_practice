@@ -1,56 +1,31 @@
-# Ruby Blocks - Basic Usage
-# Blocks are chunks of code enclosed between do...end or {...}
-# Blocks are NOT objects - they cannot be stored in variables
+#!/usr/bin/env ruby
+# frozen_string_literal: true
 
-# Basic block syntax with each
-[1, 2, 3].each do |number|
-  puts number * 2
+# 01_blocks.rb — blocks eliminate setup/teardown repetition
+
+# WITHOUT blocks — copy-paste the ceremony every time:
+#
+#   puts "Connecting to DB..."
+#   rows = query("SELECT * FROM users")
+#   puts "Closing DB connection..."
+#
+#   puts "Connecting to DB..."
+#   count = query("SELECT COUNT(*) FROM orders")
+#   puts "Closing DB connection..."
+#
+# WITH blocks — the ceremony lives ONCE:
+
+def query(sql)
+  puts "  Running: #{sql}"
+  sql.include?("COUNT") ? 42 : ["carlos", "ana"]
 end
 
-# Single-line block syntax
-[1, 2, 3].each { |number| puts number * 2 }
-
-# Yield - blocks are executed via yield
-def greet
-  puts "Before"
-  yield
-  puts "After"
+def with_db
+  puts "Connecting to DB..."
+  result = yield
+  puts "Closing DB connection..."
+  result
 end
 
-greet { puts "BLOCK" }
-
-# Multiple yields
-def print_twice
-  yield
-  yield
-end
-
-print_twice { puts "Hello!" }
-
-# Checking for block presence with block_given?
-def maybe_yield
-  if block_given?
-    yield
-  else
-    puts "No block provided"
-  end
-end
-
-maybe_yield { puts "Block here!" }
-maybe_yield
-
-# Capturing blocks with &block (converts to Proc)
-def with_logging(&block)
-  puts "Starting..."
-  block.call
-  puts "Finished!"
-end
-
-with_logging { puts "Doing work..." }
-
-# Custom iterator using blocks
-def repeat(n)
-  n.times { yield } if block_given?
-end
-
-repeat(3) { puts "Echo!" }
+with_db { query("SELECT * FROM users") }
+with_db { query("SELECT COUNT(*) FROM orders") }
