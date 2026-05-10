@@ -1,21 +1,20 @@
 #!/usr/bin/env ruby
 # frozen_string_literal: true
 
-# Check file
-# This file contains Ruby code for check file.
+# check_file.rb — File.exist? + File.directory? without exceptions
 
-# Rubyists value clarity and "English-like" flow
-path = ARGV[0]
+# WITHOUT File API — shell out every time:
+#
+#   `test -f /etc/hosts && echo "exists"`
+#   # subprocess overhead, platform-specific, brittle parsing
+#
+# WITH File — Ruby-native, cross-platform:
 
-if path.nil?
-  puts 'Please provide a path.'
-  exit
-end
+path = ARGV[0] || "/etc/hosts"
 
-# The File class provides a highly readable API
 if File.exist?(path)
-  type = File.directory?(path) ? 'directory' : 'file'
-  puts "The #{type} exists at: #{path}"
+  type = File.directory?(path) ? "directory" : "file"
+  puts "#{path} is a #{type}"
 else
-  puts 'Nothing found at that path.'
+  puts "#{path} not found"
 end
