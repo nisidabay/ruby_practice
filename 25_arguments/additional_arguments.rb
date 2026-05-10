@@ -1,14 +1,20 @@
 #!/usr/bin/env ruby
+# frozen_string_literal: true
 
-def describe_hero(name, *super_powers)
-  puts "Name: #{name}"
-  super_powers.each do |power|
-    puts "Super power: #{power}"
-  end
-  puts ""
+# additional_arguments.rb — splat captures extra args, keyword args are named
+
+# Splat (*): variable number of positional arguments
+def deploy(env, *services)
+  puts "Deploying to #{env}: #{services.join(', ')}"
 end
 
-describe_hero("Batman")
-describe_hero("Flash", "speed")
-describe_hero("Superman", "can fly", "x-ray vision", "invulnerable")
+deploy("staging", "web")
+deploy("production", "web", "worker", "scheduler")
 
+# Keyword arguments with defaults — order doesn't matter, intent is explicit
+def deploy_with(env:, region: "us-east-1", replicas: 2)
+  puts "#{env} @ #{region} x#{replicas}"
+end
+
+deploy_with(env: "prod")
+deploy_with(env: "staging", region: "eu-west-1", replicas: 1)
