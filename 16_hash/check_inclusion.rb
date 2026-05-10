@@ -1,11 +1,12 @@
 #!/usr/bin/env ruby
+# frozen_string_literal: true
 
-cars= {toyota: "Camry", chevrolet: "Aveo", ford: "F150", kia: 
-"Soul"}
+# check_inclusion.rb — hash membership: key? + value? + include?
 
-p cars.include?(:toyota)    # Checks if the hash contains the given key
-p cars.has_value?("Camry")  # Checks if the hash contains the given value
-p cars.value?("Camry")      # Alias for has_value?, checks if the value exists
-p cars.has_key?(:toyota)    # Checks if the hash contains the given key
-p cars.key?(:toyota)        # Alias for has_key?, checks if the key exists
+config = {host: "db.internal", port: 5432, ssl: true}
 
+p config.key?(:port)       # => true   (check key)
+p config.key?(:password)   # => false  (missing key)
+p config.value?(5432)      # => true   (check value)
+p config.value?("admin")   # => false  (wrong password)
+p config.include?(:ssl)    # => true   (alias for key?)
