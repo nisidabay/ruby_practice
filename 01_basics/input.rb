@@ -1,9 +1,12 @@
 #!/usr/bin/env ruby
 # frozen_string_literal: true
 
-# input.rb — reading user input with gets
+# input.rb — gets reads from the terminal (or STDIN pipe)
 
-print 'Enter your name: '
-name = gets.chomp
+# Interactive: ruby input.rb  →  type and press Enter
+# Piped:      echo "db.internal" | ruby input.rb
 
-puts "Hello. Good morning #{name}"
+host = $stdin.gets&.chomp || "localhost"
+port = $stdin.gets&.chomp || "5432"
+
+puts "Connecting to #{host}:#{port}..."
