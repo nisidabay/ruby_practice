@@ -1,16 +1,20 @@
 #!/usr/bin/env ruby
 # frozen_string_literal: true
 
-# Test speed
-# This file contains Ruby code for test speed.
+# test_speed.rb — Benchmark.measure: how long does this really take?
+
+# WITHOUT Benchmark — manual timing with Time.now subtraction:
+#
+#   start = Time.now
+#   heavy_task
+#   puts "Took #{Time.now - start}s"   # you do this every time
+#
+# WITH Benchmark — built-in, precise:
 
 require 'benchmark'
 
-# A heavy task: calculating a big sum many times
-def heavy_task
+def process_batch
   1_000_000.times { |i| i * i }
 end
 
-puts 'Running benchmark...'
-time = Benchmark.measure { heavy_task }
-puts "Time taken: #{time.real.round(5)} seconds"
+puts Benchmark.measure { process_batch }
