@@ -1,12 +1,16 @@
 #!/usr/bin/env ruby
 # frozen_string_literal: true
 
-# between.rb — testing if value falls in a range
+# between.rb — range check without two comparisons
 
-puts 20.between?(10, 15)      # => false
-puts 20.between?(10, 20)      # => true (inclusive)
-puts 20.between?(20, 30)      # => true (inclusive lower bound)
+# WITHOUT between? — two explicit comparisons:
+#
+#   temp = 98.6
+#   normal = temp >= 97.0 && temp <= 99.0
+#   # and again for every threshold check: disk_usage, latency, balance
+#
+# WITH between? — one method call:
 
-puts 1.2.between?(1.1, 1.3)   # => true
-puts (-10).between?(-13, -8)  # => true
-puts (-8.3).between?(-9.5, -7.2) # => true
+p 98.6.between?(97.0, 99.0)    # => true  (normal body temp)
+p 250.between?(200, 299)       # => true  (2xx HTTP success)
+p 1500.between?(1000, 2000)    # => true  (budget range)
