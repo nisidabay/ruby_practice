@@ -1,8 +1,5 @@
 #!/usr/bin/env ruby
 # frozen_string_literal: true
-#
-# Each
-# This file contains Ruby code for each.
 
 # each in Ruby iterates over each element in an array or other enumerable
 # object, executing a block of code for each element.
