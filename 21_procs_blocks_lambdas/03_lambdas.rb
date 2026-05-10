@@ -1,47 +1,24 @@
 #!/usr/bin/env ruby
 # frozen_string_literal: true
 
-# lambdas.rb — strict argument checking, safe return behavior
+# 03_lambdas.rb — strict blocks: argument checking + safe returns
 
-# Creation: stabby syntax or lambda keyword
-l1 = ->(x) { x * 2 }
-l2 = lambda { |x| x * 2 }
-p l1.call(5), l2.call(5)  # => 10 10
+# Procs are lenient (missing args → nil) and return from the enclosing method.
+# Lambdas are strict (wrong args → ArgumentError) and return from themselves.
 
-# Multi-line
-greet = ->(name) do
-  puts "Hello, #{name}!"
-  puts "Welcome!"
-end
-greet.call("Alice")
-
-# Argument STRICTNESS (unlike procs)
-strict = ->(a, b) { a + b }
-p strict.call(1, 2)  # => 3
-# strict.call(1)     # => ArgumentError!
-# strict.call(1,2,3) # => ArgumentError!
-
-# return is SAFE — returns from lambda only, method continues
-def test_lambda
-  l = -> { return "From Lambda" }
-  l.call
-  "Method ended"  # reached
-end
-p test_lambda  # => "Method ended"
-
-# Higher-order: function composition
-def compose(f, g)
-  ->(x) { f.call(g.call(x)) }
-end
+# Strict argument checking:
 double = ->(x) { x * 2 }
-increment = ->(x) { x + 1 }
-p compose(increment, double).call(5)  # => 11 (5*2 + 1)
+p double.call(5)   # => 10
+# double.call        # => ArgumentError (wrong number of arguments)
+# double.call(1, 2)  # => ArgumentError
 
-# Proc composition operators (Ruby 2.6+): << and >>
-p (double << increment).call(5)  # 12 (increment first, then double)
-p (double >> increment).call(5)  # 11 (double first, then increment)
+# Safe return: lambda returns to its caller, method continues.
+def safe
+  l = -> { return "From lambda" }
+  l.call
+  "Method finished"  # this runs!
+end
+p safe  # => "Method finished"
 
-# Check type
-p proc {}.lambda?    # => false
-p ->() {}.lambda?    # => true
-
+# Use lambdas when you want predictability. Use procs when you
+# don't care about argument counts and just want stored blocks.
