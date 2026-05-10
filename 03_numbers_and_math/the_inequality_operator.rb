@@ -1,12 +1,15 @@
 #!/usr/bin/env ruby
 # frozen_string_literal: true
 
-# the_inequality_operator.rb — != compares values
+# the_inequality_operator.rb — != checks "not equal to"
 
-puts 10 != 5           # => true
-puts 10 != 10          # => false
+# WITHOUT != — negate ==, more typing, harder to read:
+#
+#   !(user == "root")   # double negative: "not (user equals root)"
+#
+# WITH != — reads like English:
 
-puts 'Hello' != 'Goodbye'   # => true
-puts 'Hello' != 'hello'     # => true (case sensitive)
-puts 'Hello' != 'Hello'     # => false
-puts 5 != '5'               # => true (different types)
+p "admin" != "root"     # => true  (restricted user)
+p "root" != "root"      # => false (this IS the superuser)
+p 401 != 200            # => true  (not a success code)
+p "200" != 200          # => true  (string vs integer — different types)
