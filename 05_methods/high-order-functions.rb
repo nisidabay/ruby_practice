@@ -1,21 +1,21 @@
 #!/usr/bin/env ruby
 # frozen_string_literal: true
 
-# high-order-functions.rb — functions that take or return functions
+# high-order-functions.rb — lambdas let you pass logic around like data
 
-def filter(array, condition)
-  array.select { |e| condition.call(e) }
-end
+# WITHOUT lambdas — duplicate the filtering logic everywhere:
+#
+#   active = orders.select { |o| o[:status] == :active }
+#   # ... later, same check scattered across 5 places in the codebase
+#
+# WITH lambdas — define the check once, reuse:
 
-even = ->(n) { n.even? }
-puts filter([1, 2, 3, 4, 5, 6], even).inspect  # => [2, 4, 6]
+active = ->(order) { order[:status] == :active }
 
-def create_multiplier(factor)
-  ->(x) { x * factor }
-end
+orders = [
+  {id: 1, status: :active},
+  {id: 2, status: :cancelled},
+  {id: 3, status: :active},
+]
 
-double = create_multiplier(2)
-triple = create_multiplier(3)
-
-puts double.call(5)  # => 10
-puts triple.call(5)  # => 15
+p orders.select(&active)  # => [{id:1,...}, {id:3,...}]
