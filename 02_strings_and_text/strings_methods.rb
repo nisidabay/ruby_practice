@@ -35,9 +35,9 @@ puts 'hello'.sub('l', 'L')               # => heLlo (first only)
 puts 'hello'.gsub('l', 'L')              # => heLLo (all)
 
 # Regex
-p 'user@domain.com'.match?(/@/)          # => true
+p 'user@domain.com'.match?(/@/) # => true
 
 # Conversion
 p '42'.to_i                              # => 42
 p :status.to_s                           # => "status"
-p 'status'.to_sym                        # => :status
+p :status # => :status

@@ -1,4 +1,8 @@
 #!/usr/bin/env ruby
+
+# DO NOT USE frozen_string_literal: true
+# From Udemy Course
+
 # Define a custom_join method that accepts an array of strings
 # and a delimiter. The method should merge/join the array elements
 # together into a single string. It should insert the delimiter
