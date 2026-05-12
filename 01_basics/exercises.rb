@@ -9,11 +9,11 @@ year = Time.now.year
 
 puts "You're in #{city} in #{year}."
 
-# --- Fix the broken line below so it prints correctly ---
-# name = 'Carlos'
-# puts 'Hello + name'
+name = 'Carlos'
+puts "Hello #{name}"
 
-# --- Add a line that asks for age and prints it ---
+print "What's your age? "
+age = gets.chomp
+puts "You're #{age} years old"
 
-# --- Can you print a multi-line message using one puts? ---
-# Hint: puts "Line1\nLine2"
+puts "Line1\nLine2"

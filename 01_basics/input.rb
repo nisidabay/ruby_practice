@@ -6,7 +6,8 @@
 # Interactive: ruby input.rb  →  type and press Enter
 # Piped:      echo "db.internal" | ruby input.rb
 
-host = $stdin.gets&.chomp || "localhost"
-port = $stdin.gets&.chomp || "5432"
+# "&" validate the "gets" command from being empty before "chomping it"
+host = $stdin.gets&.chomp || 'localhost'
+port = $stdin.gets&.chomp || '5432'
 
 puts "Connecting to #{host}:#{port}..."
