@@ -11,8 +11,14 @@ APP_NAME = "Advanced CLI"
 
 options = {
   verbose: false,
+  quiet: false,
   host: 'localhost',
-  port: 8080
+  port: 8080,
+  bind: nil,
+  ssl: false,
+  cert: nil,
+  key: nil,
+  config: nil
 }
 
 OptionParser.new do |opts|
