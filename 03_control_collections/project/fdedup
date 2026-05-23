@@ -1,0 +1,93 @@
+#!/usr/bin/env ruby
+# frozen_string_literal: true
+
+# fdedup — find duplicate files by content hash
+#
+# WITHOUT File/Digest — manual comparison is impossible at scale:
+#   1000 files × comparing every pair = 500,000 comparisons
+#   Each requires reading entire files. Hours.
+#
+# WITH Digest::MD5 — hash once, group by hash, done in seconds:
+#   fdedup --verbose ~/Downloads
+#   fdedup --json /var/backups
+
+require 'optparse'
+require 'digest'
+require 'find'
+
+options = {
+  verbose: false,
+  json: false,
+  min_size: 1
+}
+
+parser = OptionParser.new do |opts|
+  opts.banner = "Usage: fdedup [options] <directory>"
+
+  opts.on("-v", "--verbose", "Show progress") { options[:verbose] = true }
+  opts.on("--json", "Output as JSON") { options[:json] = true }
+  opts.on("--min-size BYTES", Integer, "Minimum file size (default: 1)") { |n| options[:min_size] = n }
+  opts.on("-h", "--help", "Show this message") { puts opts; exit }
+end.parse!
+
+dir = ARGV[0] || "."
+abort "fdedup: #{dir} not found" unless File.directory?(dir)
+
+# Phase 1: Hash all files
+hashes = Hash.new { |h, k| h[k] = [] }
+total = 0
+
+Find.find(dir) do |path|
+  begin
+    stat = File.lstat(path)
+  rescue Errno::ENOENT, Errno::EACCES
+    next
+  end
+
+  next unless stat.file?
+  next if stat.size < options[:min_size]
+
+  total += 1
+  warn "Hashing: #{path}" if options[:verbose]
+
+  digest = Digest::MD5.file(path).hexdigest
+  hashes[digest] << { path: path, size: stat.size }
+end
+
+# Phase 2: Find duplicates (hash with >1 file)
+dupes = hashes.select { |_hash, files| files.size > 1 }
+
+if options[:json]
+  require 'json'
+  result = dupes.map do |hash, files|
+    { hash: hash, count: files.size, files: files }
+  end
+  puts JSON.pretty_generate(result)
+else
+  if dupes.empty?
+    puts "No duplicates found in #{total} files."
+  else
+    wasted = 0
+    dupes.each_value do |files|
+      wasted += files[1..].sum { |f| f[:size] }
+    end
+
+    puts "Scanned #{total} files. Found #{dupes.size} duplicate groups."
+    puts "Wasted space: #{human_size(wasted)}"
+    puts
+
+    dupes.each do |hash, files|
+      puts "#{hash[0..7]}... — #{files.size} copies (#{human_size(files[0][:size])} each):"
+      files.each { |f| puts "  #{f[:path]}" }
+      puts
+    end
+  end
+end
+
+def human_size(bytes)
+  return "0 B" if bytes.zero?
+  units = %w[B KB MB GB TB]
+  exp = (Math.log(bytes) / Math.log(1024)).to_i
+  exp = units.size - 1 if exp >= units.size
+  format("%.1f %s", bytes.to_f / (1024 ** exp), units[exp])
+end

@@ -1,0 +1,100 @@
+#!/usr/bin/env ruby
+# frozen_string_literal: true
+
+# freport — file tree reporter with pluggable formatters
+#
+# WITHOUT a formatter interface — one class per format, no way to swap:
+#   PlainReport.new(files).print
+#   JSONReport.new(files).print
+#   Adding CSV = another class, all callers update
+#
+# WITH a Formatter mixin — write once, swap at the command line:
+#   freport --format plain .
+#   freport --format json .
+#   freport --format csv .
+
+require 'optparse'
+require 'find'
+
+options = { format: 'plain', depth: nil, show_hidden: false }
+
+parser = OptionParser.new do |opts|
+  opts.banner = "Usage: freport [options] <directory>"
+
+  opts.on("-f", "--format FORMAT", %w[plain json csv], "Output format") { |f| options[:format] = f }
+  opts.on("-d", "--depth N", Integer, "Max directory depth") { |n| options[:depth] = n }
+  opts.on("-a", "--all", "Include hidden files") { options[:show_hidden] = true }
+  opts.on("-h", "--help", "Show this message") { puts opts; exit }
+end.parse!
+
+dir = ARGV[0] || "."
+abort "freport: #{dir} not found" unless File.directory?(dir)
+
+# Formatter classes
+module Formatters
+  class Plain
+    def header(total) = "Directory: #{File.expand_path(Dir.pwd)}\nTotal: #{total} entries\n\n"
+    def entry(e) = "#{e[:type]} #{e[:size]} #{e[:name]}"
+    def footer = nil
+  end
+
+  class JSON
+    def header(total) = "{\n  \"directory\": \"#{File.expand_path(Dir.pwd)}\",\n  \"total\": #{total},\n  \"entries\": ["
+    def entry(e) = "    {\"type\": \"#{e[:type]}\", \"size\": #{e[:size]}, \"name\": \"#{e[:name]}\"}"
+    def footer = "  ]\n}"
+  end
+
+  class CSV
+    def header(total) = "type,size,name"
+    def entry(e) = "#{e[:type]},#{e[:size]},\"#{e[:name]}\""
+    def footer = nil
+  end
+end
+
+format_class = { 'plain' => 'Plain', 'json' => 'JSON', 'csv' => 'CSV' }
+formatter = Formatters.const_get(format_class[options[:format]]).new
+
+entries = []
+Find.find(dir) do |path|
+  begin
+    stat = File.lstat(path)
+  rescue Errno::ENOENT, Errno::EACCES
+    next
+  end
+
+  name = File.basename(path)
+  next if !options[:show_hidden] && name.start_with?('.')
+
+  if options[:depth]
+    depth = path.sub(dir, '').count('/')
+    Find.prune if stat.directory? && depth >= options[:depth]
+  end
+
+  type = case true
+         when stat.symlink? then "@"
+         when stat.directory? then "/"
+         when stat.file? then " "
+         else "?"
+         end
+
+  entries << {
+    type: type,
+    size: stat.file? ? stat.size : 0,
+    name: name,
+    path: path
+  }
+end
+
+# Output
+sep = false
+puts formatter.header(entries.size) if formatter.respond_to?(:header)
+
+entries.each_with_index do |e, i|
+  if formatter.is_a?(Formatters::JSON)
+    sep &&= puts(",")
+    sep = true
+  end
+  puts formatter.entry(e)
+end
+
+puts formatter.footer if formatter.respond_to?(:footer)

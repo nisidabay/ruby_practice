@@ -1,0 +1,84 @@
+#!/usr/bin/env ruby
+# frozen_string_literal: true
+
+# fgrep — parallel file search using threads
+#
+# WITHOUT threads — one file at a time:
+#   files.each { |f| search_in(f) }   # 1000 files = 100 seconds
+#
+# WITH threads — saturate all cores:
+#   files.each_slice(n) { |chunk| Thread.new { search_in(chunk) } }
+#   1000 files = ~3 seconds
+
+require 'optparse'
+require 'find'
+require 'thread'
+
+options = {
+  pattern: nil,
+  workers: 8,
+  dir: "."
+}
+
+parser = OptionParser.new do |opts|
+  opts.banner = "Usage: fgrep [options] <pattern> [directory]"
+  opts.on("-w", "--workers N", Integer, "Number of threads (default: 8)") { |n| options[:workers] = n }
+  opts.on("-h", "--help") { puts opts; exit }
+end.parse!
+
+options[:pattern] = ARGV[0]
+dir = ARGV[1] || "."
+abort "fgrep: pattern required" unless options[:pattern]
+abort "fgrep: #{dir} not found" unless File.directory?(dir)
+
+# Collect files
+files = Dir.glob(File.join(dir, "**", "*")).select { |f| File.file?(f) }
+
+abort "fgrep: no files to search" if files.empty?
+
+start_time = Time.now
+matches = Queue.new
+searched = 0
+mutex = Mutex.new
+
+# Worker threads
+threads = []
+options[:workers].times do
+  threads << Thread.new do
+    loop do
+      file = mutex.synchronize do
+        f = files.shift
+        searched += 1 if f
+        f
+      end
+      break unless file
+
+      begin
+        File.foreach(file).with_index do |line, idx|
+          if line.include?(options[:pattern])
+            matches << { file: file, line: idx + 1, text: line.strip }
+          end
+        end
+      rescue Errno::ENOENT, Errno::EACCES
+        next
+      end
+    end
+  end
+end
+
+threads.each(&:join)
+elapsed = Time.now - start_time
+
+# Drain queue
+results = []
+results << matches.pop until matches.empty?
+
+puts "Pattern: #{options[:pattern]}"
+puts "Files:   #{searched} searched in #{format('%.2f', elapsed)}s (#{options[:workers]} threads)"
+puts "Matches: #{results.size}
+
+"
+
+results.each do |m|
+  puts "#{m[:file]}:#{m[:line]}: #{m[:text]}"
+end

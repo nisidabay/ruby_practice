@@ -1,0 +1,76 @@
+#!/usr/bin/env ruby
+# frozen_string_literal: true
+
+# fwatch — watch a directory and run a block on every change
+#
+# WITHOUT blocks — you'd need a polling loop every N seconds:
+#   loop { check_files; sleep 1 }   # wasteful, slow, clunky
+#
+# WITH blocks — pass behavior as data, run it when events fire:
+#   fwatch --dir /tmp --pattern '*.log' --action 'puts "changed: #{path}"'
+
+require 'optparse'
+require 'find'
+
+options = {
+  dir: '.',
+  pattern: '*',
+  interval: 1
+}
+
+parser = OptionParser.new do |opts|
+  opts.banner = "Usage: fwatch [options]"
+  opts.on("-d", "--dir DIR", "Directory to watch") { |d| options[:dir] = d }
+  opts.on("-p", "--pattern PATTERN", "File glob to watch") { |p| options[:pattern] = p }
+  opts.on("-i", "--interval SECONDS", Float, "Polling interval") { |f| options[:interval] = f }
+  opts.on("-h", "--help") { puts opts; exit }
+end.parse!
+
+abort "fwatch: #{options[:dir]} not found" unless File.directory?(options[:dir])
+
+# Build initial snapshot
+snapshot = {}
+Find.find(options[:dir]) do |path|
+  name = File.basename(path)
+  next unless File.fnmatch(options[:pattern], name, File::FNM_DOTMATCH)
+  begin
+    snapshot[path] = File.mtime(path).to_i
+  rescue Errno::ENOENT
+    next
+  end
+end
+
+puts "Watching #{options[:dir]} for changes... (press Ctrl+C to stop)"
+
+trap("INT") { puts "
+Stopped."; exit }
+
+loop do
+  sleep(options[:interval])
+
+  current = {}
+  Find.find(options[:dir]) do |path|
+    name = File.basename(path)
+    next unless File.fnmatch(options[:pattern], name, File::FNM_DOTMATCH)
+    begin
+      current[path] = File.mtime(path).to_i
+    rescue Errno::ENOENT
+      next
+    end
+  end
+
+  # Detect changes
+  current.each do |path, mtime|
+    if !snapshot.key?(path)
+      puts "[CREATED] #{path}"
+    elsif snapshot[path] != mtime
+      puts "[MODIFIED] #{path}"
+    end
+  end
+
+  snapshot.keys.each do |path|
+    puts "[DELETED] #{path}" unless current.key?(path)
+  end
+
+  snapshot = current
+end

@@ -1,0 +1,92 @@
+#!/usr/bin/env ruby
+# frozen_string_literal: true
+
+# fparse — parse log files into structured output
+#
+# WITHOUT structured parsing — every grep/awk pipeline is a one-off:
+#   grep "ERROR" app.log | awk '{print $1,$4}'    # fragile, no reuse
+#   grep "404" access.log | awk '{print $7}' | sort | uniq -c   # unreadable
+#
+# WITH fparse — one tool, three formats, reusable:
+#   fparse --format plain /var/log/nginx/access.log
+#   fparse --format json /var/log/nginx/access.log
+#   fparse --pattern "ERROR" --count /var/log/app.log
+
+require 'optparse'
+
+options = {
+  format: 'plain',
+  pattern: nil,
+  count: false,
+  top: nil
+}
+
+parser = OptionParser.new do |opts|
+  opts.banner = "Usage: fparse [options] <logfile>"
+
+  opts.on("-f", "--format FORMAT", %w[plain json csv], "Output format: plain, json, csv") do |f|
+    options[:format] = f
+  end
+
+  opts.on("-p", "--pattern PATTERN", "Filter lines containing PATTERN (regex)") do |p|
+    options[:pattern] = Regexp.new(p, Regexp::IGNORECASE)
+  end
+
+  opts.on("-c", "--count", "Show counts instead of lines") do
+    options[:count] = true
+  end
+
+  opts.on("-t", "--top N", Integer, "Show top N results") do |n|
+    options[:top] = n
+  end
+
+  opts.on("-h", "--help", "Show this message") { puts opts; exit }
+end.parse!
+
+path = ARGV[0]
+abort "fparse: missing logfile path" unless path
+abort "fparse: #{path} not found" unless File.exist?(path)
+
+lines = File.readlines(path, chomp: true)
+
+# Pattern filter
+if options[:pattern]
+  lines.select! { |l| l.match?(options[:pattern]) }
+end
+
+if options[:count]
+  # Count by first word (log level, IP, path prefix, etc.)
+  counts = Hash.new(0)
+  lines.each do |line|
+    key = if line.match?(/^\d{3}/)
+            line[/^\d{3}/]
+          elsif line.match?(/^[A-Z]+/)
+            line[/^[A-Z]+/]
+          else
+            line.split.first || "(empty)"
+          end
+    counts[key] += 1
+  end
+
+  sorted = counts.sort_by { |_k, v| -v }
+  sorted = sorted.first(options[:top]) if options[:top]
+
+  sorted.each { |key, count| printf("%6d  %s\n", count, key) }
+else
+  lines = lines.first(options[:top]) if options[:top]
+
+  case options[:format]
+  when 'json'
+    require 'json'
+    entries = lines.each_with_index.map { |l, i| { line: i + 1, content: l, length: l.length } }
+    puts JSON.pretty_generate(entries)
+  when 'csv'
+    require 'csv'
+    csv = CSV.new($stdout)
+    csv << %w[line content length]
+    lines.each_with_index { |l, i| csv << [i + 1, l, l.length] }
+  else
+    lines.each_with_index { |l, i| printf("%5d  %s\n", i + 1, l) }
+    puts "\n#{lines.size} lines"
+  end
+end

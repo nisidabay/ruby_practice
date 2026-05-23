@@ -1,0 +1,66 @@
+#!/usr/bin/env ruby
+# frozen_string_literal: true
+
+# fsafe — batch file operation with rollback
+#
+# WITHOUT exceptions and rollback — one error poisons the batch:
+#   files.each { |f| File.rename(f.old, f.new) }  # half rename, then crash
+#   Result: 50 renamed, 50 not renamed, 10 orphaned. DB in bad state.
+#
+# WITH exceptions and rollback — all-or-nothing guarantee:
+#   begin; batch.execute; rescue => rollback all
+
+require 'optparse'
+require 'fileutils'
+
+options = {
+  src: nil,
+  dst: nil,
+  dry_run: false
+}
+
+parser = OptionParser.new do |opts|
+  opts.banner = "Usage: fsafe [options]"
+  opts.on("-s", "--src DIR", "Source directory") { |d| options[:src] = d }
+  opts.on("-d", "--dst DIR", "Destination directory") { |d| options[:dst] = d }
+  opts.on("--dry-run", "Show what would be done") { options[:dry_run] = true }
+  opts.on("-h", "--help") { puts opts; exit }
+end.parse!
+
+abort "fsafe: --src required" unless options[:src]
+abort "fsafe: --dst required" unless options[:dst]
+abort "fsafe: #{options[:src]} not found" unless File.directory?(options[:src])
+FileUtils.mkdir_p(options[:dst]) unless File.directory?(options[:dst])
+
+# Transaction-like batch: record every operation
+operations = []
+files = Dir.glob(File.join(options[:src], "*")).select { |f| File.file?(f) }
+
+begin
+  files.each do |src_file|
+    dst_file = File.join(options[:dst], File.basename(src_file))
+
+    if options[:dry_run]
+      puts "[DRY-RUN] Would copy: #{src_file} -> #{dst_file}"
+      next
+    end
+
+    FileUtils.cp(src_file, dst_file, preserve: true)
+    operations << { type: :copy, src: src_file, dst: dst_file }
+    puts "Copied: #{src_file} -> #{dst_file}"
+  end
+
+  puts "
+#{operations.size} file(s) copied successfully."
+rescue StandardError => e
+  warn "fsafe: ERROR: #{e.message}. Rolling back..."
+
+  operations.reverse_each do |op|
+    if op[:type] == :copy && File.exist?(op[:dst])
+      File.delete(op[:dst])
+      puts "Rolled back: deleted #{op[:dst]}"
+    end
+  end
+
+  abort "fsafe: batch failed, all operations undone."
+end

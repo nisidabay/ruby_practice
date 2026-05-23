@@ -1,0 +1,125 @@
+#!/usr/bin/env ruby
+# frozen_string_literal: true
+
+# fargs — inspect and validate file arguments from the command line
+#
+# WITHOUT OptionParser — your CLI is fragile, no --help, no error messages:
+#   ARGV[0] could be anything — nil, wrong type, missing
+#   User types "fargs -h" → "unknown option: -h" or worse, silence
+#
+# WITH OptionParser — self-documenting, validated input:
+#   fargs --verbose --min-size 1024 /tmp /var/log
+#   fargs --help   # prints usage, exits clean
+
+require 'optparse'
+require 'find'
+
+options = {
+  verbose: false,
+  min_size: 0,
+  max_size: nil,
+  type: nil,
+  pattern: nil
+}
+
+parser = OptionParser.new do |opts|
+  opts.banner = "Usage: fargs [options] <path> [path...]"
+
+  opts.on("-v", "--verbose", "Show detailed output") do
+    options[:verbose] = true
+  end
+
+  opts.on("--min-size BYTES", Integer, "Minimum file size") do |n|
+    options[:min_size] = n
+  end
+
+  opts.on("--max-size BYTES", Integer, "Maximum file size") do |n|
+    options[:max_size] = n
+  end
+
+  opts.on("--type TYPE", %w[file dir symlink], "Filter by type: file, dir, symlink") do |t|
+    options[:type] = t
+  end
+
+  opts.on("--pattern GLOB", "Filename pattern (e.g. '*.rb')") do |p|
+    options[:pattern] = p
+  end
+
+  opts.on("-h", "--help", "Show this message") do
+    puts opts
+    exit
+  end
+end
+
+parser.parse!
+
+def human_size(bytes)
+  return "0 B" if bytes.zero?
+  units = %w[B KB MB GB TB]
+  exp = (Math.log(bytes) / Math.log(1024)).to_i
+  exp = units.size - 1 if exp >= units.size
+  format("%.1f %s", bytes.to_f / (1024 ** exp), units[exp])
+end
+
+paths = ARGV
+if paths.empty?
+  paths = ["."]
+  warn "fargs: no paths specified, using current directory" if options[:verbose]
+end
+
+# Walk the paths and collect matching entries
+total = 0
+matched = 0
+total_bytes = 0
+
+paths.each do |root|
+  Find.find(root) do |path|
+    begin
+      stat = File.lstat(path)
+    rescue Errno::ENOENT, Errno::EACCES
+      next
+    end
+
+    total += 1
+
+    # Type filter
+    if options[:type]
+      case options[:type]
+      when "file" then next unless stat.file?
+      when "dir" then next unless stat.directory?
+      when "symlink" then next unless stat.symlink?
+      end
+    end
+
+    # Size filter
+    next if stat.file? && stat.size < options[:min_size]
+    next if stat.file? && options[:max_size] && stat.size > options[:max_size]
+
+    # Pattern filter
+    if options[:pattern]
+      next unless File.fnmatch(options[:pattern], File.basename(path))
+    end
+
+    matched += 1
+    total_bytes += stat.size if stat.file?
+
+    type_char = case true
+                when stat.symlink? then "@"
+                when stat.directory? then "/"
+                when stat.file? then " "
+                else "?"
+                end
+
+    if options[:verbose]
+      printf("%s%s  %10s  %s\n",
+             stat.mode.to_s(8)[-4..] || "????",
+             type_char,
+             stat.file? ? human_size(stat.size) : "-",
+             path)
+    else
+      printf("%s%s  %s\n", type_char, type_char, path)
+    end
+  end
+end
+
+puts "\n#{matched} entries matched out of #{total}" if options[:verbose]

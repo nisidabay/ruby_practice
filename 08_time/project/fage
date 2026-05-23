@@ -1,0 +1,78 @@
+#!/usr/bin/env ruby
+# frozen_string_literal: true
+
+# fage — find files older than X days and take action
+#
+# WITHOUT Time arithmetic — manual counting with Date objects:
+#   days_old = (Time.now.to_i - File.mtime(path).to_i) / 86400
+#   error-prone, ugly, forgets leap seconds
+#
+# WITH Time arithmetic — clean, readable intent:
+#   File.mtime(path) < cutoff  # where cutoff = Time.now - (days * 86400)
+
+require 'optparse'
+require 'find'
+
+options = {
+  days: 30,
+  action: 'list',  # list, delete, compress
+  dry_run: false
+}
+
+parser = OptionParser.new do |opts|
+  opts.banner = "Usage: fage [options] <directory>"
+  opts.on("-d", "--days N", Integer, "Files older than N days (default: 30)") { |n| options[:days] = n }
+  opts.on("-a", "--action ACTION", %w[list delete compress], "Action: list, delete, compress") { |a| options[:action] = a }
+  opts.on("--dry-run", "Show what would be done") { options[:dry_run] = true }
+  opts.on("-h", "--help") { puts opts; exit }
+end.parse!
+
+dir = ARGV[0] || "."
+abort "fage: #{dir} not found" unless File.directory?(dir)
+
+cutoff = Time.now - (options[:days] * 86400)
+matched = 0
+
+Find.find(dir) do |path|
+  begin
+    stat = File.lstat(path)
+  rescue Errno::ENOENT, Errno::EACCES
+    next
+  end
+
+  next unless stat.file?
+  next unless stat.mtime < cutoff
+
+  matched += 1
+  age_days = ((Time.now - stat.mtime) / 86400).to_i
+
+  case options[:action]
+  when 'list'
+    puts "#{age_days}d  #{human_size(stat.size)}  #{path}"
+  when 'delete'
+    if options[:dry_run]
+      puts "[DRY-RUN] Would delete: #{path}"
+    else
+      File.delete(path)
+      puts "Deleted: #{path}"
+    end
+  when 'compress'
+    target = "#{path}.#{Time.now.strftime('%Y%m%d')}.gz"
+    if options[:dry_run]
+      puts "[DRY-RUN] Would compress: #{path} -> #{target}"
+    else
+      system("gzip", "-c", path, out: target) && File.delete(path)
+      puts "Compressed: #{path} -> #{target}"
+    end
+  end
+end
+
+puts "#{matched} files older than #{options[:days]} days."
+
+def human_size(bytes)
+  return "0 B" if bytes.zero?
+  units = %w[B KB MB GB TB]
+  exp = (Math.log(bytes) / Math.log(1024)).to_i
+  exp = units.size - 1 if exp >= units.size
+  format("%.1f %s", bytes.to_f / (1024 ** exp), units[exp])
+end
