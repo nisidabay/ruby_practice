@@ -9,7 +9,9 @@ require 'optparse'
 options = {
   port: nil,
   env: nil,
-  log_level: 'info'
+  log_level: 'info',
+  date: nil,
+  config: nil
 }
 
 OptionParser.new do |opts|
