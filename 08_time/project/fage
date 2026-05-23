@@ -33,6 +33,14 @@ abort "fage: #{dir} not found" unless File.directory?(dir)
 cutoff = Time.now - (options[:days] * 86400)
 matched = 0
 
+def human_size(bytes)
+  return "0 B" if bytes.zero?
+  units = %w[B KB MB GB TB]
+  exp = (Math.log(bytes) / Math.log(1024)).to_i
+  exp = units.size - 1 if exp >= units.size
+  format("%.1f %s", bytes.to_f / (1024 ** exp), units[exp])
+end
+
 Find.find(dir) do |path|
   begin
     stat = File.lstat(path)
@@ -68,11 +76,3 @@ Find.find(dir) do |path|
 end
 
 puts "#{matched} files older than #{options[:days]} days."
-
-def human_size(bytes)
-  return "0 B" if bytes.zero?
-  units = %w[B KB MB GB TB]
-  exp = (Math.log(bytes) / Math.log(1024)).to_i
-  exp = units.size - 1 if exp >= units.size
-  format("%.1f %s", bytes.to_f / (1024 ** exp), units[exp])
-end
