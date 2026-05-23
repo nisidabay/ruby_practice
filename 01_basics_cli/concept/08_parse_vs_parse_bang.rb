@@ -17,7 +17,7 @@ puts "-" * 50
 test_argv = ['--verbose', '--name', 'Alice', 'file1.txt', 'file2.txt']
 puts "Before parse!: #{test_argv.inspect}"
 
-options = {}
+options = { verbose: false, name: nil }
 OptionParser.new do |opts|
   opts.banner = "Usage: #{program} [options] [files...]"
   opts.on("-v", "--verbose", "Enable verbose mode") { options[:verbose] = true }
@@ -36,7 +36,7 @@ puts "-" * 50
 test_argv2 = ['--verbose', '--name', 'Bob', 'data.csv', 'output.json']
 puts "Before parse: #{test_argv2.inspect}"
 
-options2 = {}
+options2 = { verbose: false, name: nil }
 remaining = OptionParser.new do |opts|
   opts.banner = "Usage: #{program} [options] [files...]"
   opts.on("-v", "--verbose", "Enable verbose mode") { options2[:verbose] = true }
@@ -58,7 +58,7 @@ puts <<~CODE
   #!/usr/bin/env ruby
   require 'optparse'
   
-  options = {}
+  options = { file: nil }
   OptionParser.new do |opts|
     opts.on("-f", "--file FILE", "Input file") { |f| options[:file] = f }
   end.parse!
