@@ -16,13 +16,13 @@ def create_user(name:, email:, **options)
   options.each { |k, v| puts "  #{k}: #{v}" }
 end
 
-create_user(name: "Ana", email: "ana@dev.io", plan: "pro", region: "eu-west-1", dry_run: true)
+create_user(name: 'Ana', email: 'ana@dev.io', plan: 'pro', region: 'eu-west-1', dry_run: true)
 # name/email are explicit, the rest lands in options
 
 # Forwarding: pass options down to another method
 def deploy(env:, **flags)
   puts "Deploying to #{env}"
-  run_checks(**flags)  # pass all flags through to run_checks
+  run_checks(**flags) # pass all flags through to run_checks
 end
 
 def run_checks(dry_run: false, verbose: false, **)
@@ -31,23 +31,26 @@ def run_checks(dry_run: false, verbose: false, **)
 end
 
 puts
-deploy(env: "staging", dry_run: true, verbose: true)
+deploy(env: 'staging', dry_run: true, verbose: true)
 
 # Block arg: capture a block as an explicit parameter
 def benchmark(label, &block)
   start = Time.now
-  result = block.call      # same as yield
+  result = block.call # same as yield
   elapsed = Time.now - start
   puts "#{label}: #{elapsed.round(4)}s"
   result
 end
 
-benchmark("calculation") { sleep(0.1); 42 }
+benchmark('calculation') do
+  sleep(0.1)
+  42
+end
 
 # Argument forwarding (Ruby 2.7+): (...) passes everything through
 def log_and_call(...)
-  puts "[LOG] delegating..."
-  target(...)             # forwards all positional, keyword, and block
+  puts '[LOG] delegating...'
+  target(...) # forwards all positional, keyword, and block
 end
 
 def target(*args, **kwargs, &block)
@@ -56,4 +59,4 @@ def target(*args, **kwargs, &block)
   block&.call
 end
 
-log_and_call("deploy", "staging", dry_run: true) { puts "  block ran!" }
+log_and_call('deploy', 'staging', dry_run: true) { puts '  block ran!' }
