@@ -2,79 +2,85 @@
 
 A progressive learning path from Ruby fundamentals through OptionParser.
 
-## Quick Start
+Files use a 3-letter prefix for instant category recognition:
 
-Work through scripts in order — each builds on the previous:
+| Prefix | Category | When |
+|---|---|---|
+| `basics_` | Ruby fundamentals | Read first |
+| `args_` | Method argument patterns | Read second |
+| `optparse_` | OptionParser CLI | Read third |
+| `reference/` | Templates, exercises, guides | Not linear |
+
+## Quick Start
 
 ```bash
 # 1. Ruby basics
-ruby hello_lesson.rb                       # each vs while loops
-ruby comments.rb                           # comment conventions
-ruby input.rb                              # gets, $stdin
-ruby default_arguments.rb                   # keyword args with defaults
-ruby additional_arguments.rb               # splat (*) + keyword args
+ruby basics_01_hello_lesson.rb                    # each vs while loops
+ruby basics_02_comments.rb                        # comment conventions
+ruby basics_03_input.rb                           # gets, $stdin
+ruby basics_04_default_arguments.rb               # keyword args with defaults
+ruby basics_05_splat_args.rb                      # *args captures variable positional args
 
 # 2. Method argument patterns
-ruby kwarg_double_splat.rb                 # **options captures extra kwargs
-ruby kwarg_forwarding.rb                   # forward **flags to another method
-ruby block_argument.rb                     # &block explicit block parameter
-ruby argument_forwarding.rb                # (...) forwards everything
+ruby args_01_kwarg_double_splat.rb                # **options captures extra kwargs
+ruby args_02_kwarg_forwarding.rb                  # forward **flags to another method
+ruby args_03_block_argument.rb                    # &block explicit block parameter
+ruby args_04_argument_forwarding.rb               # (...) forwards everything
 
 # 3. OptionParser series
-ruby 01_basic_flags.rb -v --debug
-ruby 02_string_args.rb -n "Alice" --email "alice@example.com"
-ruby 03_type_conversion.rb -p 8080 -r 3.14 -t ruby -t python
-ruby 04_required_options.rb --api-key abc123 --endpoint https://api.example.com
-ruby 05_custom_validation.rb --port 8080 --env production
-ruby 06_advanced_features.rb -V
-ruby 06_advanced_features.rb --host localhost --port 3000 --verbose
-ruby 07_real_world_cli.rb deploy --environment production --servers web1,web2 --dry-run
-ruby 08_parse_vs_parse_bang.rb
-ruby 09_stderr_exit_codes.rb --port 99999
+ruby optparse_01_basic_flags.rb -v --debug
+ruby optparse_02_string_args.rb -n "Alice" --email "alice@example.com"
+ruby optparse_03_type_conversion.rb -p 8080 -r 3.14 -t ruby -t python
+ruby optparse_04_required_options.rb --api-key abc123 --endpoint https://api.example.com
+ruby optparse_05_custom_validation.rb --port 8080 --env production
+ruby optparse_06_advanced_features.rb -V
+ruby optparse_07_real_world_cli.rb deploy --environment production --servers web1,web2 --dry-run
+ruby optparse_08_parse_vs_parse_bang.rb
+ruby optparse_09_stderr_exit_codes.rb --port 99999
 ```
 
 ## Learning Path
 
 ### Ruby Fundamentals (~30 min)
 
-| Script | Concepts |
+| Script | Concept |
 |---|---|
-| `hello_lesson.rb` | `each` vs `while` loops |
-| `comments.rb` | Comments explain WHY, not what |
-| `input.rb` | `gets`, `$stdin`, `&.` safe navigation |
-| `default_arguments.rb` | Keyword args with defaults (`convertible: false`) |
-| `additional_arguments.rb` | Splat `*services` + keyword args |
-| `exercises.rb` | Positional, keyword, splat, double-splat — combined |
+| `basics_01_hello_lesson.rb` | `each` vs `while` loops |
+| `basics_02_comments.rb` | Comments explain WHY, not what |
+| `basics_03_input.rb` | `gets`, `$stdin`, `&.` safe navigation |
+| `basics_04_default_arguments.rb` | Keyword args with defaults (`convertible: false`) |
+| `basics_05_splat_args.rb` | Splat `*args` captures variable positional args |
 
 ### Method Argument Patterns (~30 min)
 
 | Script | Problem it solves |
 |---|---|
-| `kwarg_double_splat.rb` | `**options` — accept extra kwargs without declaring them |
-| `kwarg_forwarding.rb` | Catch with `**` then pass through to another method |
-| `block_argument.rb` | `&block` — capture block as Proc (store it, forward it) |
-| `argument_forwarding.rb` | `(...)` — forward ALL args (positional + keyword + block) |
+| `args_01_kwarg_double_splat.rb` | `**options` — accept extra kwargs without declaring them |
+| `args_02_kwarg_forwarding.rb` | Catch with `**` then pass through to another method |
+| `args_03_block_argument.rb` | `&block` — capture block as Proc (store it, forward it) |
+| `args_04_argument_forwarding.rb` | `(...)` — forward ALL args (positional + keyword + block) |
 
 ### OptionParser Series (~2 hours)
 
 | Script | Concepts | Time |
 |---|---|---|
-| `01_basic_flags.rb` | Boolean flags, `--[no-]option` pattern | 10 min |
-| `02_string_args.rb` | String arguments, required vs optional | 15 min |
-| `03_type_conversion.rb` | Integer, Float, Array, restricted values | 20 min |
-| `04_required_options.rb` | Post-parse validation, mutual exclusion | 15 min |
-| `05_custom_validation.rb` | Custom validators, error handling | 20 min |
-| `06_advanced_features.rb` | Separators, banners, version | 15 min |
-| `07_real_world_cli.rb` | Complete CLI application | 30 min |
-| `08_parse_vs_parse_bang.rb` | `parse!` (mutates ARGV) vs `parse` (returns) | 10 min |
-| `09_stderr_exit_codes.rb` | `$stderr` for errors, exit codes for shell | 10 min |
+| `optparse_01_basic_flags.rb` | Boolean flags, `--[no-]option` pattern | 10 min |
+| `optparse_02_string_args.rb` | String arguments, required vs optional | 15 min |
+| `optparse_03_type_conversion.rb` | Integer, Float, Array, restricted values | 20 min |
+| `optparse_04_required_options.rb` | Post-parse validation, mutual exclusion | 15 min |
+| `optparse_05_custom_validation.rb` | Custom validators, error handling | 20 min |
+| `optparse_06_advanced_features.rb` | Separators, banners, version | 15 min |
+| `optparse_07_real_world_cli.rb` | Complete CLI application | 30 min |
+| `optparse_08_parse_vs_parse_bang.rb` | `parse!` (mutates ARGV) vs `parse` (returns) | 10 min |
+| `optparse_09_stderr_exit_codes.rb` | `$stderr` for errors, exit codes for shell | 10 min |
 
 ### Reference
 
-| Script | Notes |
+| File | Notes |
 |---|---|
-| `minimal_setup.rb` | Smallest possible OptionParser template |
-| `reference/03_keyword_args.rb` | Original unsplit file (4 concepts) |
+| `reference/minimal_setup.rb` | Smallest possible OptionParser template |
+| `reference/exercises.rb` | Consolidation: all 4 argument patterns |
+| `reference/OPTIONPARSER_TUTORIAL.md` | Comprehensive written guide |
 
 ## Common Patterns Reference
 
@@ -102,6 +108,11 @@ end
 # (...) — forward everything (Ruby 2.7+)
 def wrapper(...)
   target(...)
+end
+
+# * — capture variable positional args into an Array
+def deploy(env, *services)
+  puts "Deploying to #{env}: #{services.join(', ')}"
 end
 ```
 
@@ -167,6 +178,6 @@ end
 
 ## Additional Resources
 
-- `OPTIONPARSER_TUTORIAL.md` — Comprehensive written guide
+- `reference/OPTIONPARSER_TUTORIAL.md` — Comprehensive written guide
 - [Ruby Docs: OptionParser](https://ruby-doc.org/stdlib/libdoc/optparse/rdoc/OptionParser.html)
 - Run any script with `-h` to see its help message
