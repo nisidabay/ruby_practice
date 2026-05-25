@@ -13,7 +13,9 @@
 
 ## What is OptionParser?
 
-OptionParser is Ruby's built-in library for parsing command-line options. It's part of the standard library and provides a clean, declarative way to define and handle CLI arguments.
+OptionParser is Ruby's built-in library for parsing command-line options. It's
+part of the standard library and provides a clean, declarative way to define
+and handle CLI arguments.
 
 **Key Features:**
 - Automatic help message generation (`-h`/`--help`)

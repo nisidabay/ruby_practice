@@ -25,9 +25,13 @@ def deploy(env:, **flags)
   run_checks(**flags) # pass all flags through to run_checks
 end
 
-def run_checks(dry_run: false, verbose: false, **)
+def run_checks(dry_run: false, verbose: false, **extra)
   puts "  dry_run: #{dry_run}"
   puts "  verbose: #{verbose}"
+  return if extra.empty?
+
+  puts "  extra flags: #{extra.keys.join(', ')}"
+  extra.each { |k, v| puts "    #{k}: #{v}" }
 end
 
 puts

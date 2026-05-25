@@ -1,142 +1,145 @@
-# Ruby OptionParser Practice Suite
+# Ruby Concepts — Practice Suite
 
-A hands-on learning suite for mastering Ruby's OptionParser module.
+A progressive learning path from Ruby fundamentals through OptionParser.
 
 ## Quick Start
 
-Work through the scripts in order - each builds on concepts from the previous:
+Work through scripts in order — each builds on the previous:
 
 ```bash
-# 1. Basic boolean flags
+# 1. Ruby basics
+ruby hello_lesson.rb                       # each vs while loops
+ruby comments.rb                           # comment conventions
+ruby input.rb                              # gets, $stdin
+ruby default_arguments.rb                   # keyword args with defaults
+ruby additional_arguments.rb               # splat (*) + keyword args
+
+# 2. Method argument patterns
+ruby kwarg_double_splat.rb                 # **options captures extra kwargs
+ruby kwarg_forwarding.rb                   # forward **flags to another method
+ruby block_argument.rb                     # &block explicit block parameter
+ruby argument_forwarding.rb                # (...) forwards everything
+
+# 3. OptionParser series
 ruby 01_basic_flags.rb -v --debug
-
-# 2. String arguments  
 ruby 02_string_args.rb -n "Alice" --email "alice@example.com"
-
-# 3. Type conversion (Integer, Float, Array)
 ruby 03_type_conversion.rb -p 8080 -r 3.14 -t ruby -t python
-
-# 4. Required options and validation
 ruby 04_required_options.rb --api-key abc123 --endpoint https://api.example.com
-
-# 5. Custom validators
 ruby 05_custom_validation.rb --port 8080 --env production
-
-# 6. Advanced features (separators, version, complex layouts)
 ruby 06_advanced_features.rb -V
 ruby 06_advanced_features.rb --host localhost --port 3000 --verbose
-
-# 7. Real-world CLI application
 ruby 07_real_world_cli.rb deploy --environment production --servers web1,web2 --dry-run
+ruby 08_parse_vs_parse_bang.rb
+ruby 09_stderr_exit_codes.rb --port 99999
 ```
 
 ## Learning Path
 
+### Ruby Fundamentals (~30 min)
+
+| Script | Concepts |
+|---|---|
+| `hello_lesson.rb` | `each` vs `while` loops |
+| `comments.rb` | Comments explain WHY, not what |
+| `input.rb` | `gets`, `$stdin`, `&.` safe navigation |
+| `default_arguments.rb` | Keyword args with defaults (`convertible: false`) |
+| `additional_arguments.rb` | Splat `*services` + keyword args |
+| `exercises.rb` | Positional, keyword, splat, double-splat — combined |
+
+### Method Argument Patterns (~30 min)
+
+| Script | Problem it solves |
+|---|---|
+| `kwarg_double_splat.rb` | `**options` — accept extra kwargs without declaring them |
+| `kwarg_forwarding.rb` | Catch with `**` then pass through to another method |
+| `block_argument.rb` | `&block` — capture block as Proc (store it, forward it) |
+| `argument_forwarding.rb` | `(...)` — forward ALL args (positional + keyword + block) |
+
+### OptionParser Series (~2 hours)
+
 | Script | Concepts | Time |
-|--------|----------|------|
+|---|---|---|
 | `01_basic_flags.rb` | Boolean flags, `--[no-]option` pattern | 10 min |
 | `02_string_args.rb` | String arguments, required vs optional | 15 min |
 | `03_type_conversion.rb` | Integer, Float, Array, restricted values | 20 min |
 | `04_required_options.rb` | Post-parse validation, mutual exclusion | 15 min |
 | `05_custom_validation.rb` | Custom validators, error handling | 20 min |
-| `06_advanced_features.rb` | Separators, banners, version, formatting | 15 min |
+| `06_advanced_features.rb` | Separators, banners, version | 15 min |
 | `07_real_world_cli.rb` | Complete CLI application | 30 min |
+| `08_parse_vs_parse_bang.rb` | `parse!` (mutates ARGV) vs `parse` (returns) | 10 min |
+| `09_stderr_exit_codes.rb` | `$stderr` for errors, exit codes for shell | 10 min |
 
-**Total: ~2 hours**
+### Reference
 
-## Key Concepts by Script
-
-### 01 - Basic Flags
-- Simple boolean options (`-v`, `--verbose`)
-- The `--[no-]option` pattern for toggleable flags
-- Accessing parsed values from the options hash
-
-### 02 - String Arguments
-- Required string arguments
-- Optional arguments with `[ARG]` syntax
-- Multi-line option descriptions
-
-### 03 - Type Conversion
-- Automatic Integer/Float conversion
-- Array collection (multiple `-t` flags)
-- Comma-separated values
-- Restricted value sets (`["json", "xml", "yaml"]`)
-
-### 04 - Required Options
-- Post-parse validation
-- Checking for missing required options
-- Mutually exclusive options
-- Dependent option validation
-
-### 05 - Custom Validation
-- Raising `OptionParser::InvalidArgument`
-- Port range validation
-- Environment validation
-- File existence checks
-- Date format validation
-
-### 06 - Advanced Features
-- Custom banners with heredocs
-- Section separators
-- Version information
-- Custom help footers
-- Option grouping
-
-### 07 - Real-World CLI
-- Complete deployment tool simulation
-- Command parsing (deploy/rollback/status/logs)
-- JSON output format
-- Authentication handling
-- Dry-run mode
-- Verbose/quiet modes
+| Script | Notes |
+|---|---|
+| `minimal_setup.rb` | Smallest possible OptionParser template |
+| `reference/03_keyword_args.rb` | Original unsplit file (4 concepts) |
 
 ## Common Patterns Reference
 
-### Boolean Flag
+### Keyword Arg Patterns
+
 ```ruby
+# ** — catch unknown kwargs into a Hash
+def create_user(name:, email:, **options)
+  options.each { |k, v| puts "  #{k}: #{v}" }
+end
+
+# Forward ** to another method
+def deploy(env:, **flags)
+  run_checks(**flags)
+end
+
+# & — capture block as Proc
+def benchmark(label, &block)
+  start = Time.now
+  result = block.call
+  puts "#{label}: #{(Time.now - start).round(4)}s"
+  result
+end
+
+# (...) — forward everything (Ruby 2.7+)
+def wrapper(...)
+  target(...)
+end
+```
+
+### OptionParser Patterns
+
+```ruby
+# Boolean flag
 opts.on("-v", "--verbose", "Enable verbose output") do
   options[:verbose] = true
 end
-```
 
-### Required String
-```ruby
+# Required string
 opts.on("-n", "--name NAME", "Your name") do |name|
   options[:name] = name
 end
-```
 
-### Optional Argument
-```ruby
+# Optional argument
 opts.on("-o", "--output [FILE]", "Output file") do |file|
   options[:output] = file || "stdout"
 end
-```
 
-### Type Conversion
-```ruby
+# Type conversion
 opts.on("-p", "--port PORT", Integer, "Port number") do |port|
   options[:port] = port
 end
-```
 
-### Restricted Values
-```ruby
+# Restricted values
 opts.on("-e", "--env ENV", ["dev", "staging", "prod"], "Environment") do |env|
   options[:env] = env
 end
-```
 
-### Array (Multiple Values)
-```ruby
+# Array (multiple values)
 opts.on("-t", "--tag TAG", Array, "Tags") do |tags|
   options[:tags] ||= []
   options[:tags] += tags
 end
-```
 
-### Custom Validator
-```ruby
+# Custom validator
 opts.on("-p", "--port PORT", "Port (1-65535)") do |port_str|
   port = Integer(port_str)
   raise OptionParser::InvalidArgument, "Invalid port" unless (1..65535).include?(port)
@@ -148,31 +151,22 @@ end
 
 OptionParser provides these exception classes:
 
-- `OptionParser::InvalidOption` - Unknown option
-- `OptionParser::MissingArgument` - Required argument not provided
-- `OptionParser::InvalidArgument` - Argument fails custom validation
-- `OptionParser::AmbiguousOption` - Abbreviated option matches multiple
+- `OptionParser::InvalidOption` — Unknown option
+- `OptionParser::MissingArgument` — Required argument not provided
+- `OptionParser::InvalidArgument` — Argument fails custom validation
+- `OptionParser::AmbiguousOption` — Abbreviated option matches multiple
 
-Example:
 ```ruby
 begin
   OptionParser.new { |opts| ... }.parse!
 rescue OptionParser::InvalidOption => e
-  puts "Error: #{e.message}"
-  exit 1
+  $stderr.puts "Error: #{e.message}"   # stderr, not stdout
+  exit 1                                # non-zero = failure
 end
 ```
 
 ## Additional Resources
 
-- `OPTIONPARSER_TUTORIAL.md` - Comprehensive written guide
+- `OPTIONPARSER_TUTORIAL.md` — Comprehensive written guide
 - [Ruby Docs: OptionParser](https://ruby-doc.org/stdlib/libdoc/optparse/rdoc/OptionParser.html)
 - Run any script with `-h` to see its help message
-
-## Tips for Learning
-
-1. **Run with `-h` first** - See what each script accepts
-2. **Try invalid inputs** - See how validation works
-3. **Read the source** - Each script is well-commented
-4. **Modify and experiment** - Change options and see what breaks
-5. **Build your own** - Use script 07 as a template for your CLI
