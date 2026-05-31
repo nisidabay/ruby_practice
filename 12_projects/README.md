@@ -1,6 +1,6 @@
 # Projects — Real-World Ruby Toolbox
 
-30+ CLI tools built in Ruby. Each project applies concepts from the numbered groups (01-11).
+35+ CLI tools built in Ruby. Each project applies concepts from the numbered groups (01-16).
 
 ## Quick Reference: Tool → Groups
 
@@ -36,6 +36,11 @@
 | `todo_list1` | Simple todo (single file) | 01 (basics), 05 (filesystem) |
 | `todo_list2` | Structured todo (classes) | 04 (OOP), 05 (filesystem) |
 | `tty` | Terminal/TTY utilities | process I/O, 03 (control flow) |
+| `Rakefile` | Task automation with Rake | 01 (basics — Rake) |
+| `fconv` | JSON ↔ CSV ↔ YAML converter | 13 (data parsing) |
+| `fcheck` | HTTP health check + timing | 14 (networking) |
+| `frun` | Run command with timeout | 15 (processes) |
+| `ftimer` | Benchmark a command | 16 (performance) |
 
 ## By Concept Group
 
@@ -57,6 +62,18 @@
 
 ### 10 Threads
 `dupefinder`, `gitbatch`, `logwatch`
+
+### 13 Data Parsing
+`fconv` — JSON, CSV, YAML conversion
+
+### 14 Networking
+`fcheck` — HTTP health check and latency
+
+### 15 Processes
+`frun` — command runner with timeout
+
+### 16 Performance
+`ftimer` — benchmark any command
 
 ## Installation
 
