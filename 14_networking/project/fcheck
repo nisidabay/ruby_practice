@@ -1,0 +1,41 @@
+#!/usr/bin/env ruby
+# frozen_string_literal: true
+
+# fcheck — simple HTTP health check and status reporter
+#
+# Usage: fcheck https://httpbin.org/get
+#        fcheck --count 3 https://httpbin.org/get
+
+require "net/http"
+require "uri"
+require "optparse"
+
+options = {count: 1}
+OptionParser.new do |opts|
+  opts.banner = "Usage: fcheck [options] <url>"
+  opts.on("-c", "--count N", Integer, "Requests to send (default: 1)") { |n| options[:count] = n }
+  opts.on("-h", "--help") { puts opts; exit }
+end.parse!
+
+abort "Usage: fcheck <url>" if ARGV.empty?
+
+url = ARGV.first
+uri = URI(url)
+uri.path = "/" if uri.path.empty?
+
+http = Net::HTTP.new(uri.host, uri.port)
+http.use_ssl = (uri.scheme == "https")
+http.open_timeout = 5
+http.read_timeout = 5
+
+times = []
+options[:count].times do |i|
+  start = Time.now
+  response = http.request_head(uri.path)
+  elapsed = ((Time.now - start) * 1000).round
+  times << elapsed
+  puts "[#{i + 1}] #{response.code} — #{elapsed}ms"
+end
+
+avg = times.sum / times.size
+puts "#{times.size} requests, avg #{avg}ms"
