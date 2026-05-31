@@ -1,6 +1,6 @@
 # Ruby Concepts — Practice Suite
 
-A progressive learning path from Ruby fundamentals through OptionParser.
+A progressive learning path from Ruby fundamentals through OptionParser and Rake.
 
 Files use a 3-letter prefix for instant category recognition:
 
@@ -10,6 +10,7 @@ Files use a 3-letter prefix for instant category recognition:
 | `args_` | Method argument patterns | Read second |
 | `optparse_` | OptionParser CLI | Read third |
 | `reference/` | Templates, exercises, guides | Not linear |
+| `rake_` | Task automation with Rake | Read last |
 
 ## Quick Start
 
@@ -37,6 +38,11 @@ ruby optparse_06_advanced_features.rb -V
 ruby optparse_07_real_world_cli.rb deploy --environment production --servers web1,web2 --dry-run
 ruby optparse_08_parse_vs_parse_bang.rb
 ruby optparse_09_stderr_exit_codes.rb --port 99999
+
+# 4. Rake — task automation
+cd ../project && rake -T                           # list available tasks
+cd ../project && rake process                      # download → process chain
+ruby rake_01_basics.rb                             # task definition template
 ```
 
 ## Learning Path
@@ -73,6 +79,13 @@ ruby optparse_09_stderr_exit_codes.rb --port 99999
 | `optparse_07_real_world_cli.rb` | Complete CLI application | 30 min |
 | `optparse_08_parse_vs_parse_bang.rb` | `parse!` (mutates ARGV) vs `parse` (returns) | 10 min |
 | `optparse_09_stderr_exit_codes.rb` | `$stderr` for errors, exit codes for shell | 10 min |
+
+### Rake (~15 min)
+
+| Script | Concept |
+|---|---|
+| `rake_01_basics.rb` | `task` definitions, `=>` dependencies, `rake -T` |
+| `../project/Rakefile` | Working example: download → process → clean |
 
 ### Reference
 
@@ -129,25 +142,14 @@ opts.on("-n", "--name NAME", "Your name") do |name|
   options[:name] = name
 end
 
-# Optional argument
-opts.on("-o", "--output [FILE]", "Output file") do |file|
-  options[:output] = file || "stdout"
-end
-
 # Type conversion
 opts.on("-p", "--port PORT", Integer, "Port number") do |port|
   options[:port] = port
 end
 
 # Restricted values
-opts.on("-e", "--env ENV", ["dev", "staging", "prod"], "Environment") do |env|
+opts.on("-e", "--env ENV", %w[dev staging prod], "Environment") do |env|
   options[:env] = env
-end
-
-# Array (multiple values)
-opts.on("-t", "--tag TAG", Array, "Tags") do |tags|
-  options[:tags] ||= []
-  options[:tags] += tags
 end
 
 # Custom validator
@@ -156,6 +158,23 @@ opts.on("-p", "--port PORT", "Port (1-65535)") do |port_str|
   raise OptionParser::InvalidArgument, "Invalid port" unless (1..65535).include?(port)
   options[:port] = port
 end
+```
+
+### Rake Patterns
+
+```ruby
+# Single task
+task :greet do
+  puts "Hello!"
+end
+
+# Task with dependencies (runs :download first)
+task :process => :download do
+  data = File.read("/tmp/data.txt")
+  # ...
+end
+
+# List all tasks: rake -T
 ```
 
 ## Error Handling
