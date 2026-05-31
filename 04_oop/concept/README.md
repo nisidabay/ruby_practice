@@ -84,6 +84,8 @@ ruby 28_private_class_method.rb         # Singleton with private .new
 
 | Script | Concept |
 |---|---|
+| `method_missing_define_method.rb` | `method_missing` + `respond_to_missing?` — catch undefined calls |
+| `define_method.rb` | `define_method` — create methods at runtime from data |
 | `10_public_send_dynamic_calls.rb` | `send()` calls methods by string/symbol |
 | `30_send_dynamic_dispatch.rb` | Dynamic method dispatch |
 | `29_method_missing.rb` | Intercept calls to undefined methods |
