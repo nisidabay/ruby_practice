@@ -1,0 +1,68 @@
+#!/usr/bin/env ruby
+# frozen_string_literal: true
+
+# fconv — convert between JSON, CSV, and YAML
+#
+# Usage: fconv input.json output.csv
+#        fconv input.csv output.yaml
+#        fconv input.yml output.json
+
+require "json"
+require "yaml"
+require "optparse"
+
+begin
+  require "csv"
+rescue LoadError
+  $stderr.puts "⚠️  CSV gem required. Run: gem install csv"
+  exit 1
+end
+
+options = {}
+OptionParser.new do |opts|
+  opts.banner = "Usage: fconv input.ext output.ext"
+  opts.on("-h", "--help") { puts opts; exit }
+end.parse!
+
+if ARGV.size < 2
+  $stderr.puts "Usage: fconv input.ext output.ext"
+  exit 1
+end
+
+infile, outfile = ARGV
+$stderr.puts "#{infile} not found" && exit(1) unless File.exist?(infile)
+
+ext_in = File.extname(infile).downcase
+ext_out = File.extname(outfile).downcase
+
+# Read
+data = case ext_in
+when ".json" then JSON.parse(File.read(infile))
+when ".csv"
+  rows = []
+  CSV.foreach(infile, headers: true) { |r| rows << r.to_h }
+  rows
+when ".yml", ".yaml" then YAML.safe_load_file(infile)
+else
+  $stderr.puts "Unknown input format: #{ext_in}"
+  exit 1
+end
+
+# Write
+case ext_out
+when ".json" then File.write(outfile, JSON.pretty_generate(data))
+when ".csv"
+  rows = data.is_a?(Array) ? data : [data]
+  keys = rows.first.keys
+  CSV.open(outfile, "w") do |csv|
+    csv << keys
+    rows.each { |row| csv << row.values_at(*keys) }
+  end
+when ".yml", ".yaml" then File.write(outfile, YAML.dump(data))
+else
+  $stderr.puts "Unknown output format: #{ext_out}"
+  exit 1
+end
+
+count = data.is_a?(Array) ? data.size : 1
+puts "#{infile} → #{outfile}  (#{count} records)"
