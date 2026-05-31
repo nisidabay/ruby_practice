@@ -114,3 +114,9 @@ require "stringio"
 io = StringIO.new("hello\nworld")
 io.gets                                   # => "hello\n"
 ```
+
+## Now Build Your Own
+
+Write a script that scans a directory tree, finds all files larger
+than 10 MB, and prints their path and size in human-readable format
+(KB/MB/GB). Use `Find.find`, `File.size`, and `Pathname`.

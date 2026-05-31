@@ -56,3 +56,9 @@ set.include?(needle)  # O(1) vs Array O(n)
 ../project/ftimer ls -la /tmp
 ../project/ftimer -n 10 curl -s https://httpbin.org/get
 ```
+
+## Now Build Your Own
+
+Benchmark three ways to find duplicates in a large array: `uniq`,
+`Set`, and `sort` + linear scan. Use `Benchmark.bm` and report which
+is fastest for 100,000 elements.

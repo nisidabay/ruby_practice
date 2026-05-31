@@ -66,3 +66,9 @@ Socket.tcp("host", 80) { |s| s.write "GET / HTTP/1.1\r\n\r\n" }
 ../project/fcheck https://httpbin.org/get
 ../project/fcheck --count 3 https://httpbin.org/get
 ```
+
+## Now Build Your Own
+
+Write a `ping` clone in Ruby: open a TCP socket to a host on port 80,
+send `GET / HTTP/1.1`, measure the round-trip time in milliseconds,
+and print it. Use `Socket.tcp` and a timeout.

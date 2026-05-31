@@ -84,3 +84,9 @@ Time.at(1768723200)                     # => time from timestamp
 Time.now.utc                            # UTC
 Time.now.localtime("+09:00")            # Tokyo
 ```
+
+## Now Build Your Own
+
+Write a script that calculates your age in seconds, minutes, hours,
+and days, then formats the output with `strftime` for a birthdate
+the user provides via command line.

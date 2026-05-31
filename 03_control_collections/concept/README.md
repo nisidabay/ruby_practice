@@ -96,3 +96,9 @@ h.key?(:c)                               # => false
 (1..5).to_a                              # => [1, 2, 3, 4, 5]
 (1...5).to_a                             # => [1, 2, 3, 4]
 ```
+
+## Now Build Your Own
+
+Write a program that reads a CSV of names and scores, builds a Hash,
+and prints the top 3 scorers sorted by score. Use `reduce` to build
+the Hash and `sort_by` to rank them.

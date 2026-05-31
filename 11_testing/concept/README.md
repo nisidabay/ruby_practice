@@ -91,3 +91,10 @@ class DatabaseTest < Minitest::Test
   end
 end
 ```
+
+## Now Build Your Own
+
+Write a test for a `PasswordValidator` class with methods `valid?` and
+`errors`. Mock the `User#password` call with `Minitest::Mock` so you
+can test validation without a real User object. Test at least 3 scenarios:
+too short, no digits, and valid.

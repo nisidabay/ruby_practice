@@ -5,9 +5,7 @@
 # Try: echo "hello" | ruby argf_demo.rb
 #      ruby argf_demo.rb /etc/hostname
 
-if ARGF.filename == "-" && !$stdin.tty?
-  puts "Reading from pipe..."
-end
+puts 'Reading from pipe...' if ARGF.filename == '-' && !$stdin.tty?
 
 ARGF.each_line.with_index(1) do |line, i|
   puts "#{i}: #{line.chomp.upcase}"

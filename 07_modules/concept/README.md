@@ -137,3 +137,9 @@ end
 
 MyApp::Auth::Token.new
 ```
+
+## Now Build Your Own
+
+Create a `Cacheable` module that gives any class `cache(key)` and
+`cached?(key)` methods backed by a class-level Hash. Use `extend self`
+or `module_function` so it works as both a mixin and a namespaced utility.
