@@ -105,3 +105,9 @@ fiber.resume                            # => 1
 fiber.resume                            # => 2
 fiber.resume                            # => 3
 ```
+
+## Now Build Your Own
+
+Write a parallel file checker: given a list of file paths, spawn a
+thread for each one that checks if the file exists and reports its
+size. Use a `Queue` to collect results and print them in the main thread.

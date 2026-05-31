@@ -132,3 +132,10 @@ class Version
   end
 end
 ```
+
+## Now Build Your Own
+
+Design a `ReportCard` class with classes for `Student` and `Course`.
+A student has many courses. A course has a name and grade.
+Add a method to `ReportCard` that computes GPA. Use composition,
+not inheritance.

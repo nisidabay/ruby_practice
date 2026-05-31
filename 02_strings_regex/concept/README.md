@@ -70,3 +70,9 @@ puts "Hello, #{name}!"                  # Hello, Ruby!
 # Scan
 "a1 b2 c3".scan(/\w\d/)                 # => ["a1", "b2", "c3"]
 ```
+
+## Now Build Your Own
+
+Write a log parser that reads a file, extracts all lines matching
+`ERROR` or `WARN`, and prints them with line numbers. Use `File.foreach`
+and `=~` to do it without loading the whole file into memory.

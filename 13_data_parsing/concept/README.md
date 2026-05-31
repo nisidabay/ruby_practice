@@ -68,3 +68,10 @@ File.write("out.yml", YAML.dump(data))             # write
 ../project/fconv input.csv output.yaml
 ../project/fconv input.yml output.json
 ```
+
+## Now Build Your Own
+
+Write a script that reads a JSON config file, adds a `"backup"` key
+with `"enabled" => true` and `"path" => "/var/backups"`, and writes
+it back. Handle the case where the file doesn't exist yet by starting
+with defaults.

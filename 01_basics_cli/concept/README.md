@@ -201,3 +201,9 @@ end
 - `reference/OPTIONPARSER_TUTORIAL.md` — Comprehensive written guide
 - [Ruby Docs: OptionParser](https://ruby-doc.org/stdlib/libdoc/optparse/rdoc/OptionParser.html)
 - Run any script with `-h` to see its help message
+
+## Now Build Your Own
+
+Write a CLI tool that takes `--name` and `--repeat N` flags,
+prints `"Hello, #{name}!"` N times, and exits 0 on success.
+Use `optparse_01_basic_flags.rb` as your template.

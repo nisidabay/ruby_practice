@@ -24,7 +24,7 @@ end
 # Now we get all Enumerable methods for free!
 collection = MyArray.new([1, 2, 4])
 
-puts collection.map { |x| x * 2 }.to_a.inspect # [2, 4, 8]
-puts collection.select { |x| x > 1 }.to_a.inspect # [2, 4]
-puts(collection.find { |x| x == 2 }) # 2
-puts(collection.all?(&:positive?)) # true
+p collection.map { |x| x * 2 }.to_a # [2, 4, 8]
+p collection.select { |x| x > 1 }.to_a # [2, 4]
+p(collection.find { |x| x == 2 }) # 2
+p(collection.all?(&:positive?)) # true

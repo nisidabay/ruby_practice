@@ -91,3 +91,9 @@ rescue ArgumentError
   0
 end
 ```
+
+## Now Build Your Own
+
+Write a `safe_read` method that tries to read a file 3 times with
+exponential backoff (1s, 2s, 4s). If all attempts fail, raise a
+custom `PersistentIOError`. Use `retry` and a counter.

@@ -7,6 +7,9 @@
 # Methodology: One Problem -> One Solution -> One Key Insight
 # Goal: Look at the challenge, understand the solution, put it into practice.
 
+require 'open3'
+require 'pathname'
+
 # ------------------------------------------------------------------------------
 # TOPIC: COLLECTION LOGIC (Arrays & Enumerables)
 # ------------------------------------------------------------------------------
@@ -25,10 +28,10 @@ p result
 # Challenge 2: Calculate the product of elements at even indexes
 # Goal: Efficiently aggregate values based on position.
 numbers = [1, 2, 3, 4, 5, 6]
-product = numbers.each_with_index.reduce(1) { |prod, (val, idx)| idx.even? ? prod * val : prod }
+product = numbers.select.with_index { |_, idx| idx.even? }.reduce(1, :*)
 p product # 15 (1 * 3 * 5)
-# Key Insight: `reduce` (or `inject`) is the power-tool for aggregation; always
-# provide an initial value (1 for multiplication, 0 for addition).
+# Key Insight: Filter first, then reduce. Putting conditionals inside a reducer
+# forces manual accumulator passing, which is an anti-pattern.
 
 # Challenge 3: Detect trends in sequential data (Sliding Window)
 # Goal: Compare today's price with yesterday's price.
@@ -37,7 +40,8 @@ prices.each_cons(2) do |yesterday, today|
   diff = today - yesterday
   puts "Trend: #{diff > 0 ? '📈' : '📉'} (#{diff})"
 end
-# Key Insight: `each_cons(n)` (consecutive) is the idiomatic way to implement sliding windows in Ruby.
+# Key Insight: `each_cons(n)` (consecutive) is the idiomatic way to implement
+# sliding windows in Ruby.
 
 # ------------------------------------------------------------------------------
 # TOPIC: STRING & CHARACTER MANIPULATION
@@ -50,13 +54,17 @@ puts "\n--- Topic: String Mastery ---"
 sentence = 'Hello Ruby World'
 count = sentence.downcase.count('aeiou')
 p "Vowel Count: #{count}"
-# Key Insight: `.count` accepts a string of characters or a regex; it's significantly faster than `.select` or `.grep` for simple counting.
+# Key Insight: `.count` accepts a string representing a character set (e.g., 'a-z').
+# It does NOT accept regex. It is significantly faster than `.select` or `.grep`
+# for simple counting.
 
 # Challenge 5: Proper Emoji/Grapheme handling
-# Goal: Iterate over characters that might be composed of multiple bytes (like emojis).
+# Goal: Iterate over characters that might be composed of multiple bytes.
 text = '👧🏽'
-text.each_grapheme_cluster { |c| puts "Cluster: #{c} (Length: #{c.length} bytes)" }
-# Key Insight: Use `each_grapheme_cluster` instead of `chars` when dealing with complex Unicode/Emojis to avoid splitting a single visual character into multiple pieces.
+text.each_grapheme_cluster { |c| puts "Cluster: #{c} (Length: #{c.length} chars, #{c.bytesize} bytes)" }
+# Key Insight: Use `each_grapheme_cluster` instead of `chars` for complex Unicode
+# to avoid splitting visual characters. String#length returns character count,
+# not byte count.
 
 # ------------------------------------------------------------------------------
 # TOPIC: HASH & SET OPERATIONS
@@ -70,7 +78,8 @@ config = { debug: true, cache: false, logging: true }
 required = %i[debug cache timeout]
 missing = required - config.keys
 p "Missing: #{missing}" if missing.any?
-# Key Insight: Treat Hash keys as a Set. Using the subtraction operator (`-`) on arrays of keys is the cleanest way to find missing requirements.
+# Key Insight: Treat Hash keys as a Set. Array subtraction (`-`) is the cleanest
+# way to find missing requirements.
 
 # Challenge 7: Indexing and Labeling a Hash
 # Goal: Print a numbered list of steps from a hash.
@@ -78,7 +87,8 @@ steps = { download: 'Get file', install: 'Run setup', launch: 'Start app' }
 steps.each_with_index do |(step, desc), idx|
   puts "#{idx + 1}. #{step.capitalize}: #{desc}"
 end
-# Key Insight: Deconstruct pairs directly in the block arguments `|(step, desc)|` for maximum readability.
+# Key Insight: Deconstruct pairs directly in the block arguments `|(step, desc)|`
+# for maximum readability.
 
 # ------------------------------------------------------------------------------
 # TOPIC: FILE I/O (Surgical Implementation)
@@ -87,7 +97,7 @@ end
 puts "\n--- Topic: File I/O ---"
 
 # Challenge 8: Atomic Write-Read-Verify cycle
-# Goal: Create a file, add data, and verify it line-by-line without leaving handles open.
+# Goal: Create a file, add data, and verify line-by-line without leaving handles open.
 fn = 'practice_test.txt'
 
 # Write & Append (Surgical)
@@ -100,4 +110,77 @@ File.foreach(fn) { |line| puts "-> #{line.strip}" }
 
 # Cleanup
 File.delete(fn) if File.exist?(fn)
-# Key Insight: `File.write` is for quick whole-file operations; `File.foreach` is mandatory for large files to avoid loading the entire content into RAM (Memory-efficient).
+# Key Insight: `File.write` is for quick whole-file operations; `File.foreach`
+# is mandatory for large files to avoid loading the entire content into RAM.
+
+# ------------------------------------------------------------------------------
+# TOPIC: SYSTEM COMMANDS & SHELL EXECUTION
+# ------------------------------------------------------------------------------
+
+puts "\n--- Topic: Shell Execution ---"
+
+# Challenge 9: Safely execute shell commands and handle failures
+# Goal: Run a system command, capture the output, but don't silently fail if it crashes.
+_, stderr, status = Open3.capture3('ls', '/nonexistent')
+puts "Command failed (as expected): #{stderr.strip}" unless status.success?
+# Key Insight: Never use backticks (`` ` ``) in production scripts unless you
+# explicitly do not care about failure states. Use Open3 for data capture and status.
+
+# ------------------------------------------------------------------------------
+# TOPIC: PATH MANIPULATION (Pathname)
+# ------------------------------------------------------------------------------
+
+puts "\n--- Topic: Path Manipulation ---"
+
+# Challenge 10: Navigate and manipulate the filesystem without string concatenation
+# Goal: Find a config file relative to the current script's location.
+script_dir = Pathname.new(__dir__)
+config_file = script_dir.parent.join('config.yml')
+
+puts "Looking for config at: #{config_file}"
+# Key Insight: `Pathname` wraps File, Dir, and IO into a single object-oriented
+# interface. Always `require 'pathname'` instead of using `File.join`.
+
+# ------------------------------------------------------------------------------
+# TOPIC: CLI INPUT (ARGF)
+# ------------------------------------------------------------------------------
+
+puts "\n--- Topic: CLI Input ---"
+
+# Challenge 11: Write a script that acts like a standard UNIX tool (grep, cat)
+# Goal: Accept input from a piped command OR a file argument.
+#
+# (Commented out so the script doesn't block waiting for input when run directly)
+# ARGF.each_line do |line|
+#   next if line.strip.empty?
+#   puts "Processed: #{line.upcase}"
+# end
+#
+# Key Insight: `ARGF` is a stream designed for CLI tools. It automatically handles
+# reading from STDIN if data is piped, or reading files passed in ARGV.
+
+# ------------------------------------------------------------------------------
+# TOPIC: ERROR RECOVERY
+# ------------------------------------------------------------------------------
+
+puts "\n--- Topic: Error Recovery ---"
+
+# Challenge 12: Handle flaky external resources (APIs, network drives)
+# Goal: Attempt an operation and retry automatically up to 3 times before failing.
+retries = 0
+begin
+  # Simulate flaky call
+  raise 'Network timeout' if retries < 2
+
+  puts 'Operation Success!'
+rescue RuntimeError => e
+  if (retries += 1) <= 3
+    puts "Attempt #{retries} failed (#{e.message}). Retrying..."
+    retry
+  else
+    puts 'Operation failed completely after 3 retries.'
+    raise # Re-raise to kill the script
+  end
+end
+# Key Insight: `retry` jumps back to the `begin` block. You must maintain a
+# counter, otherwise a persistent failure causes an infinite loop.

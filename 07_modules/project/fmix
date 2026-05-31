@@ -13,6 +13,7 @@
 #   class Fmix; include Logging, ColorOutput, SizeFormat; end
 
 require 'optparse'
+require 'shellwords'
 
 module Logging
   def log(msg)
@@ -30,13 +31,8 @@ module ColorOutput
 end
 
 module SizeFormat
-  def human_size(bytes)
-    return '0 B' if bytes.zero?
-
-    units = %w[B KB MB GB TB]
-    exp = (Math.log(bytes) / Math.log(1024)).to_i
-    exp = units.size - 1 if exp >= units.size
-    format('%.1f %s', bytes.to_f / (1024**exp), units[exp])
+  def human_size(path)
+    `du -h #{Shellwords.escape(path)} 2>/dev/null | cut -f1`.strip
   end
 end
 
@@ -46,7 +42,7 @@ class Fmix
   include SizeFormat
 
   def run(args)
-    options = {}
+    options = { verbose: false, color: false }
 
     OptionParser.new do |opts|
       opts.banner = 'Usage: fmix [options] <path>'
@@ -63,17 +59,13 @@ class Fmix
 
     log("Scanning #{path}") if options[:verbose]
 
-    size = begin
-      File.size(path)
-    rescue StandardError
-      0
-    end
-    msg = "#{path}: #{human_size(size)}"
+    size = human_size(path)
+    msg = "#{path}: #{size}"
 
     if options[:color]
-      puts colorize(msg, size > 1024 * 1024 ? :yellow : :green)
+      log(colorize(msg, :yellow))
     else
-      puts msg
+      log(msg)
     end
   end
 end

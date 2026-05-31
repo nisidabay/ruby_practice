@@ -1,8 +1,22 @@
-# Projects — Real-World Ruby Toolbox
+# Projects — The Ruby Toolbox
 
-35+ CLI tools built in Ruby. Each project applies concepts from the numbered groups (01-16).
+These aren't exercises. This is the toolbox of an Arch user who replaced Bash scripts
+with Ruby. Every tool here solved a real problem on a real machine. No frameworks,
+no scaffolding — just pure Ruby doing real work.
 
-## Quick Reference: Tool → Groups
+## Where to Start
+
+If you're new to these tools, try them in this order:
+
+| # | Tool | Why first |
+|---|---|---|
+| 1 | `notes` | Simplest — take a note, save to disk (05 filesystem, 02 strings) |
+| 2 | `calculator` | CLI logic — args, branching, output (01 basics, 03 control flow) |
+| 3 | `ruby_todo` | OOP in practice — classes, files, timestamps (04 OOP, 05 filesystem, 08 time) |
+| 4 | `fzen` | Algorithmic — fuzzy matching in pure Ruby (05 filesystem, 02 strings) |
+| 5 | `dupefinder` | Concurrency — threads scanning your disk (05 filesystem, 10 threads) |
+
+## Tool → Concept Groups
 
 | Tool | What it does | Concepts used |
 |---|---|---|

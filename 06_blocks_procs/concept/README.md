@@ -88,3 +88,9 @@ def capture(&block)
   block.class                           # => Proc
 end
 ```
+
+## Now Build Your Own
+
+Write a `benchmark` method that accepts a block, measures runtime,
+and prints the result. Then write the same using a Proc and a lambda.
+Compare: which is most flexible?

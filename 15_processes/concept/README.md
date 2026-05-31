@@ -65,3 +65,10 @@ trap("TERM") { puts "Terminated";  exit 0 }
 ../project/frun ls -la /tmp
 ../project/frun --timeout 5 curl https://example.com
 ```
+
+## Now Build Your Own
+
+Write a `parallel_build` script that takes a list of directories and
+runs `make` in each one simultaneously using `fork`. Capture each
+child's stdout/stderr with `Open3.capture3` and report which builds
+succeeded or failed.
