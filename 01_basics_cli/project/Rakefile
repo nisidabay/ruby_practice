@@ -1,0 +1,23 @@
+# Rakefile — task automation example
+# Run: rake -T          (list tasks)
+#      rake download    (just download)
+#      rake process     (download + process — chain via dependencies)
+
+task :download do
+  puts "Downloading..."
+  sleep 1
+  File.write("/tmp/rake_demo.txt", "line1\nline2\nline3\n")
+  puts "  → Saved #{File.size('/tmp/rake_demo.txt')} bytes"
+end
+
+task :process => :download do  # runs :download first
+  puts "Processing..."
+  lines = File.readlines("/tmp/rake_demo.txt")
+  puts "  → #{lines.size} lines"
+  lines.each { |l| puts "    #{l.chomp.reverse}" }
+end
+
+task :clean do
+  File.delete("/tmp/rake_demo.txt") rescue nil
+  puts "Cleaned up"
+end
