@@ -39,6 +39,7 @@ ruby exercises.rb                       # FizzBuzz, palindrome, factorial
 | `03_assert_output.rb` | `assert_output` — test stdout/stderr |
 | `04_setup_teardown.rb` | `setup`/`teardown` — shared state across test methods |
 | `composition.rb` | Composing test helpers via modules |
+| `mock_demo.rb` | `Minitest::Mock` — verify calls without side effects |
 
 ### Algorithm Practice (~20 min)
 
