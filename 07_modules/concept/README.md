@@ -1,0 +1,110 @@
+# Modules — Practice Suite
+
+Namespacing, mixins, module_function, and the include/extend duality.
+
+## Quick Start
+
+```bash
+# Module methods
+ruby 01_standalone_methods.rb           # def self.method — callable on module
+ruby 04_extend_self.rb                  # Module as standalone toolbox
+ruby 05_module_function.rb              # Public on module, private when included
+
+# Mixins
+ruby 02_include_for_instances.rb        # include → instance methods
+ruby 03_extend_for_class_methods.rb     # extend → class methods
+ruby 06_hybrid_pattern.rb               # module_function — both module + mixin
+ruby 08_mixins.rb                       # Share instance AND class methods
+
+# Namespacing
+ruby 09_nested_modules.rb               # Organizing classes under namespaces
+
+# Built-in modules
+ruby 07_enumerable.rb                   # Implement each → get 50+ methods free
+```
+
+## Learning Path
+
+### Standalone Modules (~25 min)
+
+| Script | Concept |
+|---|---|
+| `01_standalone_methods.rb` | `def self.method` — callable on the module |
+| `04_extend_self.rb` | Module as standalone toolbox |
+| `05_module_function.rb` | Public on module, private when included in classes |
+
+### Mixins (~30 min)
+
+| Script | Concept |
+|---|---|
+| `02_include_for_instances.rb` | `include` adds instance methods |
+| `03_extend_for_class_methods.rb` | `extend` adds class methods |
+| `06_hybrid_pattern.rb` | `module_function` — both module-level + mixin |
+| `08_mixins.rb` | Share instance AND class methods from one module |
+
+### Namespacing & Built-ins (~20 min)
+
+| Script | Concept |
+|---|---|
+| `09_nested_modules.rb` | Organizing classes under namespaces with `::` |
+| `07_enumerable.rb` | Implement `each` → get `map`, `select`, `reduce` for free |
+
+## include vs extend vs module_function
+
+| Mechanism | Adds to | Typical use |
+|---|---|---|
+| `include Mod` | Instance methods | Share behavior across instances |
+| `extend Mod` | Class methods (singleton) | Add class-level utilities |
+| `module_function :m` | Both: public on module, private in class | Math-like modules |
+| `extend self` | All methods callable on module | Standalone toolbox |
+
+## Common Patterns
+
+```ruby
+# include — instance methods
+module Loggable
+  def log(msg)
+    puts "[#{self.class}] #{msg}"
+  end
+end
+
+class Worker
+  include Loggable
+end
+
+Worker.new.log("starting")              # [Worker] starting
+
+# extend — class methods
+module Finders
+  def find(id)
+    # ...
+  end
+end
+
+class User
+  extend Finders
+end
+
+User.find(1)
+
+# module_function — both
+module MathTools
+  def square(n) = n * n
+  module_function :square
+end
+
+MathTools.square(4)                     # => 16 (module level)
+
+class Calculator
+  include MathTools                     # square is private here
+end
+
+# Nested modules for namespacing
+module MyApp
+  module Auth
+    class Token; end
+  end
+end
+
+MyApp::Auth::Token.new
+```
