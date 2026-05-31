@@ -42,6 +42,7 @@ ruby 06_tracepoint.rb                   # Hook into Ruby's execution events
 | `debug_1.rb` | `binding.break` — suspend execution in-place (Ruby 3.2+) |
 | `02_binding_irb.rb` | `binding.irb` — drop into REPL mid-execution |
 | `04_global_debug.rb` | `$DEBUG` flag — conditional output without changing code |
+| `debug_and_pp.rb` | `pp` — pretty print nested data; debugger setup |
 
 ### Stack Inspection (~20 min)
 
