@@ -1,0 +1,31 @@
+#!/usr/bin/env ruby
+# frozen_string_literal: true
+
+# ftimer — benchmark a command, show real/user/sys time
+require "benchmark"
+require "optparse"
+
+options = {runs: 1}
+OptionParser.new do |opts|
+  opts.banner = "Usage: ftimer [options] <command> [args...]"
+  opts.on("-n", "--runs N", Integer, "Times to run (default: 1)") { |n| options[:runs] = n }
+  opts.on("-h", "--help") { puts opts; exit }
+end.order!
+
+abort "Usage: ftimer <command> [args...]" if ARGV.empty?
+
+cmd = ARGV
+times = []
+
+Benchmark.bm(8) do |x|
+  options[:runs].times do |i|
+    x.report("run #{i + 1}") do
+      start = Time.now
+      system(*cmd, out: File::NULL, err: File::NULL)
+      times << (Time.now - start)
+    end
+  end
+end
+
+avg = times.sum / times.size
+puts "avg: #{(avg * 1000).round}ms over #{options[:runs]} run(s)"
