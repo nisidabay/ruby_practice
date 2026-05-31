@@ -53,6 +53,7 @@ ruby file_system_navigation.rb          # Interactive filesystem navigator
 | `06_expand_path.rb` | Turn relative paths into absolute paths |
 | `07_file_checks.rb` | `exist?` / `file?` / `directory?` |
 | `13_file_metadata.rb` | `stat` without opening: size, mtime, atime |
+| `pathname_tour.rb` | `Pathname` — OOP replacement for File, Dir, IO |
 
 ### Error Handling (~20 min)
 

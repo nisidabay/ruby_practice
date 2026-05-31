@@ -56,6 +56,7 @@ ruby rake_01_basics.rb                             # task definition template
 | `basics_03_input.rb` | `gets`, `$stdin`, `&.` safe navigation |
 | `basics_04_default_arguments.rb` | Keyword args with defaults (`convertible: false`) |
 | `basics_05_splat_args.rb` | Splat `*args` captures variable positional args |
+| `argf_demo.rb` | `ARGF` — pipe or file input, UNIX tool pattern |
 
 ### Method Argument Patterns (~30 min)
 

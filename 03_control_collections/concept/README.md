@@ -61,6 +61,7 @@ ruby next.rb                            # Skip this iteration
 | `array_new.rb` | `Array.new` — size, default value, block |
 | `hashes.rb` | Hash basics and common patterns |
 | `hash_methods.rb` | Hash reference catalog |
+| `config_keys_check.rb` | Hash keys as Set — find missing keys with subtraction |
 | `ranges.rb` | Inclusive `..` vs exclusive `...` |
 | `structs.rb` | Struct — lightweight data class |
 | `sets.rb` | Set — unique element collection |

@@ -29,6 +29,7 @@ ruby strings_methods.rb                 # Quick-lookup catalog (not a concept fi
 | `strings_literals.rb` | Multi-line strings, heredocs |
 | `interpolation.rb` | `#{}` embeds code inside strings |
 | `split_chars.rb` | Split a string into characters |
+| `grapheme_clusters.rb` | `each_grapheme_cluster` — Unicode visual characters |
 
 ### Regex (~30 min)
 
