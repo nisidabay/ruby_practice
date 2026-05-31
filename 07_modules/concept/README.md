@@ -1,5 +1,34 @@
 # Modules — Practice Suite
 
+## What modules are for (plain English)
+
+Modules have two jobs in Ruby:
+
+1. **Namespacing** — preventing name clashes. Like folders for your code:
+   `Auth::Token` won't collide with `Payments::Token`.
+
+2. **Mixins** — sharing behavior without inheritance. Instead of a long
+   parent chain, you compose a class from independent pieces:
+
+   ```ruby
+   class Payment
+     include Loggable
+     include Serializable
+   end
+   ```
+
+   `Payment` gets logging from one module, serialization from another. No
+   inheritance tree. This is composition — the same idea as classical OOP
+   composition, but Ruby's flavor: behaviors are mixed directly into the
+   class rather than held as separate objects you delegate to.
+
+| Style | How it works | Trade-off |
+|-------|-------------|-----------|
+| Classical composition | Hold a reference, delegate | Explicit, but more code |
+| Ruby mixin composition | `include` copies behavior in | Less code, but don't overdo it |
+
+**Use modules to favor composition over inheritance.**
+
 Namespacing, mixins, module_function, and the include/extend duality.
 
 > **YAGNI for language guts:** If the language is showing you its internals —
