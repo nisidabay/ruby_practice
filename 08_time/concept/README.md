@@ -47,13 +47,11 @@ ruby 09_timezones.rb                    # UTC, local time, and zone offsets
 | `08_date_class.rb` | `Date` — date-only objects (requires `require 'date'`) |
 | `09_timezones.rb` | `.utc`, `.localtime`, `.getlocal`, zone offsets |
 
-### Numbers (~15 min)
+### Exercises (~20 min)
 
-| Script | Concept |
-|---|---|
-| `floating_point_numbers.rb` | Float division vs integer division |
-| `predicate_methods.rb` | `.odd?`, `.even?`, `.positive?`, `.negative?` |
-| `the_inequality_operator.rb` | `!=` — not equal to |
+```bash
+ruby ../exercises.rb                     # 5 time-arithmetic exercises + BONUS
+```
 
 ## Common Patterns
 
