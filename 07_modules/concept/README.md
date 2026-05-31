@@ -2,6 +2,10 @@
 
 Namespacing, mixins, module_function, and the include/extend duality.
 
+> **YAGNI for language guts:** If the language is showing you its internals —
+> hooks, base, metaprogramming, the object model — skip it. Procedural code
+> covers 90% of real work. You ain't gonna need it.
+
 ## Quick Start
 
 ```bash
@@ -13,7 +17,6 @@ ruby 05_module_function.rb              # Public on module, private when include
 # Mixins
 ruby 02_include_for_instances.rb        # include → instance methods
 ruby 03_extend_for_class_methods.rb     # extend → class methods
-ruby 08_mixins.rb                       # Share instance AND class methods
 
 # Namespacing
 ruby 09_nested_modules.rb               # Organizing classes under namespaces
@@ -38,7 +41,6 @@ ruby 07_enumerable.rb                   # Implement each → get 50+ methods fre
 |---|---|
 | `02_include_for_instances.rb` | `include` adds instance methods |
 | `03_extend_for_class_methods.rb` | `extend` adds class methods |
-| `08_mixins.rb` | Share instance AND class methods from one module |
 
 ### Namespacing & Built-ins (~20 min)
 
