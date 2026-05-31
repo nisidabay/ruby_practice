@@ -2,38 +2,23 @@
 
 ✅ = in library · ❌ = want to acquire
 
-## Foundational & Beginner
+## Reading Path (mapped to the curriculum)
 
-- **Programming Ruby 3.3 (The Pickaxe Book)** — Noel Rappin & Dave Thomas ✅
-- **The Well-Grounded Rubyist (3rd Edition)** — David A. Black & Joseph Leo III ❌
-- **Beginning Ruby: From Novice to Professional** — Peter Cooper ❌
+| When | Books | Covers |
+|---|---|---|
+| During groups 01–03 (fundamentals) | Pickaxe ✅, Well-Grounded Rubyist ❌, Beginning Ruby ❌ | Language basics, syntax, core classes |
+| During group 04 (OOP) | POODR ❌, 99 Bottles ❌, Eloquent Ruby ❌, Design Patterns ❌ | Object design, idiomatic style |
+| During groups 05–08 (filesystem, blocks, modules, time) | Text Processing with Ruby ✅, Build Awesome CLI Apps ❌ | Real-world scripting patterns |
+| During group 10 (threads) | Working with Ruby Threads ❌ | Concurrency, race conditions |
+| During group 11 (testing) | Effective Testing with RSpec 3 ✅ | Test design, mocking |
+| During groups 13–16 (data, networking, processes, performance) | Everyday Scripting ❌, Polished Ruby ❌ | Automation, advanced patterns |
+| After the curriculum (metaprogramming, internals) | Metaprogramming Ruby 2 ❌, Ruby Under a Microscope ❌ | Dynamic Ruby, MRI internals |
+| Any time (language-agnostic) | Mastering Regular Expressions ❌ | Regex mastery |
+
+## Other Beginner Books
+
 - **Head First Ruby** — Jay McGavren ❌
 - **The Book of Ruby** — Huw Collingbourne ❌
-
-## Design & Technique
-
-- **Practical Object-Oriented Design in Ruby (POODR)** — Sandi Metz ❌
-- **99 Bottles of OOP** — Sandi Metz & Katrina Owen ❌
-- **Eloquent Ruby** — Russ Olsen ❌
-- **Design Patterns in Ruby** — Russ Olsen ❌
-
-## Metaprogramming & Internals
-
-- **Metaprogramming Ruby 2** — Paolo Perrotta ❌
-- **Ruby Under a Microscope** — Pat Shaughnessy ❌
-
-## Specialized
-
-- **Text Processing with Ruby** — Rob Miller ✅
-- **Build Awesome Command-Line Applications in Ruby 2** — David B. Copeland ❌
-- **Polished Ruby Programming** — Jeremy Evans ❌
-- **Everyday Scripting with Ruby** — Brian Marick ❌
-- **Effective Testing with RSpec 3** — Myron Marston & Erin Dees ✅
-
-## References
-
-- **Mastering Regular Expressions** — Jeffrey E.F. Friedl ❌ (language-agnostic)
-- **Working with Ruby Threads** — Jerry D'Antonio ❌ (free online)
 
 ## Online
 
