@@ -1,4 +1,5 @@
 #!/usr/bin/env ruby
+
 # frozen_string_literal: true
 
 # Problem: You want utility methods that are always called on the module itself.

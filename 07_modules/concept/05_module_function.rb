@@ -42,5 +42,12 @@ end
 obj = MathOperations.new
 puts obj.calculate(10, 5) # Works (internal call)
 
-# This fails (external call to private method):
-# obj.add(10, 5)           # NoMethodError!
+class Test
+  extend Calculator
+
+  def self.calculate(a, b) # Works! Internal use is allowed
+    add(a, b)
+  end
+end
+
+p Test.calculate(10, 5)

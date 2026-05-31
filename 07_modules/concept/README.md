@@ -13,7 +13,6 @@ ruby 05_module_function.rb              # Public on module, private when include
 # Mixins
 ruby 02_include_for_instances.rb        # include → instance methods
 ruby 03_extend_for_class_methods.rb     # extend → class methods
-ruby 06_hybrid_pattern.rb               # module_function — both module + mixin
 ruby 08_mixins.rb                       # Share instance AND class methods
 
 # Namespacing
@@ -39,7 +38,6 @@ ruby 07_enumerable.rb                   # Implement each → get 50+ methods fre
 |---|---|
 | `02_include_for_instances.rb` | `include` adds instance methods |
 | `03_extend_for_class_methods.rb` | `extend` adds class methods |
-| `06_hybrid_pattern.rb` | `module_function` — both module-level + mixin |
 | `08_mixins.rb` | Share instance AND class methods from one module |
 
 ### Namespacing & Built-ins (~20 min)

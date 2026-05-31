@@ -31,11 +31,12 @@ end
 
 module SizeFormat
   def human_size(bytes)
-    return "0 B" if bytes.zero?
+    return '0 B' if bytes.zero?
+
     units = %w[B KB MB GB TB]
     exp = (Math.log(bytes) / Math.log(1024)).to_i
     exp = units.size - 1 if exp >= units.size
-    format("%.1f %s", bytes.to_f / (1024 ** exp), units[exp])
+    format('%.1f %s', bytes.to_f / (1024**exp), units[exp])
   end
 end
 
@@ -47,19 +48,26 @@ class Fmix
   def run(args)
     options = {}
 
-    parser = OptionParser.new do |opts|
-      opts.banner = "Usage: fmix [options] <path>"
-      opts.on("-v", "--verbose", "Verbose output") { options[:verbose] = true }
-      opts.on("-c", "--color", "Colorized output") { options[:color] = true }
-      opts.on("-h", "--help") { puts opts; exit }
+    OptionParser.new do |opts|
+      opts.banner = 'Usage: fmix [options] <path>'
+      opts.on('-v', '--verbose', 'Verbose output') { options[:verbose] = true }
+      opts.on('-c', '--color', 'Colorized output') { options[:color] = true }
+      opts.on('-h', '--help') do
+        puts opts
+        exit
+      end
     end.parse!(args)
 
-    path = args[0] || "."
+    path = args[0] || '.'
     abort(colorize("Not found: #{path}", :red)) unless File.exist?(path)
 
     log("Scanning #{path}") if options[:verbose]
 
-    size = File.size(path) rescue 0
+    size = begin
+      File.size(path)
+    rescue StandardError
+      0
+    end
     msg = "#{path}: #{human_size(size)}"
 
     if options[:color]
