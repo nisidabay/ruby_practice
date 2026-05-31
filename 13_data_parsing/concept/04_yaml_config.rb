@@ -1,0 +1,17 @@
+#!/usr/bin/env ruby
+# frozen_string_literal: true
+
+# 04_yaml_config.rb — YAML for human-readable config files
+require "yaml"
+
+config = YAML.safe_load(<<~YAML)
+  database:
+    host: db.internal
+    port: 5432
+  workers: 4
+  enabled: true
+YAML
+
+puts "DB host: #{config["database"]["host"]}"
+puts "Workers: #{config["workers"]}"
+puts "Enabled: #{config["enabled"]}"
