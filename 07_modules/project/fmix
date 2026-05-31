@@ -10,7 +10,7 @@
 #     def log(msg); ...; end             # copy-paste into every class
 #
 # WITH modules — one module per concern, mix into any class:
-#   class Fmix < Thor; include Logging, ErrorHandling, Verbosity; end
+#   class Fmix; include Logging, ColorOutput, SizeFormat; end
 
 require 'optparse'
 
