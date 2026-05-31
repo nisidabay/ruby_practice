@@ -1,0 +1,44 @@
+#!/usr/bin/env ruby
+# frozen_string_literal: true
+
+# frun — run a command and report: exit code, runtime, stdout/stderr summary
+#
+# Usage: frun ls -la /tmp
+#        frun --timeout 5 curl https://httpbin.org/delay/10
+
+require "open3"
+require "optparse"
+require "timeout"
+
+options = {timeout: 30}
+OptionParser.new do |opts|
+  opts.banner = "Usage: frun [options] <command> [args...]"
+  opts.on("-t", "--timeout SEC", Integer, "Timeout in seconds") { |s| options[:timeout] = s }
+  opts.on("-h", "--help") { puts opts; exit }
+end.order!
+
+abort "Usage: frun <command> [args...]" if ARGV.empty?
+
+cmd = ARGV
+start = Time.now
+
+begin
+  Timeout.timeout(options[:timeout]) do
+    stdin, stdout, stderr, wait_thr = Open3.popen3(*cmd)
+    stdin.close
+
+    out = stdout.read
+    err = stderr.read
+    status = wait_thr.value
+    elapsed = ((Time.now - start) * 1000).round
+
+    puts "exit=#{status.exitstatus}  time=#{elapsed}ms"
+    puts "stdout: #{out.lines.size} lines" unless out.empty?
+    puts "stderr: #{err.lines.size} lines" unless err.empty?
+    puts out unless out.empty?
+  end
+rescue Timeout::Error
+  elapsed = ((Time.now - start) * 1000).round
+  $stderr.puts "exit=timeout  time=#{elapsed}ms"
+  exit 124
+end
