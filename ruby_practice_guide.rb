@@ -30,8 +30,9 @@ p result
 numbers = [1, 2, 3, 4, 5, 6]
 product = numbers.select.with_index { |_, idx| idx.even? }.reduce(1, :*)
 p product # 15 (1 * 3 * 5)
-# Key Insight: Filter first, then reduce. Putting conditionals inside a reducer
-# forces manual accumulator passing, which is an anti-pattern.
+# Key Insight: Separate filtering from aggregation. `.select.with_index` picks
+# only the elements you care about. `.reduce` then combines them — clean and
+# focused. Each step does one thing.
 
 # Challenge 3: Detect trends in sequential data (Sliding Window)
 # Goal: Compare today's price with yesterday's price.
@@ -123,8 +124,9 @@ puts "\n--- Topic: Shell Execution ---"
 # Goal: Run a system command, capture the output, but don't silently fail if it crashes.
 _, stderr, status = Open3.capture3('ls', '/nonexistent')
 puts "Command failed (as expected): #{stderr.strip}" unless status.success?
-# Key Insight: Never use backticks (`` ` ``) in production scripts unless you
-# explicitly do not care about failure states. Use Open3 for data capture and status.
+# Key Insight: `Open3.capture3` gives you three things: stdout, stderr, and
+# the exit status. You can check `status.success?` before trusting the output —
+# that's what makes it safe for production scripts.
 
 # ------------------------------------------------------------------------------
 # TOPIC: PATH MANIPULATION (Pathname)
@@ -150,14 +152,22 @@ puts "\n--- Topic: CLI Input ---"
 # Challenge 11: Write a script that acts like a standard UNIX tool (grep, cat)
 # Goal: Accept input from a piped command OR a file argument.
 #
-# (Commented out so the script doesn't block waiting for input when run directly)
-# ARGF.each_line do |line|
-#   next if line.strip.empty?
-#   puts "Processed: #{line.upcase}"
-# end
-#
-# Key Insight: `ARGF` is a stream designed for CLI tools. It automatically handles
-# reading from STDIN if data is piped, or reading files passed in ARGV.
+# Simulate a file argument by writing a temp file to ARGV.
+temp = 'guide_argh_demo.txt'
+File.write(temp, "ALPHA\nbeta\n  GAMMA  \n")
+ARGV.replace([temp])
+
+puts 'ARGF reading from file argument:'
+ARGF.each_line do |line|
+  next if line.strip.empty?
+  puts "  Processed: #{line.strip.upcase}"
+end
+
+ARGV.clear # Don't interfere with later requires
+File.delete(temp)
+# Key Insight: `ARGF` is a stream designed for CLI tools. It automatically reads
+# from STDIN if data is piped, or from files passed in ARGV. Both paths use the
+# same `each_line` call — your logic doesn't change.
 
 # ------------------------------------------------------------------------------
 # TOPIC: ERROR RECOVERY
