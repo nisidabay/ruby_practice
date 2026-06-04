@@ -1,23 +1,114 @@
-# Rakefile — task automation example
-# Run: rake -T          (list tasks)
-#      rake download    (just download)
-#      rake process     (download + process — chain via dependencies)
+# =============================================================================
+# Rakefile — Ruby's Task Automation Tool
+# =============================================================================
+# Rake is Ruby's answer to Make. Tasks are plain Ruby, dependencies form a
+# directed acyclic graph (DAG), and file tasks only run when inputs change.
+#
+# Quick tour:  rake -T          (list documented tasks)
+#              rake             (run default task)
+#              rake build       (run specific task)
+# =============================================================================
 
+# ── PHASE 1: Basic Tasks with Dependencies ───────────────────────────────────
+# A task is a named block of Ruby. Dependencies run first, in order.
+
+desc 'Simulate downloading a file'
 task :download do
-  puts "Downloading..."
-  sleep 1
-  File.write("/tmp/rake_demo.txt", "line1\nline2\nline3\n")
+  puts 'Downloading...'
+  sleep 0.5
+  File.write('/tmp/rake_demo.txt', "line1\nline2\nline3\n")
   puts "  → Saved #{File.size('/tmp/rake_demo.txt')} bytes"
 end
 
-task :process => :download do  # runs :download first
-  puts "Processing..."
-  lines = File.readlines("/tmp/rake_demo.txt")
+desc 'Process downloaded data (depends on :download)'
+task process: :download do  # :download runs first
+  puts 'Processing...'
+  lines = File.readlines('/tmp/rake_demo.txt')
   puts "  → #{lines.size} lines"
   lines.each { |l| puts "    #{l.chomp.reverse}" }
 end
 
+desc 'Remove generated files'
 task :clean do
-  File.delete("/tmp/rake_demo.txt") rescue nil
-  puts "Cleaned up"
+  File.delete('/tmp/rake_demo.txt') if File.exist?('/tmp/rake_demo.txt')
+  File.delete('build/') rescue nil
+  puts 'Cleaned up'
+end
+
+# ── PHASE 2: File Tasks — Only Rebuild When Inputs Change ───────────────────
+# A file task names a file as its target. Rake compares timestamps — if the
+# target is newer than all its prerequisites, the task is skipped.
+
+directory 'build'
+
+file 'build/uppercase.txt' => ['build', '/tmp/rake_demo.txt'] do
+  puts 'Generating build/uppercase.txt...'
+  content = File.read('/tmp/rake_demo.txt').upcase
+  File.write('build/uppercase.txt', content)
+end
+
+desc 'Build files with timestamp-aware rebuilds'
+task generate: 'build/uppercase.txt'
+
+# ── PHASE 3: Rules — Pattern-Matched File Generation ─────────────────────────
+# Rules match a pattern (like %.html) and define how to create that kind of
+# file from its source (%.md → %.html). One rule handles infinite files.
+
+rule '.reversed' => '.txt' do |t|
+  puts "Reversing #{t.source} → #{t.name}"
+  content = File.read(t.source).lines.map { |l| l.chomp.reverse }.join("\n")
+  File.write(t.name, content)
+end
+
+# Create a source file so the rule has something to match
+file 'build/sample.txt' => 'build' do
+  File.write('build/sample.txt', "first\nsecond\nthird\n")
+end
+
+desc 'Demonstrate rule-based generation'
+task reverse: 'build/sample.reversed'
+
+# ── PHASE 4: Namespaces — Organize Large Task Sets ───────────────────────────
+# Namespaces group related tasks. The separator is : (same as dependencies).
+
+namespace :db do
+  desc 'Create database schema'
+  task :create do
+    puts 'db:create — schema created'
+  end
+
+  desc 'Run migrations'
+  task migrate: :create do  # :create inside same namespace
+    puts 'db:migrate — migrations applied'
+  end
+
+  desc 'Seed with sample data'
+  task seed: :migrate do
+    puts 'db:seed — sample data loaded'
+  end
+end
+
+desc 'Full database setup (create → migrate → seed)'
+task db_setup: 'db:seed'
+
+# ── PHASE 5: The Default Task ────────────────────────────────────────────────
+# `rake` with no arguments runs :default. Convention: show available tasks.
+
+task default: :list
+
+desc 'Show available tasks'
+task :list do
+  puts 'Available tasks:'
+  sh 'rake -T'
+end
+
+# ── PHASE 6: Calling Tasks from Ruby ─────────────────────────────────────────
+# You can invoke any task programmatically. Useful for scripts that want to
+# reuse Rake task logic without shelling out.
+
+desc 'Invoke a Rake task from Ruby code (self-demo)'
+task :invoke_demo do
+  puts 'Calling :download programmatically...'
+  Rake::Task[:download].invoke
+  puts 'Done — :download ran inside :invoke_demo'
 end

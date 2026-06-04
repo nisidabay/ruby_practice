@@ -81,12 +81,13 @@ ruby rake_01_basics.rb                             # task definition template
 | `optparse_08_parse_vs_parse_bang.rb` | `parse!` (mutates ARGV) vs `parse` (returns) | 10 min |
 | `optparse_09_stderr_exit_codes.rb` | `$stderr` for errors, exit codes for shell | 10 min |
 
-### Rake (~15 min)
+### Rake (~30 min)
 
-| Script | Concept |
-|---|---|
-| `rake_01_basics.rb` | `task` definitions, `=>` dependencies, `rake -T` |
-| `../project/Rakefile` | Working example: download → process → clean |
+| Script | Concept | Time |
+|---|---|---|
+| `rake_01_basics.rb` | `task` definitions, `=>` dependencies, `rake -T` | 5 min |
+| `rake_essentials.rb` | When Rake vs. plain Ruby script — decision guide | 5 min |
+| `../project/Rakefile` | 6-phase progressive: deps, file tasks, rules, namespaces, defaults, invoke | 20 min |
 
 ### Reference
 
@@ -164,16 +165,35 @@ end
 ### Rake Patterns
 
 ```ruby
-# Single task
+# Basic task
 task :greet do
   puts "Hello!"
 end
 
 # Task with dependencies (runs :download first)
-task :process => :download do
+task process: :download do
   data = File.read("/tmp/data.txt")
-  # ...
 end
+
+# File task — only runs if target is older than source
+file 'output.pdf' => 'input.md' do
+  sh 'pandoc input.md -o output.pdf'
+end
+
+# Rule — one pattern, infinite files
+rule '.reversed' => '.txt' do |t|
+  content = File.read(t.source).reverse
+  File.write(t.name, content)
+end
+
+# Namespaces — organize with ::
+namespace :db do
+  task create: ... end
+  task migrate: :create do ... end
+end
+
+# Programmatic invocation from Ruby
+Rake::Task[:download].invoke
 
 # List all tasks: rake -T
 ```
