@@ -194,3 +194,62 @@ rescue RuntimeError => e
 end
 # Key Insight: `retry` jumps back to the `begin` block. You must maintain a
 # counter, otherwise a persistent failure causes an infinite loop.
+
+# ------------------------------------------------------------------------------
+# TOPIC: TASK AUTOMATION (Rake)
+# ------------------------------------------------------------------------------
+
+puts "\n--- Topic: Task Automation ---"
+
+# Challenge 13: Automate a build pipeline with Rake
+# Goal: Define tasks with dependencies and file-based rebuild rules.
+#
+# Rake is Ruby's task runner — it's a Rakefile (not .rb), run with `rake`.
+# This challenge writes a temp Rakefile, runs it, and shows how task
+# dependencies chain together.
+
+rakefile = <<~'RAKEFILE'
+  desc 'Compile styles'
+  task :styles do
+    puts '  Compiling SCSS...'
+    Dir.mkdir('build') unless Dir.exist?('build')
+    File.write('build/site.css', '/* compiled styles */')
+  end
+
+  desc 'Minify JavaScript'
+  task :scripts do
+    puts '  Minifying JS...'
+    File.write('build/site.js', '// minified scripts')
+  end
+
+  desc 'Build everything (styles + scripts)'
+  task build: %i[styles scripts] do
+    size_css = File.size('build/site.css')
+    size_js  = File.size('build/site.js')
+    puts "  Built: site.css (#{size_css}B) + site.js (#{size_js}B)"
+  end
+
+  desc 'Remove build artifacts'
+  task :clean do
+    File.delete('build/site.css') if File.exist?('build/site.css')
+    File.delete('build/site.js')  if File.exist?('build/site.js')
+    Dir.rmdir('build') if Dir.exist?('build')
+    puts '  Cleaned build/'
+  end
+RAKEFILE
+
+tmp_rf = 'guide_demo_Rakefile'
+File.write(tmp_rf, rakefile)
+
+puts 'Build pipeline:'
+_stdout, stderr, status = Open3.capture3('rake', '-f', tmp_rf, 'build')
+puts _stdout if status.success?
+puts stderr unless status.success?
+
+puts 'Cleanup:'
+Open3.capture3('rake', '-f', tmp_rf, 'clean')
+File.delete(tmp_rf) if File.exist?(tmp_rf)
+
+# Key Insight: Rake resolves the dependency graph automatically. `build` depends
+# on `styles` and `scripts`, so both run first. The array syntax `%i[styles
+# scripts]` means "both these tasks must complete before build runs."
