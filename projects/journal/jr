@@ -1,0 +1,120 @@
+#!/usr/bin/env ruby
+# frozen_string_literal: true
+
+# jr — single-file CLI learning journal.
+# No gems. No configs. One JSON file on disk.
+# Symlink: ~/bin/jr -> ~/bin/journal/jr
+#
+# Usage:
+#   jr add    TOPIC  BODY
+#   jr list   [--topic TOPIC] [--limit N]
+#   jr search QUERY
+#   jr delete ID
+#
+# The journal file lives next to the real script as journal.json.
+
+require "optparse"
+require "time"
+require_relative "lib/entry"
+require_relative "lib/store"
+
+JOURNAL_PATH = File.join(__dir__, "journal.json")
+
+# ------------------------------------------------------------------ helpers
+
+# Width for the display-line columns (id + date + topic + body).
+DISPLAY_WIDTH = 80
+
+# ------------------------------------------------------------------ commands
+
+def add(topic, body)
+  entries = Store.load(JOURNAL_PATH)
+  next_id = Store.max_id(JOURNAL_PATH) + 1
+  now     = Time.now.strftime("%Y-%m-%d %H:%M:%S")
+
+  entry = Entry.new(id: next_id, timestamp: now, topic: topic, body: body)
+  entries << entry
+  Store.save(JOURNAL_PATH, entries)
+
+  puts entry.display_line(DISPLAY_WIDTH)
+end
+
+def list(topic: nil, limit: nil)
+  entries = Store.load(JOURNAL_PATH)
+
+  entries = entries.select { |e| e.matches?(topic) } if topic
+  entries = entries.last(limit.to_i)                  if limit
+
+  if entries.empty?
+    puts topic ? "No entries for topic '#{topic}'" : "Journal is empty"
+  else
+    entries.each { |e| puts e.display_line(DISPLAY_WIDTH) }
+  end
+end
+
+def search(query)
+  entries = Store.load(JOURNAL_PATH)
+  hits    = entries.select { |e| e.matches?(query) }
+
+  if hits.empty?
+    puts "No entries match '#{query}'"
+  else
+    puts "#{hits.size} match(es):"
+    hits.each { |e| puts e.display_line(DISPLAY_WIDTH) }
+  end
+end
+
+def delete(id_str)
+  id      = id_str.to_i
+  entries = Store.load(JOURNAL_PATH)
+  target  = entries.find { |e| e.id == id }
+
+  unless target
+    puts "Entry ##{id} not found"
+    return
+  end
+
+  entries.reject! { |e| e.id == id }
+  Store.save(JOURNAL_PATH, entries)
+
+  puts "Deleted ##{id}: #{target.topic} — #{target.body}"
+end
+
+# ------------------------------------------------------------------ dispatch
+
+command = ARGV.shift
+
+case command
+when "add"
+  abort "Usage: jr add TOPIC BODY" if ARGV.size < 2
+  topic = ARGV.shift
+  body  = ARGV.join(" ")
+  add(topic, body)
+
+when "list"
+  options = {}
+  OptionParser.new do |opts|
+    opts.on("--topic TOPIC", "Filter by topic") { |v| options[:topic] = v }
+    opts.on("--limit N", Integer, "Show last N entries") { |v| options[:limit] = v }
+  end.parse!
+  list(**options)
+
+when "search"
+  abort "Usage: jr search QUERY" if ARGV.empty?
+  search(ARGV.join(" "))
+
+when "delete"
+  abort "Usage: jr delete ID" if ARGV.empty?
+  delete(ARGV.first)
+
+else
+  puts <<~USAGE
+    jr — learning journal CLI
+
+    Usage:
+      jr add    TOPIC  BODY     Add a new entry
+      jr list   [--topic X] [--limit N]
+      jr search QUERY           Case-insensitive topic/body search
+      jr delete ID              Remove an entry by id
+  USAGE
+end
