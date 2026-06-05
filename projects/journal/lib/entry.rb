@@ -17,7 +17,7 @@ class Entry
   end
 
   def display_line(width = 80)
-    ts = @timestamp[5..15] # "MM-DD HH:MM"
+    ts = @timestamp[0..15] # "YYYY-MM-DD HH:MM"
     "#{id.to_s.rjust(3)}  #{ts}  #{@topic[0..20].ljust(22)}  #{@body[0..width - 32]}"
   end
 
