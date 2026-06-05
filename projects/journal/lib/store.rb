@@ -1,8 +1,8 @@
 #!/usr/bin/env ruby
 # frozen_string_literal: true
 
-require "json"
-require_relative "entry"
+require 'json'
+require_relative 'entry'
 
 # Store reads/writes journal entries as a flat JSON array.
 # No pagination here — that's a CLI concern.
@@ -14,10 +14,10 @@ class Store
     raw.map do |hash|
       # JSON keys are strings; Entry expects symbols.
       Entry.new(
-        id:        hash["id"].to_i,
-        timestamp: hash["timestamp"].to_s,
-        topic:     hash["topic"].to_s,
-        body:      hash["body"].to_s
+        id: hash['id'].to_i,
+        timestamp: hash['timestamp'].to_s,
+        topic: hash['topic'].to_s,
+        body: hash['body'].to_s
       )
     end
   end
