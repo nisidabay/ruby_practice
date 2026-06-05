@@ -1,0 +1,32 @@
+[
+  {
+    "id": 1,
+    "timestamp": "2026-01-15 09:30:00",
+    "topic": "Ruby",
+    "body": "First Ruby script — hello world with OptionParser"
+  },
+  {
+    "id": 2,
+    "timestamp": "2026-01-16 14:20:00",
+    "topic": "Nim",
+    "body": "Reading files with readFile"
+  },
+  {
+    "id": 3,
+    "timestamp": "2026-01-17 11:45:00",
+    "topic": "Bash",
+    "body": "Refactored backup script with trap for cleanup"
+  },
+  {
+    "id": 4,
+    "timestamp": "2026-02-01 08:15:00",
+    "topic": "Awk",
+    "body": "Learned associative arrays for log parsing"
+  },
+  {
+    "id": 5,
+    "timestamp": "2026-02-05 16:30:00",
+    "topic": "Ruby",
+    "body": "JSON serialization with stdlib json module"
+  }
+]
