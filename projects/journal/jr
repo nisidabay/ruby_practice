@@ -1,17 +1,16 @@
 #!/usr/bin/env ruby
 # frozen_string_literal: true
 
-# jr — single-file CLI learning journal.
+# jr — CLI learning journal.
 # No gems. No configs. One JSON file on disk.
 # Symlink: ~/bin/jr -> ~/bin/journal/jr
 #
-# Usage:
-#   jr add    TOPIC  BODY
-#   jr list   [--topic TOPIC] [--limit N]
-#   jr search QUERY
-#   jr delete ID
-#
-# The journal file lives next to the real script as journal.json.
+# Commands:
+#   jr add     TOPIC  BODY     Add a new entry
+#   jr modify  ID              Edit topic/body interactively
+#   jr list    [--topic X] [--limit N]
+#   jr search  QUERY           Case-insensitive topic/body search
+#   jr delete  ID              Remove an entry by id
 
 require 'optparse'
 require 'time'
