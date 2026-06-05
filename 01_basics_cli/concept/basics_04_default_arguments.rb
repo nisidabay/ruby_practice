@@ -3,7 +3,7 @@
 
 def create_car(model, convertible: false)
   puts "Created #{model}"
-  puts "Convertible #{convertible}" if convertible
+  puts "\tConvertible #{convertible}" if convertible
   puts '-'
 end
 

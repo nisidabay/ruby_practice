@@ -7,7 +7,14 @@
 # Piped:      echo "db.internal" | ruby input.rb
 
 # "&" validate the "gets" command from being empty before "chomping it"
+
 host = $stdin.gets&.chomp || 'localhost'
 port = $stdin.gets&.chomp || '5432'
+
+puts "Connecting to #{host}:#{port}..."
+
+# Use ARGF instead of $stdin
+host = ARGF.gets&.chomp || 'localhost'
+port = ARGF.gets&.chomp || '5432'
 
 puts "Connecting to #{host}:#{port}..."
