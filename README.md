@@ -47,7 +47,7 @@ Then keep going: `02_strings_regex` → `03_control_collections` → `04_oop` �
 
 ## The Toolbox
 
-`projects/` contains 35+ real CLI tools built with these concepts —
+`projects/` contains 36+ real CLI tools built with these concepts —
 system monitors, file finders, config generators, backup scripts.
 Everything here was built to solve an actual problem on a Linux machine.
 See `projects/README.md` for a guided tour.

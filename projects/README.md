@@ -15,6 +15,7 @@ If you're new to these tools, try them in this order:
 | 3 | `ruby_todo` | OOP in practice — classes, files, timestamps (04 OOP, 05 filesystem, 08 time) |
 | 4 | `fzen` | Algorithmic — fuzzy matching in pure Ruby (05 filesystem, 02 strings) |
 | 5 | `dupefinder` | Concurrency — threads scanning your disk (05 filesystem, 10 threads) |
+| 6 | `journal` | Multi-file CLI — entries, subcommands, JSON store (01 basics, 04 OOP, 13 data parsing) |
 
 ## Tool → Concept Groups
 
@@ -34,6 +35,7 @@ If you're new to these tools, try them in this order:
 | `git_helper` | Conventional commit validator | 02 (regex), 05 (filesystem) |
 | `gum_ruby` | Gum CLI wrapper in Ruby | process I/O, 01 (basics) |
 | `gum_todo_list` | Todo with Gum TUI | process I/O, 05 (filesystem) |
+| `journal` | Learning journal — add, list, search, delete entries via JSON | 01 (basics — OptionParser), 04 (OOP — Entry class), 13 (data parsing — JSON) |
 | `kittycmd` | Kitty terminal config generator | 05 (filesystem), 02 (strings) |
 | `logwatch` | Log viewer + filter | 05 (filesystem), 10 (threads) |
 | `nirilaunch` | Niri compositor launcher | 05 (filesystem), process |
@@ -58,6 +60,9 @@ If you're new to these tools, try them in this order:
 
 ## By Concept Group
 
+### 01 Basics & CLI
+`calculator`, `todo_list1`, `journal`, `gum_ruby`, `Rakefile`
+
 ### 02 Strings & Regex
 `git_helper`, `renamer`, `format_ruby_files`, `fzen`, `proj`, `kittycmd`, `notes`, `add_documentation`, `cpu_info`
 
@@ -65,7 +70,7 @@ If you're new to these tools, try them in this order:
 `calculator`, `tty`
 
 ### 04 OOP
-`contacts`, `ruby_todo`, `tasks`, `todo_list2`, `nuggets_manager`
+`contacts`, `ruby_todo`, `tasks`, `todo_list2`, `nuggets_manager`, `journal`
 
 ### 05 Filesystem
 *Everything* touches the filesystem, but these lean heaviest:
@@ -79,6 +84,7 @@ If you're new to these tools, try them in this order:
 
 ### 13 Data Parsing
 `fconv` — JSON, CSV, YAML conversion
+`journal` — JSON store with stdlib json module
 
 ### 14 Networking
 `fcheck` — HTTP health check and latency
@@ -96,6 +102,12 @@ Most tools are self-contained single-file scripts:
 ```bash
 cp <tool>/<tool>.rb ~/.local/bin/<tool>
 chmod +x ~/.local/bin/<tool>
+```
+
+Multi-file tools like `journal` can be run from their directory:
+
+```bash
+cd projects/journal && ./jr list
 ```
 
 Check each tool's own README for specific dependencies and setup.
