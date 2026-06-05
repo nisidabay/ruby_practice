@@ -58,7 +58,7 @@ OptionParser.new do |opts|
 
   # Optional integer
   opts.on('-w', '--wait [SECONDS]', Integer, 'Wait time in seconds') do |seconds|
-    raise OptionParser::InvalidArgument, 'Wait cannot be negative' if wait < 0
+    raise OptionParser::InvalidArgument, 'Wait cannot be negative' if seconds < 0
 
     options[:wait] = seconds || 0
   end

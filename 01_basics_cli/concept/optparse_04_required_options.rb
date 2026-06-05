@@ -78,7 +78,7 @@ end.parse!
 
 # Validation: Check required options
 required = %i[api_key endpoint]
-missing = required.reject { |key| options.key?(key) }
+missing = required.reject { |key| options[key] }
 
 if missing.any?
   puts 'Error: Missing required options:'
@@ -91,10 +91,12 @@ if missing.any?
 end
 
 # Validation: Check mutually exclusive options
-if options[:format] == :json && options[:xml]
-  puts 'Error: Cannot use both --json and --xml'
-  exit 1
-end
+# Note: Since we use a single :format key, they are naturally exclusive.
+# This block is kept for conceptual demonstration of how to check multiple keys.
+# if options[:json] && options[:xml]
+#   puts 'Error: Cannot use both --json and --xml'
+#   exit 1
+# end
 
 # Validation: Check dependent options
 if options[:timeout] && options[:timeout] <= 0

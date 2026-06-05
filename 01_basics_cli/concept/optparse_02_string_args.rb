@@ -80,5 +80,5 @@ end
 
 if options[:email]
   puts "Would send email to:
-  {options[:email]}"
+  #{options[:email]}"
 end

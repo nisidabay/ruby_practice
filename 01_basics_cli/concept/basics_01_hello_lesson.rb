@@ -14,7 +14,7 @@
 #
 # WITH #each — Ruby handles the iteration:
 
-orders = ["ORD-001", "ORD-002", "ORD-003"]
+orders = %w[ORD-001 ORD-002 ORD-003]
 
 orders.each do |order|
   puts "Processing #{order}..."
