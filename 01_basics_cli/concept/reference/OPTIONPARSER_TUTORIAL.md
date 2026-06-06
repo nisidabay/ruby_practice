@@ -380,13 +380,14 @@ end
 
 | Script | Focus |
 |--------|-------|
-| `01_basic_flags.rb` | Simple boolean flags |
-| `02_string_args.rb` | String arguments |
-| `03_type_conversion.rb` | Integer, Float, Array types |
-| `04_required_options.rb` | Validation and requirements |
-| `05_custom_validation.rb` | Custom validators |
-| `06_advanced_features.rb` | Separators, version, complex setups |
-| `07_real_world_cli.rb` | Complete CLI application |
+| `optparse_01_basic_flags.rb` | Boolean flags, `--[no-]option` |
+| `optparse_02_parse_vs_parse_bang.rb` | `parse!` vs `parse`, ARGV mutation |
+| `optparse_03_string_args.rb` | Value-taking args, required vs optional |
+| `optparse_04_type_conversion.rb` | Integer, Float auto-conversion |
+| `optparse_05_validation.rb` | Rescue, stderr, required/custom validation |
+| `optparse_06_advanced_types.rb` | Array, restricted values, optional typed args |
+| `optparse_07_separators_banners.rb` | Option groups, separators, version flag |
+| `optparse_08_subcommands.rb` | Complete subcommand CLI (capstone) |
 
 Run each script with `-h` to see available options!
 

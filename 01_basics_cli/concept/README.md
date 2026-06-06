@@ -28,16 +28,15 @@ ruby args_02_kwarg_forwarding.rb                  # forward **flags to another m
 ruby args_03_block_argument.rb                    # &block explicit block parameter
 ruby args_04_argument_forwarding.rb               # (...) forwards everything
 
-# 3. OptionParser series
-ruby optparse_01_basic_flags.rb -v --debug
-ruby optparse_02_string_args.rb -n "Alice" --email "alice@example.com"
-ruby optparse_03_type_conversion.rb -p 8080 -r 3.14 -t ruby -t python
-ruby optparse_04_required_options.rb --api-key abc123 --endpoint https://api.example.com
-ruby optparse_05_custom_validation.rb --port 8080 --env production
-ruby optparse_06_advanced_features.rb -V
-ruby optparse_07_real_world_cli.rb deploy --environment production --servers web1,web2 --dry-run
-ruby optparse_08_parse_vs_parse_bang.rb
-ruby optparse_09_stderr_exit_codes.rb --port 99999
+# 3. OptionParser series (crescendo: each builds on the one before)
+ruby optparse_01_basic_flags.rb -v --debug --no-quiet
+ruby optparse_02_parse_vs_parse_bang.rb
+ruby optparse_03_string_args.rb -n "Alice" --email "alice@example.com"
+ruby optparse_04_type_conversion.rb -p 8080 -r 2.5
+ruby optparse_05_validation.rb --api-key abc123 --endpoint https://api.example.com
+ruby optparse_06_advanced_types.rb -t ruby -t python -i abc,def -f json -w 5
+ruby optparse_07_separators_banners.rb --host 0.0.0.0 --port 3000 --verbose
+ruby optparse_08_subcommands.rb deploy --environment production --servers web1,web2
 
 # 4. Rake — task automation
 cd ../project && rake -T                           # list available tasks
@@ -67,19 +66,18 @@ ruby rake_01_basics.rb                             # task definition template
 | `args_03_block_argument.rb` | `&block` — capture block as Proc (store it, forward it) |
 | `args_04_argument_forwarding.rb` | `(...)` — forward ALL args (positional + keyword + block) |
 
-### OptionParser Series (~2 hours)
+### OptionParser Series (~2 hours) — Crescendo: each file builds on the one before
 
-| Script | Concepts | Time |
-|---|---|---|
-| `optparse_01_basic_flags.rb` | Boolean flags, `--[no-]option` pattern | 10 min |
-| `optparse_02_string_args.rb` | String arguments, required vs optional | 15 min |
-| `optparse_03_type_conversion.rb` | Integer, Float, Array, restricted values | 20 min |
-| `optparse_04_required_options.rb` | Post-parse validation, mutual exclusion | 15 min |
-| `optparse_05_custom_validation.rb` | Custom validators, error handling | 20 min |
-| `optparse_06_advanced_features.rb` | Separators, banners, version | 15 min |
-| `optparse_07_real_world_cli.rb` | Complete CLI application | 30 min |
-| `optparse_08_parse_vs_parse_bang.rb` | `parse!` (mutates ARGV) vs `parse` (returns) | 10 min |
-| `optparse_09_stderr_exit_codes.rb` | `$stderr` for errors, exit codes for shell | 10 min |
+| Script | Concepts | Builds on | Time |
+|---|---|---|---|
+| `optparse_01_basic_flags.rb` | Boolean flags, `--[no-]option` pattern | — | 10 min |
+| `optparse_02_parse_vs_parse_bang.rb` | `parse!` mutates ARGV vs `parse` returns | 01 (now you understand the bang) | 10 min |
+| `optparse_03_string_args.rb` | Value-taking args, required vs optional brackets | 01 (block receives value instead of nothing) | 15 min |
+| `optparse_04_type_conversion.rb` | Integer, Float auto-conversion | 03 (block gets typed value, not String) | 15 min |
+| `optparse_05_validation.rb` | `begin/rescue/end`, `$stderr`, required validation, custom validators | 03+04 (errors + pipe problem) | 25 min |
+| `optparse_06_advanced_types.rb` | Array, restricted values, optional typed args | 04 (more type patterns) | 20 min |
+| `optparse_07_separators_banners.rb` | Option groups, `separator`, version flag, dynamic banner | 01+03+04 (now organized) | 15 min |
+| `optparse_08_subcommands.rb` | Subcommands, `order!` vs `parse!`, full CLI tool | 01–07 capstone | 30 min |
 
 ### Rake (~30 min)
 
