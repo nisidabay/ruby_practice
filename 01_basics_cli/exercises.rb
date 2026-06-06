@@ -1,6 +1,3 @@
-#!/usr/bin/env ruby
-# frozen_string_literal: true
-
 # exercises.rb — CLI argument parsing practice
 #
 # Run me: ruby exercises.rb --verbose --count 5 file1 file2
@@ -14,24 +11,24 @@ options = {
   name: nil
 }
 
-parser = OptionParser.new do |opts|
-  opts.banner = "exercises.rb [options]"
+OptionParser.new do |opts|
+  opts.banner = 'exercises.rb [options]'
 
-  opts.on("-v", "--verbose", "Enable verbose mode") do
+  opts.on('-v', '--verbose', 'Enable verbose mode') do
     options[:verbose] = true
   end
 
-  opts.on("-c", "--count N", Integer, "Number of iterations") do |n|
+  opts.on('-c', '--count N', Integer, 'Number of iterations') do |n|
     options[:count] = n
   end
 
-  opts.on("-n", "--name NAME", String, "Your name") do |s|
+  opts.on('-n', '--name NAME', String, 'Your name') do |s|
     options[:name] = s
   end
 end.parse!
 
 # === Exercise 1: Print parsed options ===
-puts "=== Exercise 1: Options ==="
+puts '=== Exercise 1: Options ==='
 # --- your code here ---
 # HINT: print options[:verbose], options[:count], options[:name]
 
