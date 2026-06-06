@@ -10,10 +10,12 @@
 #           as a Proc object.
 
 def benchmark(label, &block)
+  raise ArgumentError, 'No block was provided!' unless block
+
   start = Time.now
   result = block.call
   elapsed = Time.now - start
-  puts "#{label}: #{elapsed.round(4)}s"
+  puts "#{label}: #{elapsed}s"
   result
 end
 
@@ -22,11 +24,3 @@ answer = benchmark('calculation') do
   42
 end
 puts "result: #{answer}"
-
-# Without &block you'd need yield, but yield can't be stored or forwarded:
-#
-#   def benchmark(label)
-#     start = Time.now
-#     result = yield    # only option — can't pass it elsewhere
-#     ...
-#   end
