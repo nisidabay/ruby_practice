@@ -16,15 +16,14 @@ require "optparse"
 require "json"
 
 VERSION = "1.0.0"
-PROGRAM = File.basename($0)
 
-config = {
+options = {
   environment: nil, servers: [], branch: "main",
   dry_run: false, verbose: false, format: :text
 }
 
 parser = OptionParser.new do |opts|
-  opts.banner = "Usage: #{PROGRAM} <command> [options]"
+  opts.banner = "Usage: #{File.basename($0)} <command> [options]"
   opts.separator ""
   opts.separator "Commands:"
   opts.separator "  deploy    Deploy to environment"
@@ -35,42 +34,40 @@ parser = OptionParser.new do |opts|
   opts.separator "Target:"
   opts.separator "────"
   opts.on("-e", "--environment ENV", %w[dev staging production],
-          "Target environment (required for deploy)") { |env| config[:environment] = env }
+          "Target environment (required for deploy)") { |env| options[:environment] = env }
 
   opts.on("-s", "--servers S1,S2,S3", Array,
-          "Server list") { |s| config[:servers] = s }
+          "Server list") { |s| options[:servers] = s }
 
   # ── Deployment ──
   opts.separator ""
   opts.separator "Deployment:"
   opts.separator "────"
-  opts.on("-b", "--branch BRANCH", "Git branch (default: main)") { |b| config[:branch] = b }
-  opts.on("--dry-run", "Simulate, don't execute")                { config[:dry_run] = true }
+  opts.on("-b", "--branch BRANCH", "Git branch (default: main)") { |b| options[:branch] = b }
+  opts.on("--dry-run", "Simulate, don't execute")                { options[:dry_run] = true }
 
   # ── Output ──
   opts.separator ""
   opts.separator "Output:"
   opts.separator "────"
-  opts.on("--json", "JSON output")        { config[:format] = :json }
-  opts.on("--verbose", "Verbose output")  { config[:verbose] = true }
+  opts.on("--json", "JSON output")        { options[:format] = :json }
+  opts.on("--verbose", "Verbose output")  { options[:verbose] = true }
 
   # ── General ──
   opts.separator ""
   opts.separator "General:"
   opts.separator "────"
-  opts.on("-V", "--version", "Show version") { puts "#{PROGRAM} v#{VERSION}"; exit }
+  opts.on("-V", "--version", "Show version") { puts "#{File.basename($0)} v#{VERSION}"; exit }
   opts.on("-h", "--help", "Show this help")  { puts opts; exit }
 end
 
-# ═══════════════════════════
 # Parse (with rescue from 05)
-# ═══════════════════════════
 begin
   parser.parse!
 rescue OptionParser::InvalidOption, OptionParser::InvalidArgument,
        OptionParser::MissingArgument => e
   $stderr.puts "Error: #{e.message}"
-  $stderr.puts "Try '#{PROGRAM} --help'."
+  $stderr.puts "Try '#{File.basename($0)} --help'."
   exit 1
 end
 
@@ -79,47 +76,43 @@ command = ARGV.shift
 VALID_COMMANDS = %w[deploy status].freeze
 unless command && VALID_COMMANDS.include?(command)
   $stderr.puts "Error: Expected one of: #{VALID_COMMANDS.join(', ')}"
-  $stderr.puts "Try '#{PROGRAM} --help'."
+  $stderr.puts "Try '#{File.basename($0)} --help'."
   exit 1
 end
 
-# ═══════════════════════════
 # Post-parse validation (from 05)
-# ═══════════════════════════
-if command == "deploy" && !config[:environment]
+if command == "deploy" && !options[:environment]
   $stderr.puts "Error: --environment is required for deploy"
   exit 1
 end
 
-# ═══════════════════════════
 # Execute
-# ═══════════════════════════
-puts "[VERBOSE] Starting #{command}..." if config[:verbose]
+puts "[VERBOSE] Starting #{command}..." if options[:verbose]
 
 result = { command: command, timestamp: Time.now.iso8601 }
 
 case command
 when "deploy"
   result[:action]   = "deploying"
-  result[:env]      = config[:environment]
-  result[:branch]   = config[:branch]
-  result[:servers]  = config[:servers]
-  result[:dry_run]  = config[:dry_run]
+  result[:env]      = options[:environment]
+  result[:branch]   = options[:branch]
+  result[:servers]  = options[:servers]
+  result[:dry_run]  = options[:dry_run]
 
 when "status"
   result[:action] = "checking status"
-  result[:env]    = config[:environment] || "all"
+  result[:env]    = options[:environment] || "all"
   # Simulated status data
   result[:servers] = { web1: "healthy", web2: "healthy", db: "healthy" }
 end
 
-if config[:format] == :json
+if options[:format] == :json
   puts JSON.pretty_generate(result)
 else
   puts "#{result[:action].capitalize} → #{result[:env]}"
   puts "Branch:  #{result[:branch]}"  if result[:branch]
   puts "Servers: #{result[:servers].join(', ')}" if result[:servers].is_a?(Array) && result[:servers].any?
-  puts "[DRY RUN — no changes made]" if config[:dry_run]
+  puts "[DRY RUN — no changes made]" if options[:dry_run]
   if result[:servers].is_a?(Hash)
     result[:servers].each { |name, status| puts "  #{name}: #{status}" }
   end
