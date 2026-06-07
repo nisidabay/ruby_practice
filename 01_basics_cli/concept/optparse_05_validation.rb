@@ -5,7 +5,7 @@
 #
 # Validation happens at TWO levels:
 #   1. Inside the block → raise OptionParser::InvalidArgument (caught by parser)
-#   2. After parse! → check required/mutual-exclusion constraints
+#   2. After parse! → check required options are present
 #
 # ERRORS GO TO $stderr, NOT stdout. Why? The pipe problem:
 #
@@ -57,9 +57,7 @@ parser = OptionParser.new do |opts|
   end
 end
 
-# ═══════════════════════════════════════════
 # LEVEL 1: Parse-time errors (caught by rescue)
-# ═══════════════════════════════════════════
 begin
   parser.parse!
 rescue OptionParser::InvalidOption, OptionParser::InvalidArgument,
@@ -69,9 +67,7 @@ rescue OptionParser::InvalidOption, OptionParser::InvalidArgument,
   exit 1
 end
 
-# ═══════════════════════════════════════════
 # LEVEL 2: Post-parse validation
-# ═══════════════════════════════════════════
 required = %w[api-key endpoint]
 missing  = required.reject { |k| options[k] }
 
@@ -80,14 +76,7 @@ if missing.any?
   exit 1
 end
 
-if options[:format] == :json && options[:format] == :xml
-  $stderr.puts "Error: --json and --xml are mutually exclusive"
-  exit 1
-end
-
-# ═══════════════════════════════════════════
 # Success output → stdout (safe to pipe)
-# ═══════════════════════════════════════════
 puts "API Key:  #{options['api-key'][0..4]}..."  # mask secret
 puts "Endpoint: #{options['endpoint']}"
 puts "Timeout:  #{options[:timeout]}s"
