@@ -9,40 +9,34 @@
 
 require "optparse"
 
-program = File.basename($0, ".rb")
-
-# ═══════════════════════════════════════════
 # parse! — DESTRUCTIVE. Removes options from the array in-place.
-# ═══════════════════════════════════════════
 
 argv = ["--verbose", "file1.txt", "file2.txt"]
 puts "Before parse!: #{argv.inspect}"
 
-opts = {}
-OptionParser.new do |o|
-  o.banner = "Usage: #{program} [options] [files...]"
-  o.on("-v", "--verbose", "Enable verbose") { opts[:verbose] = true }
+options = {}
+OptionParser.new do |opts|
+  opts.banner = "Usage: #{File.basename($0)} [options] [files...]"
+  opts.on("-v", "--verbose", "Enable verbose") { options[:verbose] = true }
 end.parse!(argv)
 
 puts "After parse!:  #{argv.inspect}"      # ["file1.txt", "file2.txt"]
-puts "Parsed:        #{opts.inspect}"      # {:verbose => true}
+puts "Parsed:        #{options.inspect}"   # {:verbose => true}
 puts
 
-# ═══════════════════════════════════════════
 # parse — NON-DESTRUCTIVE. Returns remaining args, leaves original alone.
-# ═══════════════════════════════════════════
 
 argv2 = ["--verbose", "data.csv", "out.json"]
 puts "Before parse: #{argv2.inspect}"
 
-opts2 = {}
-remaining = OptionParser.new do |o|
-  o.on("-v", "--verbose") { opts2[:verbose] = true }
+options2 = {}
+remaining = OptionParser.new do |opts|
+  opts.on("-v", "--verbose") { options2[:verbose] = true }
 end.parse(argv2)
 
 puts "After parse:  #{argv2.inspect}"     # unchanged
 puts "Remaining:    #{remaining.inspect}"  # ["data.csv", "out.json"]
-puts "Parsed:       #{opts2.inspect}"
+puts "Parsed:       #{options2.inspect}"
 puts
 puts "parse! => mutates the array, use with ARGV."
 puts "parse  => returns remaining, use when you need original intact."
