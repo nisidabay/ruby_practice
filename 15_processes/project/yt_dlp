@@ -3,34 +3,46 @@
 
 # yt_dlp — download YouTube videos to ~/Downloads/youtube_videos/
 #
-# Usage: yt_dlp <url>
-#        yt_dlp --format mp4 <url>
-#        yt_dlp --output-dir ~/Videos <url>
+# Usage: ruby_yt_dlp.rb [options] <url>
+#     -f, --format [FMT]               Video format (default: bestvideo+bestaudio)
+#     -o, --output-dir [DIR]           Output directory (default:/home/nisidabay/Downloads/youtube_videos)
+#     -h, --help                       Show this help
 
-require "optparse"
+require 'optparse'
 
-YTDLP  = "yt-dlp"
-OUTDIR = File.expand_path("~/Downloads/youtube_videos")
+YTDLP  = 'yt-dlp'
+NOTIFY = 'notify-send'
+REQUIREMENTS = [YTDLP, NOTIFY]
+OUTDIR = File.expand_path('~/Downloads/youtube_videos')
 
-options = { format: "bestvideo+bestaudio", output_dir: OUTDIR }
+options = { format: 'bestvideo+bestaudio', output_dir: OUTDIR }
 OptionParser.new do |opts|
   opts.banner = "Usage: #{File.basename($0)} [options] <url>"
-  opts.on("-f", "--format FMT", "Video format (default: bestvideo+bestaudio)") { |f| options[:format] = f }
-  opts.on("-o", "--output-dir DIR", "Output directory") { |d| options[:output_dir] = File.expand_path(d) }
-  opts.on("-h", "--help", "Show this help") { puts opts; exit }
+  opts.on('-f', '--format [FMT]', "Video format (default: #{options[:format]})") { |f| options[:format] = f }
+  opts.on('-o', '--output-dir [DIR]', "Output directory (default:#{options[:output_dir]})") do |o|
+    options[:output_dir] = File.expand_path(o)
+  end
+  opts.on('-h', '--help', 'Show this help') do
+    puts opts
+    exit
+  end
 end.parse!
 
 abort "Usage: #{File.basename($0)} <url>" if ARGV.empty?
-abort "Error: #{YTDLP} not found. Install with: pacman -S yt-dlp" unless system("command -v #{YTDLP} > /dev/null 2>&1")
+
+REQUIREMENTS.each do |req|
+  abort "Error: #{req} not found. Install with: pacman -S yt-dlp" unless system("command -v #{req} > /dev/null 2>&1")
+end
 
 url = ARGV[0]
 Dir.mkdir(options[:output_dir]) unless Dir.exist?(options[:output_dir])
 
-name = "%(title)s.%(ext)s"
+name = '%(title)s.%(ext)s'
 out  = File.join(options[:output_dir], name)
 
 puts "Downloading: #{url}"
 puts "Output:      #{options[:output_dir]}/#{name}"
 
-system(YTDLP, "-o", out, "-f", options[:format], url) or abort "Download failed."
-puts "Done."
+system(YTDLP, '-o', out, '-f', options[:format], url) or abort 'Download failed.'
+system(NOTIFY, '📥 Ruby downloader', '\tDownload completed')
+puts 'Done.'
