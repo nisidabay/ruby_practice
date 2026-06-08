@@ -1,0 +1,36 @@
+#!/usr/bin/env ruby
+# frozen_string_literal: true
+
+# yt_dlp — download YouTube videos to ~/Downloads/youtube_videos/
+#
+# Usage: yt_dlp <url>
+#        yt_dlp --format mp4 <url>
+#        yt_dlp --output-dir ~/Videos <url>
+
+require "optparse"
+
+YTDLP  = "yt-dlp"
+OUTDIR = File.expand_path("~/Downloads/youtube_videos")
+
+options = { format: "bestvideo+bestaudio", output_dir: OUTDIR }
+OptionParser.new do |opts|
+  opts.banner = "Usage: #{File.basename($0)} [options] <url>"
+  opts.on("-f", "--format FMT", "Video format (default: bestvideo+bestaudio)") { |f| options[:format] = f }
+  opts.on("-o", "--output-dir DIR", "Output directory") { |d| options[:output_dir] = File.expand_path(d) }
+  opts.on("-h", "--help", "Show this help") { puts opts; exit }
+end.parse!
+
+abort "Usage: #{File.basename($0)} <url>" if ARGV.empty?
+abort "Error: #{YTDLP} not found. Install with: pacman -S yt-dlp" unless system("command -v #{YTDLP} > /dev/null 2>&1")
+
+url = ARGV[0]
+Dir.mkdir(options[:output_dir]) unless Dir.exist?(options[:output_dir])
+
+name = "%(title)s.%(ext)s"
+out  = File.join(options[:output_dir], name)
+
+puts "Downloading: #{url}"
+puts "Output:      #{options[:output_dir]}/#{name}"
+
+system(YTDLP, "-o", out, "-f", options[:format], url) or abort "Download failed."
+puts "Done."
