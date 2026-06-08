@@ -1,4 +1,3 @@
-#!/usr/bin/env ruby
 # frozen_string_literal: true
 
 # 04_type_conversion.rb — OptionParser auto-converts arguments to types
@@ -10,7 +9,7 @@
 #   ruby optparse_04_type_conversion.rb --port 3000 --rate 1.0 --count 3
 #   ruby optparse_04_type_conversion.rb -h
 
-require "optparse"
+require 'optparse'
 
 options = { port: 8080, rate: 1.0, count: 1 }
 
@@ -18,19 +17,19 @@ OptionParser.new do |opts|
   opts.banner = "Usage: #{File.basename($0)} [options]"
 
   # Pass Integer as the 3rd argument → block receives an Integer, not a String
-  opts.on("-p", "--port PORT", Integer, "Port number (default: 8080)") do |port|
+  opts.on('-p', '--port PORT', Integer, 'Port number (default: 8080)') do |port|
     options[:port] = port
   end
 
-  opts.on("-r", "--rate RATE", Float, "Rate value (default: 1.0)") do |rate|
+  opts.on('-r', '--rate RATE', Float, 'Rate value (default: 1.0)') do |rate|
     options[:rate] = rate
   end
 
-  opts.on("-c", "--count COUNT", Integer, "Number of items (default: 1)") do |count|
+  opts.on('-c', '--count COUNT', Integer, 'Number of items (default: 1)') do |count|
     options[:count] = count
   end
 
-  opts.on("-h", "--help", "Show this help") do
+  opts.on('-h', '--help', 'Show this help') do
     puts opts
     exit
   end
