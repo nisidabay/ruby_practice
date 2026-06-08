@@ -64,6 +64,10 @@ trap("TERM") { puts "Terminated";  exit 0 }
 # Run a command with timeout and status report
 ../project/frun ls -la /tmp
 ../project/frun --timeout 5 curl https://example.com
+
+# Download YouTube videos
+../project/yt_dlp <url>
+../project/yt_dlp --format mp4 <url>
 ```
 
 ## Now Build Your Own
