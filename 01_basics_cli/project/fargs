@@ -23,29 +23,29 @@ options = {
 }
 
 parser = OptionParser.new do |opts|
-  opts.banner = "Usage: fargs [options] <path> [path...]"
+  opts.banner = 'Usage: fargs [options] <path> [path...]'
 
-  opts.on("-v", "--verbose", "Show detailed output") do
+  opts.on('-v', '--verbose', 'Show detailed output') do
     options[:verbose] = true
   end
 
-  opts.on("--min-size BYTES", Integer, "Minimum file size") do |n|
+  opts.on('--min-size BYTES', Integer, 'Minimum file size') do |n|
     options[:min_size] = n
   end
 
-  opts.on("--max-size BYTES", Integer, "Maximum file size") do |n|
+  opts.on('--max-size BYTES', Integer, 'Maximum file size') do |n|
     options[:max_size] = n
   end
 
-  opts.on("--type TYPE", %w[file dir symlink], "Filter by type: file, dir, symlink") do |t|
+  opts.on('--type TYPE', %w[file dir symlink], 'Filter by type: file, dir, symlink') do |t|
     options[:type] = t
   end
 
-  opts.on("--pattern GLOB", "Filename pattern (e.g. '*.rb')") do |p|
+  opts.on('--pattern GLOB', "Filename pattern (e.g. '*.rb')") do |p|
     options[:pattern] = p
   end
 
-  opts.on("-h", "--help", "Show this message") do
+  opts.on('-h', '--help', 'Show this message') do
     puts opts
     exit
   end
@@ -54,17 +54,18 @@ end
 parser.parse!
 
 def human_size(bytes)
-  return "0 B" if bytes.zero?
+  return '0 B' if bytes.zero?
+
   units = %w[B KB MB GB TB]
   exp = (Math.log(bytes) / Math.log(1024)).to_i
   exp = units.size - 1 if exp >= units.size
-  format("%.1f %s", bytes.to_f / (1024 ** exp), units[exp])
+  format('%.1f %s', bytes.to_f / (1024**exp), units[exp])
 end
 
 paths = ARGV
 if paths.empty?
-  paths = ["."]
-  warn "fargs: no paths specified, using current directory" if options[:verbose]
+  paths = ['.']
+  warn 'fargs: no paths specified, using current directory' if options[:verbose]
 end
 
 # Walk the paths and collect matching entries
@@ -85,9 +86,9 @@ paths.each do |root|
     # Type filter
     if options[:type]
       case options[:type]
-      when "file" then next unless stat.file?
-      when "dir" then next unless stat.directory?
-      when "symlink" then next unless stat.symlink?
+      when 'file' then next unless stat.file?
+      when 'dir' then next unless stat.directory?
+      when 'symlink' then next unless stat.symlink?
       end
     end
 
@@ -96,25 +97,23 @@ paths.each do |root|
     next if stat.file? && options[:max_size] && stat.size > options[:max_size]
 
     # Pattern filter
-    if options[:pattern]
-      next unless File.fnmatch(options[:pattern], File.basename(path))
-    end
+    next if options[:pattern] && !File.fnmatch(options[:pattern], File.basename(path))
 
     matched += 1
     total_bytes += stat.size if stat.file?
 
     type_char = case true
-                when stat.symlink? then "@"
-                when stat.directory? then "/"
-                when stat.file? then " "
-                else "?"
+                when stat.symlink? then '@'
+                when stat.directory? then '/'
+                when stat.file? then ' '
+                else '?'
                 end
 
     if options[:verbose]
       printf("%s%s  %10s  %s\n",
-             stat.mode.to_s(8)[-4..] || "????",
+             stat.mode.to_s(8)[-4..] || '????',
              type_char,
-             stat.file? ? human_size(stat.size) : "-",
+             stat.file? ? human_size(stat.size) : '-',
              path)
     else
       printf("%s%s  %s\n", type_char, type_char, path)
