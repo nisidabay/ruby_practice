@@ -5,8 +5,6 @@
 # In 03, the block got a String. Here, OptionParser does the conversion
 # BEFORE the block runs: Integer, Float.
 #
-#   ruby optparse_04_type_conversion.rb -p 8080 -r 2.5
-#   ruby optparse_04_type_conversion.rb --port 3000 --rate 1.0 --count 3
 #   ruby optparse_04_type_conversion.rb -h
 
 require 'optparse'
@@ -15,8 +13,6 @@ options = { port: 8080, rate: 1.0, count: 1 }
 
 OptionParser.new do |opts|
   opts.banner = "Usage: #{File.basename($0)} [options]"
-
-  # Pass Integer as the 3rd argument → block receives an Integer, not a String
   opts.on('-p', '--port PORT', Integer, 'Port number (default: 8080)') do |port|
     options[:port] = port
   end
