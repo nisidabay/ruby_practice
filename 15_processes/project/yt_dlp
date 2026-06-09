@@ -3,24 +3,29 @@
 
 # yt_dlp — download YouTube videos to ~/Downloads/youtube_videos/
 #
-# Usage: ruby_yt_dlp.rb [options] <url>
+# Usage: ruby_yt_dlp.rb [options] <url1> [url2] ...
 #     -f, --format [FMT]               Video format (default: bestvideo+bestaudio)
 #     -o, --output-dir [DIR]           Output directory (default:/home/nisidabay/Downloads/youtube_videos)
+#     -c, --concurrency [NUM]          Number of concurrent downloads (default: 3)
 #     -h, --help                       Show this help
 
 require 'optparse'
+require 'thread'
 
 YTDLP  = 'yt-dlp'
 NOTIFY = 'notify-send'
 REQUIREMENTS = [YTDLP, NOTIFY]
 OUTDIR = File.expand_path('~/Downloads/youtube_videos')
 
-options = { format: 'bestvideo+bestaudio', output_dir: OUTDIR }
+options = { format: 'bestvideo+bestaudio', output_dir: OUTDIR, concurrency: 3 }
 OptionParser.new do |opts|
-  opts.banner = "Usage: #{File.basename($0)} [options] <url>"
+  opts.banner = "Usage: #{File.basename($0)} [options] <url1> [url2] ..."
   opts.on('-f', '--format [FMT]', "Video format (default: #{options[:format]})") { |f| options[:format] = f }
   opts.on('-o', '--output-dir [DIR]', "Output directory (default:#{options[:output_dir]})") do |o|
     options[:output_dir] = File.expand_path(o)
+  end
+  opts.on('-c', '--concurrency [NUM]', Integer, "Number of concurrent downloads (default: #{options[:concurrency]})") do |c|
+    options[:concurrency] = c
   end
   opts.on('-h', '--help', 'Show this help') do
     puts opts
@@ -28,21 +33,48 @@ OptionParser.new do |opts|
   end
 end.parse!
 
-abort "Usage: #{File.basename($0)} <url>" if ARGV.empty?
+abort "Usage: #{File.basename($0)} <url1> [url2] ..." if ARGV.empty?
 
 REQUIREMENTS.each do |req|
   abort "Error: #{req} not found. Install with: pacman -S yt-dlp" unless system("command -v #{req} > /dev/null 2>&1")
 end
 
-url = ARGV[0]
+urls = ARGV
 Dir.mkdir(options[:output_dir]) unless Dir.exist?(options[:output_dir])
 
 name = '%(title)s.%(ext)s'
 out  = File.join(options[:output_dir], name)
 
-puts "Downloading: #{url}"
-puts "Output:      #{options[:output_dir]}/#{name}"
+puts "Downloading #{urls.size} video(s) with concurrency=#{options[:concurrency]}"
+puts "Output directory: #{options[:output_dir]}"
+puts
 
-system(YTDLP, '-o', out, '-f', options[:format], url) or abort 'Download failed.'
-system(NOTIFY, '📥 Ruby downloader', '\tDownload completed')
+# Thread pool for concurrent downloads
+semaphore = Mutex.new
+download_queue = Queue.new
+urls.each { |url| download_queue << url }
+
+threads = []
+options[:concurrency].times do
+  threads << Thread.new do
+    while (url = download_queue.pop(true) rescue nil)
+      begin
+        puts "[#{Thread.current.object_id}] Starting: #{url}"
+        result = system(YTDLP, '-o', out, '-f', options[:format], url)
+        if result
+          puts "[#{Thread.current.object_id}] Completed: #{url}"
+        else
+          puts "[#{Thread.current.object_id}] Failed: #{url}"
+        end
+      rescue => e
+        puts "[#{Thread.current.object_id}] Error: #{e.message}"
+      end
+    end
+  end
+end
+
+# Wait for all threads to complete
+threads.each(&:join)
+
+system(NOTIFY, '📥 Ruby downloader', "\tDownload completed")
 puts 'Done.'
