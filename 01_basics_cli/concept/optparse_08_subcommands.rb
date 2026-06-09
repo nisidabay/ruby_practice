@@ -12,108 +12,182 @@
 #   ruby optparse_08_subcommands.rb status           # missing command
 #   ruby optparse_08_subcommands.rb -h
 
-require "optparse"
-require "json"
+require 'optparse'
+require 'json'
 
-VERSION = "1.0.0"
+VERSION = '1.0.0'
 
-options = {
-  environment: nil, servers: [], branch: "main",
-  dry_run: false, verbose: false, format: :text
-}
+# ── Option parsing ──────────────────────────────────────────────────────────
 
-parser = OptionParser.new do |opts|
-  opts.banner = "Usage: #{File.basename($0)} <command> [options]"
-  opts.separator ""
-  opts.separator "Commands:"
-  opts.separator "  deploy    Deploy to environment"
-  opts.separator "  status    Show deployment status"
-  opts.separator ""
+def parse_options(argv)
+  options = {
+    environment: nil, servers: [], branch: 'main',
+    dry_run: false, verbose: false, format: :text
+  }
 
-  # ── Target ──
-  opts.separator "Target:"
-  opts.separator "────"
-  opts.on("-e", "--environment ENV", %w[dev staging production],
-          "Target environment (required for deploy)") { |env| options[:environment] = env }
-
-  opts.on("-s", "--servers S1,S2,S3", Array,
-          "Server list") { |s| options[:servers] = s }
-
-  # ── Deployment ──
-  opts.separator ""
-  opts.separator "Deployment:"
-  opts.separator "────"
-  opts.on("-b", "--branch BRANCH", "Git branch (default: main)") { |b| options[:branch] = b }
-  opts.on("--dry-run", "Simulate, don't execute")                { options[:dry_run] = true }
-
-  # ── Output ──
-  opts.separator ""
-  opts.separator "Output:"
-  opts.separator "────"
-  opts.on("--json", "JSON output")        { options[:format] = :json }
-  opts.on("--verbose", "Verbose output")  { options[:verbose] = true }
-
-  # ── General ──
-  opts.separator ""
-  opts.separator "General:"
-  opts.separator "────"
-  opts.on("-V", "--version", "Show version") { puts "#{File.basename($0)} v#{VERSION}"; exit }
-  opts.on("-h", "--help", "Show this help")  { puts opts; exit }
-end
-
-# Parse (with rescue from 05)
-begin
-  parser.parse!
+  parser = build_parser(options)
+  parser.parse!(argv)
+  options
 rescue OptionParser::InvalidOption, OptionParser::InvalidArgument,
        OptionParser::MissingArgument => e
-  $stderr.puts "Error: #{e.message}"
-  $stderr.puts "Try '#{File.basename($0)} --help'."
+  warn "Error: #{e.message}"
+  warn "Try '#{File.basename($PROGRAM_NAME)} --help'."
   exit 1
 end
 
-command = ARGV.shift
+def build_parser(options)
+  OptionParser.new do |opts|
+    opts.banner = "Usage: #{File.basename($PROGRAM_NAME)} <command> [options]"
 
-VALID_COMMANDS = %w[deploy status].freeze
-unless command && VALID_COMMANDS.include?(command)
-  $stderr.puts "Error: Expected one of: #{VALID_COMMANDS.join(', ')}"
-  $stderr.puts "Try '#{File.basename($0)} --help'."
-  exit 1
-end
-
-# Post-parse validation (from 05)
-if command == "deploy" && !options[:environment]
-  $stderr.puts "Error: --environment is required for deploy"
-  exit 1
-end
-
-# Execute
-puts "[VERBOSE] Starting #{command}..." if options[:verbose]
-
-result = { command: command, timestamp: Time.now.iso8601 }
-
-case command
-when "deploy"
-  result[:action]   = "deploying"
-  result[:env]      = options[:environment]
-  result[:branch]   = options[:branch]
-  result[:servers]  = options[:servers]
-  result[:dry_run]  = options[:dry_run]
-
-when "status"
-  result[:action] = "checking status"
-  result[:env]    = options[:environment] || "all"
-  # Simulated status data
-  result[:servers] = { web1: "healthy", web2: "healthy", db: "healthy" }
-end
-
-if options[:format] == :json
-  puts JSON.pretty_generate(result)
-else
-  puts "#{result[:action].capitalize} → #{result[:env]}"
-  puts "Branch:  #{result[:branch]}"  if result[:branch]
-  puts "Servers: #{result[:servers].join(', ')}" if result[:servers].is_a?(Array) && result[:servers].any?
-  puts "[DRY RUN — no changes made]" if options[:dry_run]
-  if result[:servers].is_a?(Hash)
-    result[:servers].each { |name, status| puts "  #{name}: #{status}" }
+    add_command_section(opts)
+    add_target_options(opts, options)
+    add_deployment_options(opts, options)
+    add_output_options(opts, options)
+    add_general_options(opts)
+    add_examples(opts)
   end
 end
+
+def add_command_section(opts)
+  opts.separator ''
+  opts.separator 'Commands:'
+  opts.separator '  deploy    Deploy to environment'
+  opts.separator '  status    Show deployment status'
+end
+
+def add_target_options(opts, options)
+  opts.separator 'Target:'
+  opts.separator '────'
+  opts.on('-e', '--environment ENV', %w[dev staging production],
+          'Target environment (required for deploy)') do |env|
+    options[:environment] = env
+  end
+  opts.on('-s', '--servers S1,S2,S3', Array, 'Server list') do |s|
+    options[:servers] = s
+  end
+end
+
+def add_deployment_options(opts, options)
+  opts.separator ''
+  opts.separator 'Deployment:'
+  opts.separator '────'
+  opts.on('-b', '--branch BRANCH', 'Git branch (default: main)') { |b| options[:branch] = b }
+  opts.on('--dry-run', "Simulate, don't execute")                { options[:dry_run] = true }
+end
+
+def add_output_options(opts, options)
+  opts.separator ''
+  opts.separator 'Output:'
+  opts.separator '────'
+  opts.on('--json', 'JSON output')       { options[:format] = :json }
+  opts.on('--verbose', 'Verbose output') { options[:verbose] = true }
+end
+
+def add_general_options(opts)
+  opts.separator ''
+  opts.separator 'General:'
+  opts.separator '────'
+  opts.on('-h', '--help', 'Show this help') do
+    puts opts
+    exit
+  end
+  opts.on('-V', '--version', 'Show version') do
+    puts "#{File.basename($PROGRAM_NAME)} v#{VERSION}"
+    exit
+  end
+end
+
+def add_examples(opts)
+  exe = File.basename($PROGRAM_NAME)
+  opts.separator ''
+  opts.separator 'Examples:'
+  opts.separator '────'
+  opts.separator "  #{exe} deploy --environment production --servers web1,web2,web3 --branch release/v2"
+  opts.separator "  #{exe} deploy -e staging -s web1,web2 --dry-run"
+  opts.separator "  #{exe} deploy -e dev -b hotfix --verbose"
+  opts.separator "  #{exe} status --environment production --json"
+  opts.separator "  #{exe} status -e dev --json --verbose"
+  opts.separator "  #{exe} status --verbose"
+  opts.separator "  #{exe} --version"
+end
+
+# ── Command dispatch ────────────────────────────────────────────────────────
+
+def extract_command(argv)
+  command = argv.shift
+
+  unless command && %w[deploy status].include?(command)
+    warn 'Error: Expected one of: deploy, status'
+    warn "Try '#{File.basename($PROGRAM_NAME)} --help'."
+    exit 1
+  end
+
+  command
+end
+
+def validate_command(command, options)
+  return unless command == 'deploy' && !options[:environment]
+
+  warn 'Error: --environment is required for deploy'
+  exit 1
+end
+
+# ── Command handlers ────────────────────────────────────────────────────────
+
+def run_deploy(options)
+  {
+    command: 'deploy',
+    action: 'deploying',
+    env: options[:environment],
+    branch: options[:branch],
+    servers: options[:servers],
+    dry_run: options[:dry_run],
+    timestamp: Time.now.iso8601
+  }
+end
+
+def run_status(options)
+  {
+    command: 'status',
+    action: 'checking status',
+    env: options[:environment] || 'all',
+    servers: { web1: 'healthy', web2: 'healthy', db: 'healthy' },
+    timestamp: Time.now.iso8601
+  }
+end
+
+# ── Output formatting ───────────────────────────────────────────────────────
+
+def format_result(result, options)
+  if options[:format] == :json
+    puts JSON.pretty_generate(result)
+  else
+    format_text(result, options)
+  end
+end
+
+def format_text(result, options)
+  puts "[VERBOSE] Starting #{result[:command]}..." if options[:verbose]
+  puts "#{result[:action].capitalize} → #{result[:env]}"
+  puts "Branch:  #{result[:branch]}" if result[:branch]
+  puts "Servers: #{result[:servers].join(', ')}" if result[:servers].is_a?(Array) && result[:servers].any?
+  puts '[DRY RUN — no changes made]' if result[:dry_run]
+  result[:servers].each { |name, status| puts "  #{name}: #{status}" } if result[:servers].is_a?(Hash)
+end
+
+# ── Main ────────────────────────────────────────────────────────────────────
+
+def main(argv = ARGV)
+  options = parse_options(argv)
+  command = extract_command(argv)
+  validate_command(command, options)
+
+  result = case command
+           when 'deploy' then run_deploy(options)
+           when 'status' then run_status(options)
+           end
+
+  format_result(result, options)
+end
+
+main if $PROGRAM_NAME == __FILE__
