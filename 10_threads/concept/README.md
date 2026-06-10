@@ -23,6 +23,9 @@ ruby 04_ractor.rb                       # True OS threads with isolated state
 ruby 04_condition_variable.rb           # Threads wait until signal from another
 ruby 05_thread_local_vars.rb            # Thread#[] — per-thread storage
 ruby 06_thread_pool.rb                  # Worker pool pulling from a shared queue
+
+# Hacking scripts
+ruby 05_port_scanner_threaded.rb        # Queue + Mutex + Timeout port scanner
 ```
 
 ## Learning Path
@@ -57,6 +60,12 @@ ruby 06_thread_pool.rb                  # Worker pool pulling from a shared queu
 | `04_condition_variable.rb` | Threads wait until another thread signals |
 | `05_thread_local_vars.rb` | `Thread#[]` / `Thread#[]=` — per-thread storage |
 | `06_thread_pool.rb` | Worker pool: Mutex + ConditionVariable + Queue |
+
+### Hacking Scripts (~15 min)
+
+| Script | Concept |
+|---|---|
+| `05_port_scanner_threaded.rb` | `Queue` + `Mutex` + `Timeout` applied to TCP scanning |
 
 ## Common Patterns
 

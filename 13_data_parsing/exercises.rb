@@ -56,3 +56,19 @@ end
 #     # your loop here
 #   end
 #   puts count_keys(blob)
+
+puts "\n=== 4. Logfmt Parser ==="
+# Parse a logfmt string into a hash. Start with a simple approach.
+line = 'status=200 method=GET path=/api/users'
+result = {}
+# --- your code here ---
+# HINT: line.split.each { |pair| k, v = pair.split("="); result[k] = v }
+puts result.inspect
+
+puts "\n=== 5. MD5 Hash ==="
+# Compute the MD5 hash of "hello" and compare it against a known value.
+require "digest/md5"
+known = "5d41402abc4b2a76b9719d911017c592"
+# --- your code here ---
+# HINT: Digest::MD5.hexdigest("hello")
+# HINT: Check if result == known

@@ -39,6 +39,12 @@ ruby strings_methods.rb                 # Quick-lookup catalog (not a concept fi
 | `regular_expressions.rb` | `sub` (first), `gsub` (all), `scan` (iterate) |
 | `ip_address.rb` | Regex validation + `!!` boolean coercion |
 
+### Crypto (~15 min)
+
+| Script | Concept |
+|---|---|
+| `09_xor_cipher.rb` | `unpack('U*')`, `Array#zip`, bitwise XOR `^`, `pack('U*')`, `case/in` pattern matching |
+
 ### Exercises
 
 ```bash
@@ -50,6 +56,10 @@ ruby ex-custom-split_4.rb              # Custom split implementation
 ruby ex-custom-count_5.rb              # Count matching characters
 ruby ex-custom-delete_6.rb              # Delete selected characters
 ruby ex-custom-index_7.rb               # Find first index of substring
+
+# Crypto
+ruby 09_xor_cipher.rb cipher 'hello' secret /tmp/xor.txt
+ruby 09_xor_cipher.rb decipher secret /tmp/xor.txt
 ```
 
 ## Common Patterns

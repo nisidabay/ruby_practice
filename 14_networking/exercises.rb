@@ -45,6 +45,28 @@ server.close
 
 puts response
 
+# --- Hacking Scripts ---
+
+puts "\n=== 4. Simple Port Scanner ==="
+# Scan localhost ports 8000-8010. Print open ports only.
+require "socket"
+(8000..8010).each do |port|
+  # --- your code here ---
+  # HINT: TCPSocket.new("127.0.0.1", port).close
+  # HINT: rescue Errno::ECONNREFUSED
+end
+
+puts "\n=== 5. Base64 Auth Header ==="
+# Encode "admin:secret123" to Base64 and print the Authorization header value.
+require "base64"
+# --- your code here ---
+# HINT: Base64.strict_encode64("admin:secret123")
+# Expected: Authorization: Basic YWRtaW46c2VjcmV0MTIz
+
+puts "\n=== 6. Queue Worker Pattern ==="
+# Create a Queue with 5 items. Spawn 2 threads that pop and print items.
+# HINT: require "thread"; q = Queue.new; ...; threads.each(&:join)
+
 # --- BONUS: Write a tiny web server that listens on port 8080
 # and responds "Hello, browser!" to any HTTP request.
 #   require "socket"

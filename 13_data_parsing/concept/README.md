@@ -16,6 +16,10 @@ ruby 03_csv_read_write.rb               # headers, write, read back
 # YAML
 ruby 04_yaml_config.rb                  # human-readable config files
 
+# Parsing / crypto
+ruby 05_logfmt_parser.rb                # 5-state FSM, key=value parsing
+ruby 06_md5_cracker.rb                  # Digest::MD5 + wordlist + cache
+
 # Exercises
 ruby ../exercises.rb                    # 3 exercises + BONUS
 ```
@@ -40,6 +44,13 @@ ruby ../exercises.rb                    # 3 exercises + BONUS
 | Script | Concept |
 |---|---|
 | `04_yaml_config.rb` | `YAML.safe_load`, nested keys |
+
+### Parsing & Crypto (~20 min)
+
+| Script | Concept |
+|---|---|
+| `05_logfmt_parser.rb` | 5-state FSM, `String#each_char`, type coercion |
+| `06_md5_cracker.rb` | `Digest::MD5.hexdigest`, wordlist iteration, cache file |
 
 ## Common Patterns
 

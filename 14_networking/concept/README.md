@@ -14,8 +14,16 @@ ruby 04_timeout_ssl.rb                  # Timeouts, SSL
 # Raw sockets
 ruby 03_socket_client.rb                # TCP client, send raw HTTP
 
+# Hacking scripts (networking patterns)
+ruby 05_port_scanner_simple.rb          # TCPSocket scan, ECONNREFUSED
+ruby 06_http_auth_bruteforce.rb         # Base64 auth header, wordlist
+ruby 07_directory_buster.rb             # Thread pool + Queue URL enum
+ruby 08_reverse_shell.rb                # TCPSocket + Open3.popen2e
+ruby 09_bind_shell.rb                   # tcp_server_loop + password auth
+ruby 10_http_downloader.rb              # RestClient + progress (needs gem)
+
 # Exercises
-ruby ../exercises.rb                    # 3 exercises + BONUS (tiny web server)
+ruby ../exercises.rb                    # 3 exercises + hacking scripts + BONUS (tiny web server)
 ```
 
 ## Learning Path
@@ -27,6 +35,17 @@ ruby ../exercises.rb                    # 3 exercises + BONUS (tiny web server)
 | `01_http_get.rb` | `Net::HTTP.get_response`, URI, status codes |
 | `02_http_post.rb` | `Net::HTTP#post`, JSON headers, `http.use_ssl = true` |
 | `04_timeout_ssl.rb` | `open_timeout`, `read_timeout`, `Net::OpenTimeout`, SSL |
+
+### Hacking Scripts (~40 min)
+
+| Script | Concept |
+|---|---|
+| `05_port_scanner_simple.rb` | `TCPSocket`, `Errno::ECONNREFUSED`, single-thread scan |
+| `06_http_auth_bruteforce.rb` | `Base64.strict_encode64`, `Authorization` header, wordlist |
+| `07_directory_buster.rb` | Thread pool + `Queue`, `OptionParser`, parallel HTTP |
+| `08_reverse_shell.rb` | `Open3.popen2e`, `trap(SIGINT)`, `IO.copy_stream` |
+| `09_bind_shell.rb` | `Socket.tcp_server_loop`, password auth, command loop |
+| `10_http_downloader.rb` | `RestClient` gem, `Addressable::URI`, custom exceptions |
 
 ### Sockets (~10 min)
 

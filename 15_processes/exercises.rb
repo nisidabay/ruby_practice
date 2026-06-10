@@ -30,3 +30,11 @@ puts "All #{child_pids.size} workers finished"
 
 # --- BONUS: Write a script that spawns a command, pipes its output
 # through `grep`, and prints matching lines — all via Open3.pipeline.
+
+puts "\n=== 4. Open3 with Socket Pipe ==="
+# Use Open3.popen2e to run 'ls -la', capture output, and print it.
+# Then extend: send this output through a TCPSocket instead of STDOUT.
+require "open3"
+# --- your code here ---
+# HINT: Open3.popen2e("ls -la") { |stdin, stdothers| ... }
+# HINT: IO.copy_stream(stdothers, STDOUT)
