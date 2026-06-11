@@ -1,0 +1,70 @@
+#!/usr/bin/env ruby
+# frozen_string_literal: true
+
+# fpipe — Build and run lazy data pipelines from the command line
+#
+# Usage:
+#   fpipe --range 1..100 --select 'even?' --map 'n * n' --take 5
+#   fpipe --file data.txt --select 'include?("ERROR")' --take 10
+#   fpipe --help
+
+require 'optparse'
+
+options = { select: nil, map: nil, take: 5 }
+parser = OptionParser.new do |opts|
+  opts.banner = 'Usage: fpipe --range RANGE [--select EXPR] [--map EXPR] [--take N]'
+
+  opts.on('-r', '--range RANGE', String, 'Range: 1..100 or 1.. (infinite)') do |r|
+    options[:range] = r
+  end
+
+  opts.on('-f', '--file FILE', String, 'Process file lines lazily') do |f|
+    options[:file] = f
+  end
+
+  opts.on('-s', '--select EXPR', String, 'Filter expression (e.g. even?, include?("ERR"))') do |s|
+    options[:select] = s
+  end
+
+  opts.on('-m', '--map EXPR', String, 'Transform expression (e.g. "n * n", upcase)') do |m|
+    options[:map] = m
+  end
+
+  opts.on('-t', '--take N', Integer, 'Take first N results (default: 5)') do |n|
+    options[:take] = n
+  end
+
+  opts.on('-h', '--help', 'Show this message') do
+    puts opts
+    exit
+  end
+end
+
+parser.parse!
+
+# Build the source
+source = if options[:range]
+           if options[:range].end_with?('..')
+             start = options[:range].split('..').first.to_i
+             (start..).lazy
+           else
+             eval(options[:range]).lazy
+           end
+         elsif options[:file]
+           unless File.exist?(options[:file])
+             warn "Error: file '#{options[:file]}' not found."
+             exit 1
+           end
+           File.foreach(options[:file]).lazy.map(&:chomp)
+         else
+           warn 'Error: specify --range or --file. Use --help for usage.'
+           exit 1
+         end
+
+# Apply pipeline
+pipeline = source
+pipeline = pipeline.select { |x| x.instance_eval(options[:select]) } if options[:select]
+pipeline = pipeline.map { |x| x.instance_eval(options[:map]) } if options[:map]
+
+# Materialize and output
+pipeline.take(options[:take]).each { |result| puts result }

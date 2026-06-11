@@ -1,0 +1,68 @@
+#!/usr/bin/env ruby
+# frozen_string_literal: true
+
+# fmatch — Pattern-match files and data from the command line
+#
+# Usage:
+#   fmatch --json '{"status":200,"body":"OK"}'     # match JSON against patterns
+#   fmatch --csv data.csv                           # match each CSV row
+#   fmatch --help                                   # show this message
+
+require 'optparse'
+require 'json'
+
+options = {}
+parser = OptionParser.new do |opts|
+  opts.banner = 'Usage: fmatch [--json JSON] [--csv FILE]'
+
+  opts.on('-j', '--json JSON', String, 'Match a JSON string against patterns') do |j|
+    options[:json] = j
+  end
+
+  opts.on('-c', '--csv FILE', String, 'Match each row of a CSV file') do |c|
+    options[:csv] = c
+  end
+
+  opts.on('-h', '--help', 'Show this message') do
+    puts opts
+    exit
+  end
+end
+
+parser.parse!
+
+if options[:json]
+  data = JSON.parse(options[:json], symbolize_names: true)
+  case data
+  in { status: (200 | 201), body: msg }
+    puts "✓ Success: #{msg}"
+  in { status: code, error: msg } if code >= 400
+    puts "✗ Error #{code}: #{msg}"
+  in { status: code }
+    puts "Status #{code} (no body)"
+  else
+    puts "Unknown shape: #{data}"
+  end
+
+elsif options[:csv]
+  unless File.exist?(options[:csv])
+    warn "Error: file '#{options[:csv]}' not found."
+    exit 1
+  end
+
+  File.foreach(options[:csv]).with_index(1) do |line, num|
+    fields = line.strip.split(',')
+    case fields
+    in [name, email, *rest]
+      puts "Row #{num}: #{name} <#{email}>"
+    in [name]
+      puts "Row #{num}: #{name} (no email)"
+    else
+      puts "Row #{num}: #{fields} (unknown format)"
+    end
+  end
+
+else
+  warn 'Error: specify --json or --csv. Use --help for usage.'
+  exit 1
+end

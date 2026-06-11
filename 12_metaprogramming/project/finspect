@@ -1,0 +1,83 @@
+#!/usr/bin/env ruby
+# frozen_string_literal: true
+
+# finspect — Inspect Ruby classes at runtime
+#
+# Usage:
+#   finspect --class ClassName              # show ancestors + all methods
+#   finspect --class ClassName --method m   # show method details
+#   finspect --help                         # show this message
+
+require 'optparse'
+
+options = {}
+parser = OptionParser.new do |opts|
+  opts.banner = 'Usage: finspect --class CLASSNAME [--method METHODNAME]'
+
+  opts.on('-c', '--class CLASSNAME', String, 'Class to inspect (required)') do |c|
+    options[:class] = c
+  end
+
+  opts.on('-m', '--method METHODNAME', String, 'Show details for a specific method') do |m|
+    options[:method] = m
+  end
+
+  opts.on('-h', '--help', 'Show this message') do
+    puts opts
+    exit
+  end
+end
+
+parser.parse!
+
+# Validate
+unless options[:class]
+  warn 'Error: --class is required. Use --help for usage.'
+  exit 1
+end
+
+begin
+  klass = Object.const_get(options[:class])
+rescue NameError
+  warn "Error: class '#{options[:class]}' not found."
+  exit 1
+end
+
+# --method mode: show details for one method
+if options[:method]
+  begin
+    m = klass.instance_method(options[:method])
+  rescue NameError
+    warn "Error: method '#{options[:method]}' not found on #{klass}."
+    exit 1
+  end
+
+  puts "Method: #{klass}##{m.name}"
+  puts "  Owner:      #{m.owner}"
+  puts "  Parameters: #{m.parameters.inspect}"
+  puts "  Source:     #{m.source_location&.join(':') || '(native)'}"
+  puts "  Super:      #{m.super_method&.owner || '(none — top of chain)'}"
+  exit
+end
+
+# --class mode: show ancestors + all methods grouped by origin
+puts "#{klass}"
+puts '=' * klass.name.length
+
+# Ancestors chain
+puts "\nAncestors chain:"
+klass.ancestors.each { |a| puts "  #{a}" }
+
+# Instance methods grouped by owner
+puts "\nInstance methods by owner:"
+methods_by_owner = Hash.new { |h, k| h[k] = [] }
+
+klass.instance_methods(false).each do |name|
+  owner = klass.instance_method(name).owner
+  methods_by_owner[owner] << name
+end
+
+methods_by_owner.sort_by { |owner, _| klass.ancestors.index(owner) || 999 }.each do |owner, names|
+  puts "\n  #{owner}:"
+  names.sort.each { |n| puts "    #{n}" }
+end

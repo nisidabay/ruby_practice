@@ -1,0 +1,55 @@
+#!/usr/bin/env ruby
+# frozen_string_literal: true
+
+# fserialize — Serialize and deserialize Ruby objects from the CLI
+#
+# Usage:
+#   echo '{"users":[{"name":"Alice"}]}' | fserialize --marshal    # JSON → Marshal
+#   fserialize --marshal --file cache.marshal                      # Marshal → inspect
+#   fserialize --help
+
+require 'optparse'
+require 'json'
+
+options = {}
+parser = OptionParser.new do |opts|
+  opts.banner = 'Usage: fserialize --marshal [--file FILE]'
+
+  opts.on('-m', '--marshal', 'Marshal mode: serialize/deserialize') do
+    options[:marshal] = true
+  end
+
+  opts.on('-f', '--file FILE', String, 'Read from file instead of stdin') do |f|
+    options[:file] = f
+  end
+
+  opts.on('-h', '--help', 'Show this message') do
+    puts opts
+    exit
+  end
+end
+
+parser.parse!
+
+unless options[:marshal]
+  warn 'Error: specify --marshal. Use --help for usage.'
+  exit 1
+end
+
+# Read input
+input = if options[:file]
+          File.read(options[:file])
+        else
+          $stdin.read
+        end
+
+# Try to deserialize Marshal, otherwise serialize JSON input
+begin
+  obj = Marshal.load(input)
+  puts JSON.pretty_generate(obj)
+rescue TypeError
+  # Not Marshal — treat as JSON and serialize to Marshal
+  data = JSON.parse(input, symbolize_names: true)
+  File.write('out.marshal', Marshal.dump(data))
+  puts "Serialized to out.marshal (#{File.size('out.marshal')} bytes)"
+end

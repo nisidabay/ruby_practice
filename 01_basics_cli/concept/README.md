@@ -1,6 +1,6 @@
 # Ruby Concepts — Practice Suite
 
-A progressive learning path from Ruby fundamentals through OptionParser and Rake.
+A progressive learning path from Ruby fundamentals through OptionParser.
 
 Files use a 3-letter prefix for instant category recognition:
 
@@ -10,7 +10,6 @@ Files use a 3-letter prefix for instant category recognition:
 | `args_` | Method argument patterns | Read second |
 | `optparse_` | OptionParser CLI | Read third |
 | `reference/` | Templates, exercises, guides | Not linear |
-| `rake_` | Task automation with Rake | Read last |
 
 ## Quick Start
 
@@ -37,11 +36,6 @@ ruby optparse_05_validation.rb --api-key abc123 --endpoint https://api.example.c
 ruby optparse_06_advanced_types.rb -t ruby -t python -i abc,def -f json -w 5
 ruby optparse_07_separators_banners.rb --host 0.0.0.0 --port 3000 --verbose
 ruby optparse_08_subcommands.rb deploy --environment production --servers web1,web2
-
-# 4. Rake — task automation
-cd ../project && rake -T                           # list available tasks
-cd ../project && rake process                      # download → process chain
-ruby rake_01_basics.rb                             # task definition template
 ```
 
 ## Learning Path
@@ -78,14 +72,6 @@ ruby rake_01_basics.rb                             # task definition template
 | `optparse_06_advanced_types.rb` | Array, restricted values, optional typed args | 04 (more type patterns) | 20 min |
 | `optparse_07_separators_banners.rb` | Option groups, `separator`, version flag, dynamic banner | 01+03+04 (now organized) | 15 min |
 | `optparse_08_subcommands.rb` | Subcommands, `order!` vs `parse!`, full CLI tool | 01–07 capstone | 30 min |
-
-### Rake (~30 min)
-
-| Script | Concept | Time |
-|---|---|---|
-| `rake_01_basics.rb` | `task` definitions, `=>` dependencies, `rake -T` | 5 min |
-| `rake_essentials.rb` | When Rake vs. plain Ruby script — decision guide | 5 min |
-| `../project/Rakefile` | 6-phase progressive: deps, file tasks, rules, namespaces, defaults, invoke | 20 min |
 
 ### Reference
 
@@ -158,42 +144,6 @@ opts.on("-p", "--port PORT", "Port (1-65535)") do |port_str|
   raise OptionParser::InvalidArgument, "Invalid port" unless (1..65535).include?(port)
   options[:port] = port
 end
-```
-
-### Rake Patterns
-
-```ruby
-# Basic task
-task :greet do
-  puts "Hello!"
-end
-
-# Task with dependencies (runs :download first)
-task process: :download do
-  data = File.read("/tmp/data.txt")
-end
-
-# File task — only runs if target is older than source
-file 'output.pdf' => 'input.md' do
-  sh 'pandoc input.md -o output.pdf'
-end
-
-# Rule — one pattern, infinite files
-rule '.reversed' => '.txt' do |t|
-  content = File.read(t.source).reverse
-  File.write(t.name, content)
-end
-
-# Namespaces — organize with ::
-namespace :db do
-  task create: ... end
-  task migrate: :create do ... end
-end
-
-# Programmatic invocation from Ruby
-Rake::Task[:download].invoke
-
-# List all tasks: rake -T
 ```
 
 ## Error Handling

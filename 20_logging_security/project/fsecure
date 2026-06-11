@@ -1,0 +1,56 @@
+#!/usr/bin/env ruby
+# frozen_string_literal: true
+
+# fsecure — Generate secure tokens, UUIDs, and random values from the CLI
+#
+# Usage:
+#   fsecure --token [BYTES]       # URL-safe base64 token
+#   fsecure --hex [BYTES]          # hex string
+#   fsecure --uuid                 # UUID v4
+#   fsecure --code MIN..MAX        # random number in range
+#   fsecure --help
+
+require 'optparse'
+require 'securerandom'
+
+options = {}
+parser = OptionParser.new do |opts|
+  opts.banner = 'Usage: fsecure --token [BYTES] | --hex [BYTES] | --uuid | --code RANGE'
+
+  opts.on('-t', '--token [BYTES]', Integer, 'URL-safe base64 token (default: 32 bytes)') do |b|
+    options[:token] = b || 32
+  end
+
+  opts.on('-x', '--hex [BYTES]', Integer, 'Hex string (default: 16 bytes)') do |b|
+    options[:hex] = b || 16
+  end
+
+  opts.on('-u', '--uuid', 'UUID v4') do
+    options[:uuid] = true
+  end
+
+  opts.on('-c', '--code RANGE', String, 'Random number in range (e.g. 100000..999999)') do |r|
+    options[:code] = r
+  end
+
+  opts.on('-h', '--help', 'Show this message') do
+    puts opts
+    exit
+  end
+end
+
+parser.parse!
+
+if options[:token]
+  puts SecureRandom.urlsafe_base64(options[:token])
+elsif options[:hex]
+  puts SecureRandom.hex(options[:hex])
+elsif options[:uuid]
+  puts SecureRandom.uuid
+elsif options[:code]
+  min, max = options[:code].split('..').map(&:to_i)
+  puts SecureRandom.random_number(min..max)
+else
+  warn 'Error: specify --token, --hex, --uuid, or --code. Use --help for usage.'
+  exit 1
+end

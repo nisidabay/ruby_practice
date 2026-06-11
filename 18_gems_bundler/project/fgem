@@ -1,0 +1,83 @@
+#!/usr/bin/env ruby
+# frozen_string_literal: true
+
+# fgem — Inspect and query installed gems from the command line
+#
+# Usage:
+#   fgem --list [FILTER]          # list gems matching filter
+#   fgem --info GEMNAME           # show gem details
+#   fgem --deps GEMNAME           # show dependency tree
+#   fgem --help                   # show this message
+
+require 'optparse'
+
+options = {}
+parser = OptionParser.new do |opts|
+  opts.banner = 'Usage: fgem --list [FILTER] | --info GEM | --deps GEM'
+
+  opts.on('-l', '--list [FILTER]', String, 'List installed gems (optional filter)') do |f|
+    options[:list] = f || ''
+  end
+
+  opts.on('-i', '--info GEMNAME', String, 'Show gem details') do |g|
+    options[:info] = g
+  end
+
+  opts.on('-d', '--deps GEMNAME', String, 'Show dependency tree') do |g|
+    options[:deps] = g
+  end
+
+  opts.on('-h', '--help', 'Show this message') do
+    puts opts
+    exit
+  end
+end
+
+parser.parse!
+
+if options[:list]
+  filter = options[:list].downcase
+  gems = Gem::Specification.each.select { |s| s.name.downcase.include?(filter) }
+  gems.sort_by(&:name).each do |spec|
+    puts "#{spec.name} #{spec.version} — #{spec.summary || 'no description'}"
+  end
+  puts "\n#{gems.count} gems found."
+
+elsif options[:info]
+  begin
+    spec = Gem::Specification.find_by_name(options[:info])
+  rescue Gem::MissingSpecError
+    warn "Error: gem '#{options[:info]}' not found."
+    exit 1
+  end
+
+  puts "#{spec.name} #{spec.version}"
+  puts "  Summary:     #{spec.summary}"
+  puts "  Authors:     #{spec.authors.join(', ')}"
+  puts "  Homepage:    #{spec.homepage || 'none'}"
+  puts "  License:     #{spec.license || 'none'}"
+  puts "  Installed:   #{spec.gem_dir}"
+  puts "  Files:       #{spec.files.count} files"
+  puts "  Dependencies: #{spec.dependencies.count} gems"
+
+elsif options[:deps]
+  begin
+    spec = Gem::Specification.find_by_name(options[:deps])
+  rescue Gem::MissingSpecError
+    warn "Error: gem '#{options[:deps]}' not found."
+    exit 1
+  end
+
+  puts "#{spec.name} #{spec.version} dependencies:"
+  if spec.dependencies.empty?
+    puts '  (none)'
+  else
+    spec.dependencies.each do |dep|
+      puts "  #{dep.name} #{dep.requirement} (#{dep.type})"
+    end
+  end
+
+else
+  warn 'Error: specify --list, --info, or --deps. Use --help for usage.'
+  exit 1
+end

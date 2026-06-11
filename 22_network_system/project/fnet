@@ -1,0 +1,75 @@
+#!/usr/bin/env ruby
+# frozen_string_literal: true
+
+# fnet — Network diagnostics from the command line
+#
+# Usage:
+#   fnet --resolve HOST              # DNS resolution
+#   fnet --check HOST [PORT]         # TCP connectivity check
+#   fnet --subnet CIDR               # List IPs in a subnet
+#   fnet --help
+
+require 'optparse'
+require 'resolv'
+require 'ipaddr'
+require 'socket'
+
+options = {}
+parser = OptionParser.new do |opts|
+  opts.banner = 'Usage: fnet --resolve HOST | --check HOST [PORT] | --subnet CIDR'
+
+  opts.on('-r', '--resolve HOST', String, 'DNS resolution') do |h|
+    options[:resolve] = h
+  end
+
+  opts.on('-c', '--check HOST', String, 'TCP connectivity check') do |h|
+    options[:check] = h
+  end
+
+  opts.on('-p', '--port PORT', Integer, 'Port for --check (default: 80)') do |p|
+    options[:port] = p
+  end
+
+  opts.on('-s', '--subnet CIDR', String, 'List IPs in subnet') do |c|
+    options[:subnet] = c
+  end
+
+  opts.on('-h', '--help', 'Show this message') do
+    puts opts
+    exit
+  end
+end
+
+parser.parse!
+
+if options[:resolve]
+  resolver = Resolv::DNS.new
+  resolver.getaddresses(options[:resolve]).each { |a| puts a }
+
+elsif options[:check]
+  port = options[:port] || 80
+  resolver = Resolv::DNS.new
+  addrs = resolver.getaddresses(options[:check])
+  if addrs.empty?
+    warn "Could not resolve #{options[:check]}"
+    exit 1
+  end
+  addrs.each do |addr|
+    begin
+      s = Socket.tcp(addr.to_s, port, connect_timeout: 3)
+      puts "#{addr}:#{port} OPEN"
+      s.close
+    rescue Errno::ECONNREFUSED
+      puts "#{addr}:#{port} REFUSED"
+    rescue Errno::ETIMEDOUT, Errno::EHOSTUNREACH
+      puts "#{addr}:#{port} TIMEOUT"
+    end
+  end
+
+elsif options[:subnet]
+  IPAddr.new(options[:subnet]).to_range.each { |ip| puts ip }
+
+else
+  warn 'Error: specify --resolve, --check, or --subnet. Use --help for usage.'
+  exit 1
+end

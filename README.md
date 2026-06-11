@@ -3,6 +3,8 @@
 A progressive, code-first curriculum for learning Ruby through CLI scripting.
 No Rails, no frameworks — just the standard library and real problems.
 
+**23 groups. 43 CLI tools. All Ruby, all stdlib.**
+
 ## Who This Is For
 
 - You already program in another language and want to pick up Ruby
@@ -40,17 +42,54 @@ cat README.md            # see the map
 ruby basics_01_hello_lesson.rb   # first concept
 ```
 
-Then keep going: `02_strings_regex` → `03_control_collections` → `04_oop` →
-`05_filesystem` → `06_blocks_procs` → `07_modules` → `08_time` →
-`09_exceptions` → `10_threads` → `11_testing` → `13_data_parsing` →
-`14_networking` → `15_processes` → `16_performance`.
+## The Curriculum (23 Groups)
+
+| # | Group | What You'll Learn |
+|---|-------|-------------------|
+| 01 | **Basics & CLI** | Loops, `gets`, `*args`, `**kwargs`, `(...)` forwarding, OptionParser, ARGF |
+| 02 | **Strings & Regex** | Heredocs, interpolation, `gsub`, `scan`, Unicode, pattern matching |
+| 03 | **Control & Collections** | `if`/`case`/`unless`, `each`/`map`/`select`/`reduce`, Array, Hash, Set, Stack, Queue, Heap, Graph |
+| 04 | **OOP** | Classes, `attr_accessor`, inheritance, `super`, composition, mixins, `method_missing`, `Comparable`, `Enumerable` |
+| 05 | **Filesystem** | `File.read`/`write`, `Pathname`, `StringIO`, `Tempfile`, `Dir`, `FileUtils` |
+| 06 | **Blocks & Procs** | `yield`, `Proc`, `lambda`, `&` operator, block-to-proc conversion |
+| 07 | **Modules** | Namespacing, `include`/`extend`, `module_function`, `extend self` |
+| 08 | **Time** | `Time`, `Date`, `strftime`, timezones, arithmetic, Unix epoch |
+| 09 | **Exceptions** | `raise`/`rescue`/`ensure`/`retry`, custom exceptions, `binding.break`, `TracePoint` |
+| 10 | **Threads** | `Thread`, `Mutex`, `Queue`, `Fiber`, `Ractor`, `ConditionVariable`, thread pools |
+| 11 | **Testing** | Minitest, `assert_raises`, `setup`/`teardown`, mocks, test helpers |
+| 12 | **Metaprogramming** | `instance_eval`/`class_eval`, `binding`, `Method` objects, `ancestors`, `prepend`, `refine`, DSLs |
+| 13 | **Data Parsing** | JSON, CSV, YAML, `Digest::MD5`, logfmt parser, data conversion |
+| 14 | **Networking** | `Net::HTTP`, `TCPSocket`, SSL, HTTP auth, reverse shells, REST clients |
+| 15 | **Processes** | `Open3.capture3`, `fork`, `spawn`, `Process.wait`, signal handling |
+| 16 | **Performance** | `Benchmark`, `.lazy` pipelines, `Set` vs `Array`, command benchmarking |
+| 17 | **Pattern Matching** | `case/in`, array/hash patterns, `^` pin, `\|` alternatives, guards, find patterns |
+| 18 | **Gems & Bundler** | Gemfile, `.gemspec`, version operators, `bundle gem`, publishing, `Gem::Specification` |
+| 19 | **Data & Enumerators** | `Data.define`, `Enumerator.produce`, `.lazy`, external iterators, Fiber Scheduler |
+| 20 | **Logging & Security** | `Logger`, `SecureRandom`, `English`, `Shellwords`, `Etc`, `Zlib`, `ERB` |
+| 21 | **Serialization & Objects** | `Marshal`, `ObjectSpace`, `WeakRef`, `OpenStruct`, `Observable`, `Singleton` |
+| 22 | **Network & System** | `Resolv` (DNS), `IPAddr`, UDP/Unix sockets, `Find`, `TSort` |
+| 23 | **Rake for Real** | Task arguments, `TestTask`, `FileList`, `clean`/`clobber`, `PackageTask`, `multitask`, CI pipelines |
 
 ## The Toolbox
 
-`projects/` contains 36+ real CLI tools built with these concepts —
-system monitors, file finders, config generators, backup scripts.
+`projects/` contains **43 real CLI tools** built with these concepts —
+system monitors, file finders, config generators, backup scripts, network diagnostics,
+pattern matchers, gem inspectors, lazy data pipelines, and CI task runners.
 Everything here was built to solve an actual problem on a Linux machine.
 See `projects/README.md` for a guided tour.
+
+### Tools Added in This Session
+
+| Tool | Group | What It Does |
+|------|-------|--------------|
+| `finspect` | 12 | Inspect Ruby classes — ancestors, methods grouped by origin |
+| `fmatch` | 17 | Pattern-match JSON and CSV from the command line |
+| `fgem` | 18 | List, inspect, and query installed gems |
+| `fpipe` | 19 | Build and run lazy data pipelines |
+| `fsecure` | 20 | Generate secure tokens, UUIDs, and random values |
+| `fserialize` | 21 | Serialize/deserialize between Marshal and JSON |
+| `fnet` | 22 | DNS resolution, TCP checks, subnet iteration |
+| `Rakefile` | 23 | Production-ready task runner: test, lint, build, release |
 
 ## Reading
 

@@ -1,0 +1,82 @@
+# =============================================================================
+# Rakefile — Production-Ready Task Runner
+# =============================================================================
+# Copy this file to your project root. Run `rake -T` to see all tasks.
+#
+# Provides: rake test, rake lint, rake build, rake clean, rake clobber, rake release
+# =============================================================================
+
+require 'rake/testtask'
+require 'rake/clean'
+
+# ── Test ──────────────────────────────────────────────────────────────────────
+# Runs all Minitest files in test/. Change test_files to match your setup.
+#
+# Usage:
+#   rake test                    # all tests
+#   rake test TEST=test/user_test.rb  # single file
+
+Rake::TestTask.new(:test) do |t|
+  t.libs << 'lib' << 'test'
+  t.test_files = FileList['test/**/*_test.rb']
+  t.verbose = true
+end
+
+# ── Lint ──────────────────────────────────────────────────────────────────────
+# Runs RuboCop if installed. Falls back gracefully if not.
+#
+# Install: gem install rubocop
+# Config:  .rubocop.yml at project root
+
+desc 'Run linter (RuboCop)'
+task :lint do
+  if system('which rubocop > /dev/null 2>&1')
+    sh 'rubocop lib/ test/'
+  else
+    puts 'RuboCop not installed — skipping lint.'
+    puts 'Install with: gem install rubocop'
+  end
+end
+
+# ── Build ─────────────────────────────────────────────────────────────────────
+# Copies source files to build/. Only runs if tests pass.
+
+CLEAN.include('build/')
+directory 'build'
+
+desc 'Build project (tests must pass first)'
+task build: [:test, 'build'] do
+  cp_r 'lib', 'build/' if Dir.exist?('lib')
+  puts "Build complete: #{Dir['build/**/*'].size} files in build/"
+end
+
+# ── Clean / Clobber ───────────────────────────────────────────────────────────
+# CLEAN: temporary files (build artifacts, logs)
+# CLOBBER: everything generated (packages, gems)
+
+CLEAN.include('build/', '*.log', 'tmp/')
+CLOBBER.include('pkg/', '*.gem')
+
+desc 'Remove temporary files (build/, logs)'
+task :clean
+
+desc 'Remove ALL generated files'
+task :clobber
+
+# ── Release ──────────────────────────────────────────────────────────────────
+# Full release pipeline: test → lint → build → tag → push.
+# Set VERSION=1.2.0 to override the default.
+
+desc 'Release new version (test → lint → build → tag)'
+task release: [:test, :lint, :build] do
+  version = ENV['VERSION'] || '0.1.0'
+  puts "Releasing version #{version}..."
+  sh "git tag v#{version}"
+  sh 'git push --tags'
+  puts "Released v#{version} — done!"
+end
+
+# ── Default ───────────────────────────────────────────────────────────────────
+# `rake` with no arguments runs tests.
+
+task default: :test
