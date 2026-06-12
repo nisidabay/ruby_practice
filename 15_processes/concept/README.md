@@ -13,6 +13,7 @@ ruby 02_backticks_vs_system.rb          # backticks vs system()
 # Process management
 ruby 03_fork_spawn_exec.rb              # fork, spawn, Process.wait
 ruby 04_signals_trap.rb                 # trap SIGINT/SIGTERM
+ruby 05_io_popen.rb                    # IO.popen — bidirectional pipes
 
 # Exercises
 ruby ../exercises.rb                    # 3 exercises + BONUS
@@ -33,6 +34,7 @@ ruby ../exercises.rb                    # 3 exercises + BONUS
 |---|---|
 | `03_fork_spawn_exec.rb` | `fork` (clone process), `spawn` (new process), `Process.wait` |
 | `04_signals_trap.rb` | `trap("INT")`, `trap("TERM")` — graceful shutdown |
+| `05_io_popen.rb` | `IO.popen` — bidirectional pipes, read+write to subprocesses |
 
 ## Common Patterns
 

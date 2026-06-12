@@ -21,6 +21,7 @@ ruby 07_directory_buster.rb             # Thread pool + Queue URL enum
 ruby 08_reverse_shell.rb                # TCPSocket + Open3.popen2e
 ruby 09_bind_shell.rb                   # tcp_server_loop + password auth
 ruby 10_http_downloader.rb              # RestClient + progress (needs gem)
+ruby 11_cgi_urlencode.rb               # URL encoding, query string parsing
 
 # Exercises
 ruby ../exercises.rb                    # 3 exercises + hacking scripts + BONUS (tiny web server)
@@ -46,6 +47,7 @@ ruby ../exercises.rb                    # 3 exercises + hacking scripts + BONUS 
 | `08_reverse_shell.rb` | `Open3.popen2e`, `trap(SIGINT)`, `IO.copy_stream` |
 | `09_bind_shell.rb` | `Socket.tcp_server_loop`, password auth, command loop |
 | `10_http_downloader.rb` | `RestClient` gem, `Addressable::URI`, custom exceptions |
+| `11_cgi_urlencode.rb` | `CGI.escape`/`unescape`, `CGI.parse`, building search URLs |
 
 ### Sockets (~10 min)
 

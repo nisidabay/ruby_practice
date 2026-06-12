@@ -1,0 +1,71 @@
+#!#!/usr/bin/env ruby
+# frozen_string_literal: true
+
+require 'cgi'
+
+# Configuration
+BROWSER = 'qutebrowser'
+
+# Search engine configuration
+ENGINES = {
+  'brave' => 'https://search.brave.com/search?q=',
+  'google' => 'https://www.google.com/search?q=',
+  'duck' => 'https://duckduckgo.com/?q='
+}.freeze
+
+def check_deps
+  missing = []
+  missing << 'gum' unless system('command -v gum > /dev/null 2>&1')
+  missing << BROWSER unless system("command -v #{BROWSER} > /dev/null 2>&1")
+
+  return unless missing.any?
+
+  warn "❌ Missing dependencies: #{missing.join(' ')}"
+  warn "   Install with: pacman -S #{missing.join(' ')}"
+  exit 1
+end
+
+def get_query
+  query = `gum input --placeholder "Search what?" --prompt "🔎 "`.strip
+  query.empty? ? nil : query
+end
+
+def get_engine(query)
+  selected_engine = nil
+  begin
+    IO.popen(['gum', 'filter', '--placeholder', 'Select Engine: ', '--height', '15'], 'r+') do |io|
+      io.puts ENGINES.keys
+      io.close_write
+      selected_engine = io.read.strip
+    end
+  rescue Errno::ENOENT, IOError => e
+    warn "❌ Failed to run gum filter: #{e.message}"
+    return nil
+  end
+
+  return nil if selected_engine.empty?
+
+  base_url = ENGINES[selected_engine]
+  unless base_url
+    warn '❌ Invalid engine selected.'
+    return nil
+  end
+
+  url = "#{base_url}#{CGI.escape(query)}"
+  spawn(BROWSER, url, out: File::NULL, err: File::NULL)
+rescue Errno::ENOENT => e
+  warn "❌ Failed to launch browser: #{e.message}"
+  nil
+end
+
+def main
+  check_deps
+
+  if (query = get_query)
+    get_engine(query) || puts('❌ Engine selection failed.')
+  else
+    puts '❌ No query entered.'
+  end
+end
+
+main if __FILE__ == $0

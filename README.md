@@ -59,8 +59,8 @@ ruby basics_01_hello_lesson.rb   # first concept
 | 11 | **Testing** | Minitest, `assert_raises`, `setup`/`teardown`, mocks, test helpers |
 | 12 | **Metaprogramming** | `instance_eval`/`class_eval`, `binding`, `Method` objects, `ancestors`, `prepend`, `refine`, DSLs |
 | 13 | **Data Parsing** | JSON, CSV, YAML, `Digest::MD5`, logfmt parser, data conversion |
-| 14 | **Networking** | `Net::HTTP`, `TCPSocket`, SSL, HTTP auth, reverse shells, REST clients |
-| 15 | **Processes** | `Open3.capture3`, `fork`, `spawn`, `Process.wait`, signal handling |
+| 14 | **Networking** | `Net::HTTP`, `TCPSocket`, SSL, HTTP auth, reverse shells, REST clients, `CGI` URL encoding |
+| 15 | **Processes** | `Open3.capture3`, `fork`, `spawn`, `Process.wait`, signal handling, `IO.popen` |
 | 16 | **Performance** | `Benchmark`, `.lazy` pipelines, `Set` vs `Array`, command benchmarking |
 | 17 | **Pattern Matching** | `case/in`, array/hash patterns, `^` pin, `\|` alternatives, guards, find patterns |
 | 18 | **Gems & Bundler** | Gemfile, `.gemspec`, version operators, `bundle gem`, publishing, `Gem::Specification` |
