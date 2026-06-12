@@ -12,20 +12,22 @@ require 'find'
 # Find all Ruby files in the current project
 puts 'Ruby files in r_ruby_practice (first 10):'
 count = 0
-Find.find('Dir.pwd') do |path|
+project_root = File.expand_path('../..', __dir__)
+
+Find.find(project_root) do |path|
   next unless path.end_with?('.rb')
-  puts "  #{path.sub('Dir.pwd/', '')}"
+  puts "  #{path.sub("#{project_root}/", '')}"
   count += 1
   break if count >= 10
 end
 
 # Usage: Prune — skip a directory entirely
 puts "\nSkipping .git directory:"
-Find.find('Dir.pwd') do |path|
+Find.find(project_root) do |path|
   if File.basename(path) == '.git'
     Find.prune  # skip this directory and all its contents
   end
-  puts "  #{path.sub('Dir.pwd/', '')}" if path.end_with?('.md')
+  puts "  #{path.sub("#{project_root}/", '')}" if path.end_with?('.md')
 end
 
 # This could also be done like this:

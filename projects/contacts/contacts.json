@@ -1,12 +1,12 @@
 [
   {
     "name": "Alice",
-    "phone": "444",
+    "phone": "555-0101",
     "email": "alice@example.com"
   },
   {
     "name": "Bob",
-    "phone": "333",
+    "phone": "555-0102",
     "email": "bob@example.com"
   }
 ]
