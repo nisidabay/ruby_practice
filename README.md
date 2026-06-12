@@ -3,7 +3,7 @@
 A progressive, code-first curriculum for learning Ruby through CLI scripting.
 No Rails, no frameworks — just the standard library and real problems.
 
-**23 groups. 43 CLI tools. All Ruby, all stdlib.**
+**23 groups. 69 CLI tools. All Ruby, all stdlib.**
 
 ## Who This Is For
 
@@ -94,7 +94,7 @@ that only uses concepts taught up to that group.
 
 ## The Toolbox
 
-`projects/` contains **51 real CLI tools** built with these concepts —
+`projects/` contains **69 real CLI tools** built with these concepts —
 system monitors, file finders, config generators, backup scripts, network diagnostics,
 pattern matchers, gem inspectors, lazy data pipelines, and CI task runners.
 Everything here was built to solve an actual problem on a Linux machine.
@@ -112,6 +112,7 @@ See `projects/README.md` for a guided tour.
 | `fserialize` | 21 | Serialize/deserialize between Marshal and JSON |
 | `fnet` | 22 | DNS resolution, TCP checks, subnet iteration |
 | `Rakefile` | 23 | Production-ready task runner: test, lint, build, release |
+| `web_search` | 14+15 | TUI web search — `gum` input/filter, `CGI.escape`, `spawn` browser |
 
 ## Reading
 
