@@ -1,0 +1,91 @@
+#!/usr/bin/env ruby
+# frozen_string_literal: true
+
+# agecalc — age calculator
+#
+# WITHOUT Time/Date — manual time is tedious and error-prone:
+#   seconds_per_day = 86400
+#   age = (Time.now - birth) / seconds_per_day / 365.25
+#   Off by one. No formatting. No timezone handling.
+#
+# WITH Time + Date — clean arithmetic, readable output:
+#   agecalc -d 1990-06-15
+#   agecalc -d 2000-01-01 --verbose
+#
+# Uses only: Time, Date, strftime, parse. No system(), no File.*
+
+require 'optparse'
+require 'date'
+
+options = { birthdate: nil, verbose: false }
+
+OptionParser.new do |opts|
+  opts.banner = 'Usage: agecalc -d YYYY-MM-DD [options]'
+
+  opts.on('-d', '--date DATE', 'Birthdate (YYYY-MM-DD, required)') do |d|
+    options[:birthdate] = d
+  end
+
+  opts.on('-v', '--verbose', 'Show detailed breakdown') do
+    options[:verbose] = true
+  end
+
+  opts.on('-h', '--help', 'Show this message') do
+    puts opts
+    puts
+    puts 'Examples:'
+    puts '  agecalc -d 1990-06-15'
+    puts '  agecalc -d 2000-01-01 -v'
+    exit
+  end
+end.parse!
+
+abort 'agecalc: --date is required (use YYYY-MM-DD format)' unless options[:birthdate]
+
+# Parse the birthdate
+birth = Date.parse(options[:birthdate])
+now   = Date.today
+t     = Time.now
+
+# Calculate differences
+days       = (now - birth).to_i
+seconds    = days * 86_400
+minutes    = seconds / 60
+hours      = minutes / 60
+weeks      = days / 7
+years      = days / 365
+
+# Birthday this year
+bday_this_year = Date.new(now.year, birth.month, birth.day)
+
+# Next birthday
+if bday_this_year >= now
+  next_bday = bday_this_year
+  days_until = (next_bday - now).to_i
+else
+  next_bday = Date.new(now.year + 1, birth.month, birth.day)
+  days_until = (next_bday - now).to_i
+end
+
+# Output
+puts 'Age Calculator'
+puts '=' * 40
+puts "Birthdate: #{birth.strftime('%B %d, %Y')} (#{birth.strftime('%A')})"
+puts "Today:     #{now.strftime('%B %d, %Y')} (#{now.strftime('%A')})"
+puts '-' * 40
+puts "You are approximately:"
+puts "  #{years} years old"
+puts "  #{weeks} weeks old"
+puts "  #{days} days old"
+puts "  #{hours} hours old"
+puts "  #{minutes} minutes old"
+puts "  #{seconds} seconds old"
+puts '-' * 40
+puts "Next birthday: #{next_bday.strftime('%B %d, %Y')} (#{days_until} days away)"
+
+if options[:verbose]
+  puts '-' * 40
+  puts "Current time: #{t.strftime('%H:%M:%S %Z')}"
+  puts "Birth weekday: #{birth.strftime('%A')}"
+  puts "Age on next birthday: #{years + 1}"
+end

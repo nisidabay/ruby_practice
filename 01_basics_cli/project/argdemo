@@ -1,0 +1,80 @@
+#!/usr/bin/env ruby
+# frozen_string_literal: true
+
+# argdemo — CLI argument patterns demo
+#
+# WITHOUT OptionParser — your CLI is fragile, no --help, no error messages:
+#   ARGV[0] could be anything — nil, wrong type, missing
+#   User types "argdemo -h" → "unknown option: -h" or worse, silence
+#
+# WITH OptionParser — self-documenting, validated input:
+#   argdemo --name Alice --repeat 3 --verbose
+#   argdemo --help   # prints usage, exits clean
+#
+# Also demonstrates *args (splat), **kwargs (double splat),
+# gets (interactive input), and ARGF (file/pipe input).
+
+require 'optparse'
+
+options = { name: 'World', repeat: 1, verbose: false }
+
+OptionParser.new do |opts|
+  opts.banner = 'Usage: argdemo [options]'
+
+  opts.on('-n', '--name NAME', 'Name to greet (default: World)') do |n|
+    options[:name] = n
+  end
+
+  opts.on('-r', '--repeat N', Integer, 'Repeat count (default: 1)') do |n|
+    options[:repeat] = n
+  end
+
+  opts.on('-v', '--verbose', 'Show extra info') do
+    options[:verbose] = true
+  end
+
+  opts.on('-h', '--help', 'Show this message') do
+    puts opts
+    exit
+  end
+end.parse!
+
+puts "Options: #{options.inspect}" if options[:verbose]
+
+# Demonstrate loops — print the greeting
+options[:repeat].times do |i|
+  printf("%3d: Hello, %s!\n", i + 1, options[:name])
+end
+
+# Demonstrate *args (splat) — pass array to a method
+def greet_all(names, greeting = 'Hello')
+  names.each { |name| puts "#{greeting}, #{name}!" }
+end
+
+extra_args = ARGV.any? ? ARGV : []
+if extra_args.any?
+  puts "\nExtra names from ARGV: #{extra_args.inspect}"
+  greet_all(*extra_args)
+end
+
+# Demonstrate **kwargs (double splat) — pass keyword hash to a method
+def build_message(greeting:, name:, punctuation: '!')
+  "#{greeting}, #{name}#{punctuation}"
+end
+
+kwargs = { greeting: 'Hi', name: options[:name], punctuation: '!' }
+puts "\nKeyword args demo: #{build_message(**kwargs)}"
+
+# Demonstrate gets — interactive input
+puts "\nEnter a comma-separated list (or press Enter to skip):"
+input = $stdin.gets
+if input && !input.strip.empty?
+  items = input.strip.split(',').map(&:strip)
+  puts "You entered #{items.size} item(s): #{items.inspect}"
+end
+
+# Demonstrate ARGF — read from files or pipe
+if ARGV.any?
+  puts "\nARGF input (#{ARGV.size} file(s)):"
+  ARGF.each_line { |line| print "  #{line}" unless line.strip.empty? }
+end

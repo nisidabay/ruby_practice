@@ -11,8 +11,12 @@ class TestHumanSize < Minitest::Test
   def human_size(bytes)
     return "0 B" if bytes.zero?
     units = %w[B KB MB GB TB]
-    exp = (Math.log(bytes) / Math.log(1024)).to_i
-    exp = units.size - 1 if exp >= units.size
+    size = bytes.to_f
+    exp = 0
+    while size >= 1024 && exp < units.size - 1
+      size /= 1024
+      exp += 1
+    end
     format("%.1f %s", bytes.to_f / (1024 ** exp), units[exp])
   end
 

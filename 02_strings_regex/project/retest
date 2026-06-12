@@ -1,0 +1,87 @@
+#!/usr/bin/env ruby
+# frozen_string_literal: true
+
+# retest — regex tester
+#
+# WITHOUT regex — string searching is painful:
+#   line.include?("ERROR")     # can't match "error", "Error", "ERROR"
+#   "123-4567".include?("-")   # can't match digit patterns
+#
+# WITH regex — one pattern, all matches:
+#   retest -p '\d{3}-\d{4}' -s 'Call 555-1234 or 555-5678'
+#   retest -p '(\\w+)@(\\w+)' -s 'user@example.com'
+#
+# Uses only: Regexp, =~, match, scan, sub, gsub, string interpolation
+
+require 'optparse'
+
+options = { pattern: nil, test_string: nil, replacement: nil }
+
+OptionParser.new do |opts|
+  opts.banner = 'Usage: retest -p PATTERN -s STRING [options]'
+
+  opts.on('-p', '--pattern PAT', 'Regex pattern (required)') do |p|
+    options[:pattern] = Regexp.new(p)
+  end
+
+  opts.on('-s', '--string STR', 'Test string to match (required)') do |s|
+    options[:test_string] = s
+  end
+
+  opts.on('-r', '--replace REPL', 'Replacement text (demo sub/gsub)') do |r|
+    options[:replacement] = r
+  end
+
+  opts.on('-h', '--help', 'Show this message') do
+    puts opts
+    exit
+  end
+end.parse!
+
+abort 'retest: --pattern is required' unless options[:pattern]
+abort 'retest: --string is required' unless options[:test_string]
+
+p = options[:pattern]
+s = options[:test_string]
+
+puts "Pattern: #{p.inspect}"
+puts "String:  #{s.inspect}"
+puts '-' * 40
+
+# =~ operator — returns index or nil
+if (idx = s =~ p)
+  puts "1. =~ operator: Match at position #{idx}"
+else
+  puts '1. =~ operator: No match'
+  exit 0
+end
+
+# match — returns MatchData or nil
+m = p.match(s)
+if m
+  puts "2. match: #{m[0].inspect} at #{m.begin(0)}-#{m.end(0)}"
+  if m.captures.any?
+    puts "   Captures (#{m.captures.size}):"
+    m.captures.each_with_index { |c, i| puts "     [#{i + 1}] #{c.inspect}" }
+  end
+  puts "   Named captures: #{m.names.inspect}" if m.names.any?
+end
+
+# scan — returns array of all matches
+matches = s.scan(p)
+if matches.any?
+  puts "3. scan: Found #{matches.size} match(es): #{matches.inspect}"
+end
+
+# sub — first replacement only
+puts "4. sub:   #{s.sub(p, "[\0]").inspect}"
+
+# gsub — global replacement
+puts "5. gsub:  #{s.gsub(p, "[\0]").inspect}"
+
+# Custom replacement via -r flag
+if options[:replacement]
+  puts '-' * 40
+  puts "6. sub  (#{options[:replacement].inspect}): #{s.sub(p, options[:replacement]).inspect}"
+  puts "7. gsub (#{options[:replacement].inspect}): #{s.gsub(p, options[:replacement]).inspect}"
+end

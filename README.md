@@ -44,16 +44,16 @@ ruby basics_01_hello_lesson.rb   # first concept
 
 ## The Curriculum (23 Groups)
 
-| # | Group | What You'll Learn |
-|---|-------|-------------------|
-| 01 | **Basics & CLI** | Loops, `gets`, `*args`, `**kwargs`, `(...)` forwarding, OptionParser, ARGF |
-| 02 | **Strings & Regex** | Heredocs, interpolation, `gsub`, `scan`, Unicode, pattern matching |
-| 03 | **Control & Collections** | `if`/`case`/`unless`, `each`/`map`/`select`/`reduce`, Array, Hash, Set, Stack, Queue, Heap, Graph |
-| 04 | **OOP** | Classes, `attr_accessor`, inheritance, `super`, composition, mixins, `method_missing`, `Comparable`, `Enumerable` |
-| 05 | **Filesystem** | `File.read`/`write`, `Pathname`, `StringIO`, `Tempfile`, `Dir`, `FileUtils` |
-| 06 | **Blocks & Procs** | `yield`, `Proc`, `lambda`, `&` operator, block-to-proc conversion |
-| 07 | **Modules** | Namespacing, `include`/`extend`, `module_function`, `extend self` |
-| 08 | **Time** | `Time`, `Date`, `strftime`, timezones, arithmetic, Unix epoch |
+| # | Group | What You'll Learn | Project |
+|---|-------|-------------------|---------|
+| 01 | **Basics & CLI** | Loops, `gets`, `*args`, `**kwargs`, `(...)` forwarding, OptionParser, ARGF | `argdemo` |
+| 02 | **Strings & Regex** | Heredocs, interpolation, `gsub`, `scan`, Unicode, pattern matching | `retest` |
+| 03 | **Control & Collections** | `if`/`case`/`unless`, `each`/`map`/`select`/`reduce`, Array, Hash, Set, Stack, Queue, Heap, Graph | `coldemo` |
+| 04 | **OOP** | Classes, `attr_accessor`, inheritance, `super`, composition, mixins, `method_missing`, `Comparable`, `Enumerable` | `gpacalc` |
+| 05 | **Filesystem** | `File.read`/`write`, `Pathname`, `StringIO`, `Tempfile`, `Dir`, `FileUtils` | `dirsizer` |
+| 06 | **Blocks & Procs** | `yield`, `Proc`, `lambda`, `&` operator, block-to-proc conversion | `benchblk` |
+| 07 | **Modules** | Namespacing, `include`/`extend`, `module_function`, `extend self` | `cacheable` |
+| 08 | **Time** | `Time`, `Date`, `strftime`, timezones, arithmetic, Unix epoch | `agecalc` |
 | 09 | **Exceptions** | `raise`/`rescue`/`ensure`/`retry`, custom exceptions, `binding.break`, `TracePoint` |
 | 10 | **Threads** | `Thread`, `Mutex`, `Queue`, `Fiber`, `Ractor`, `ConditionVariable`, thread pools |
 | 11 | **Testing** | Minitest, `assert_raises`, `setup`/`teardown`, mocks, test helpers |
@@ -70,9 +70,31 @@ ruby basics_01_hello_lesson.rb   # first concept
 | 22 | **Network & System** | `Resolv` (DNS), `IPAddr`, UDP/Unix sockets, `Find`, `TSort` |
 | 23 | **Rake for Real** | Task arguments, `TestTask`, `FileList`, `clean`/`clobber`, `PackageTask`, `multitask`, CI pipelines |
 
+## Curriculum Restructuring
+
+The first 8 group projects (G01–G08) used concepts from future groups,
+breaking the progressive learning model. They were moved to `projects/`
+and replaced with exercises that only use concepts from their group
+and prior groups.
+
+| Tool | Original Group | What It Does |
+|------|----------------|--------------|
+| `fargs` | G01 | Inspect file arguments with filters and patterns |
+| `fparse` | G02 | Parse log files into plain/JSON/CSV output |
+| `fdedup` | G03 | Find duplicate files by content hash (MD5) |
+| `freport` | G04 | File tree reporter with pluggable formatters |
+| `flog` | G05 | Log file rotator and archiver |
+| `fwatch` | G06 | Watch a directory for file changes |
+| `fmix` | G07 | Configurable CLI built from mixin modules |
+| `fage` | G08 | Find files older than N days, take action |
+
+Each original group now has a replacement project (`argdemo`, `retest`,
+`coldemo`, `gpacalc`, `dirsizer`, `benchblk`, `cacheable`, `agecalc`)
+that only uses concepts taught up to that group.
+
 ## The Toolbox
 
-`projects/` contains **43 real CLI tools** built with these concepts —
+`projects/` contains **51 real CLI tools** built with these concepts —
 system monitors, file finders, config generators, backup scripts, network diagnostics,
 pattern matchers, gem inspectors, lazy data pipelines, and CI task runners.
 Everything here was built to solve an actual problem on a Linux machine.

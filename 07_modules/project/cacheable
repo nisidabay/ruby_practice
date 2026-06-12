@@ -1,0 +1,132 @@
+#!/usr/bin/env ruby
+# frozen_string_literal: true
+
+# cacheable — Cacheable module mixin
+#
+# WITHOUT modules — every class reimplements caching:
+#   class Fetcher; def cache; @cache ||= {}; end; end
+#   class Loader;  def cache; @cache ||= {}; end; end
+#   5 classes = 5 copies of the same pattern
+#
+# WITH modules — one Cacheable mixin, any class can use it:
+#   cacheable -k user_1 -v Alice
+#   cacheable -k user_1 -v Bob --check  # shows cached? behavior
+#
+# Uses only: modules, include, extend, module_function
+
+module Cacheable
+  def self.included(base)
+    base.extend(ClassMethods)
+    base.instance_variable_set(:@cache_store, {})
+  end
+
+  module ClassMethods
+    def cache(key, value)
+      @cache_store[key] = value
+    end
+
+    def cached?(key)
+      @cache_store.key?(key)
+    end
+
+    def fetch(key)
+      @cache_store[key]
+    end
+
+    def clear_cache
+      @cache_store.clear
+    end
+
+    def cache_size
+      @cache_store.size
+    end
+  end
+end
+
+# Demo class that uses the Cacheable module
+class DataStore
+  include Cacheable
+
+  def store(id)
+    if self.class.cached?(id)
+      puts "  CACHE HIT: #{id} -> #{self.class.fetch(id)}"
+      self.class.fetch(id)
+    else
+      value = yield(id) if block_given?
+      self.class.cache(id, value)
+      puts "  CACHED: #{id} -> #{value.inspect}"
+      value
+    end
+  end
+end
+
+# CLI entry
+require 'optparse'
+
+options = { key: nil, value: nil, check: false, list: false }
+
+OptionParser.new do |opts|
+  opts.banner = 'Usage: cacheable [options]'
+
+  opts.on('-k', '--key KEY', 'Cache key') do |k|
+    options[:key] = k
+  end
+
+  opts.on('-v', '--value VALUE', 'Value to cache') do |v|
+    options[:value] = v
+  end
+
+  opts.on('-c', '--check', 'Check if key exists without caching') do
+    options[:check] = true
+  end
+
+  opts.on('-l', '--list', 'List all cached keys') do
+    options[:list] = true
+  end
+
+  opts.on('--clear', 'Clear the cache') do
+    options[:clear] = true
+  end
+
+  opts.on('-h', '--help', 'Show this message') do
+    puts opts
+    exit
+  end
+end.parse!
+
+store = DataStore.new
+
+if options[:clear]
+  DataStore.clear_cache
+  puts 'Cache cleared.'
+  exit
+end
+
+if options[:list]
+  puts "Cache has #{DataStore.cache_size} entries"
+  exit
+end
+
+if options[:check]
+  if options[:key]
+    status = DataStore.cached?(options[:key]) ? 'cached' : 'not cached'
+    puts "Key '#{options[:key]}' is #{status}"
+  else
+    abort 'cacheable: --check requires --key'
+  end
+  exit
+end
+
+if options[:key]
+  if options[:value]
+    store.store(options[:key]) { options[:value] }
+  elsif DataStore.cached?(options[:key])
+    puts "Retrieved: #{DataStore.fetch(options[:key]).inspect}"
+  else
+    abort "cacheable: key '#{options[:key]}' not cached and no --value given"
+  end
+else
+  abort 'cacheable: --key is required'
+end
+
+puts "\nCache state: #{DataStore.cache_size} entries"

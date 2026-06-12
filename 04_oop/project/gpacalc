@@ -1,0 +1,140 @@
+#!/usr/bin/env ruby
+# frozen_string_literal: true
+
+# gpacalc — GPA calculator
+#
+# WITHOUT OOP — data scattered, no encapsulation:
+#   student_name = "Alice"; courses = []; grades = []
+#   each function takes 5 arguments, nothing relates
+#
+# WITH OOP — composition, inheritance, Comparable:
+#   gpacalc Alice Math:A English:B Science:C
+#   gpacalc Bob History:A Physics:B --verbose
+#
+# Uses only: classes, attr_accessor, inheritance, composition,
+# Comparable, to_s. No File.*, no Find, no module.
+
+require 'optparse'
+
+# --- Grade value mapping (simple, no JSON/CSV) ---
+GRADE_POINTS = {
+  'A' => 4.0, 'A-' => 3.7,
+  'B+' => 3.3, 'B' => 3.0, 'B-' => 2.7,
+  'C+' => 2.3, 'C' => 2.0, 'C-' => 1.7,
+  'D+' => 1.3, 'D' => 1.0,
+  'F' => 0.0
+}.freeze
+
+# --- Course class with Comparable ---
+class Course
+  include Comparable
+
+  attr_reader :name, :grade, :credits
+
+  def initialize(name:, grade:, credits: 3)
+    @name = name
+    @grade = grade
+    @credits = credits
+  end
+
+  def points
+    (GRADE_POINTS[@grade] || 0.0) * @credits
+  end
+
+  def <=>(other)
+    points <=> other.points
+  end
+
+  def to_s
+    "#{@name}: #{@grade} (#{@credits} cr, #{points} pts)"
+  end
+end
+
+# --- Student class ---
+class Student
+  attr_reader :name
+
+  def initialize(name:)
+    @name = name
+  end
+end
+
+# --- ReportCard class (composition: has-many Courses) ---
+class ReportCard
+  def initialize(student:, courses: [])
+    @student = student
+    @courses = courses
+  end
+
+  def add_course(course)
+    @courses.push(course)
+  end
+
+  def gpa
+    total_points = @courses.reduce(0) { |sum, c| sum + c.points }
+    total_credits = @courses.reduce(0) { |sum, c| sum + c.credits }
+    total_credits.zero? ? 0.0 : (total_points / total_credits).round(2)
+  end
+
+  def to_s
+    lines = ["Report Card for #{@student.name}"]
+    lines << '=' * 40
+    @courses.each { |c| lines << "  #{c}" }
+    lines << '=' * 40
+    lines << "  GPA: #{gpa}"
+    lines << "  Courses: #{@courses.size}"
+    lines.join("\n")
+  end
+end
+
+# --- CLI entry point ---
+options = { verbose: false }
+
+OptionParser.new do |opts|
+  opts.banner = 'Usage: gpacalc <student_name> <course:grade> [course:grade...]'
+
+  opts.on('-v', '--verbose', 'Show grade points') do
+    options[:verbose] = true
+  end
+
+  opts.on('--grades', 'List valid grades and values') do
+    GRADE_POINTS.each { |g, p| puts "  #{g}: #{p}" }
+    exit
+  end
+
+  opts.on('-h', '--help', 'Show this message') do
+    puts opts
+    puts
+    puts 'Examples:'
+    puts '  gpacalc Alice Math:A English:B Science:C'
+    puts '  gpacalc Bob "History:B+" Physics:A --verbose'
+    exit
+  end
+end.parse!
+
+abort 'Usage: gpacalc <student_name> <course:grade> [course:grade...]' if ARGV.empty?
+
+student_name = ARGV.shift
+student = Student.new(name: student_name)
+card = ReportCard.new(student: student)
+
+ARGV.each do |pair|
+  parts = pair.split(':')
+  abort "Invalid format: #{pair} (expected Course:Grade)" unless parts.size == 2
+
+  course_name = parts[0]
+  grade = parts[1]
+
+  unless GRADE_POINTS.key?(grade)
+    warn "gpacalc: warning: unknown grade '#{grade}' for #{course_name}"
+  end
+
+  card.add_course(Course.new(name: course_name, grade: grade))
+end
+
+puts card
+
+if options[:verbose]
+  puts "\nGrade point scale:"
+  GRADE_POINTS.each { |g, p| puts "  #{g}: #{p}" }
+end

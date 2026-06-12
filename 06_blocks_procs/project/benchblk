@@ -1,0 +1,91 @@
+#!/usr/bin/env ruby
+# frozen_string_literal: true
+
+# benchblk — benchmark method using blocks, Proc, and lambda
+#
+# WITHOUT blocks — every behavior needs its own method:
+#   def multiply(x); x * 2; end
+#   def add(x); x + x; end
+#   Can't swap behavior at runtime
+#
+# WITH blocks — pass behavior as data:
+#   benchblk -n 10000 --type block
+#   benchblk -n 10000 --type proc
+#   benchblk -n 10000 --type lambda
+#
+# Uses only: blocks, Proc, lambda, yield, & operator
+# Timing uses an iteration counter (G06 is before G08 Time)
+
+require 'optparse'
+
+options = { count: 10_000, type: 'block' }
+
+OptionParser.new do |opts|
+  opts.banner = 'Usage: benchblk [options]'
+
+  opts.on('-n', '--count N', Integer, 'Iteration count (default: 10000)') do |n|
+    options[:count] = n
+  end
+
+  opts.on('-t', '--type TYPE', %w[block proc lambda],
+          'Type to benchmark: block, proc, lambda') do |t|
+    options[:type] = t
+  end
+
+  opts.on('-h', '--help', 'Show this message') do
+    puts opts
+    exit
+  end
+end.parse!
+
+n = options[:count]
+
+# Benchmark method — accepts a block via yield
+def benchmark(count)
+  i = 0
+  while i < count
+    yield(i)
+    i += 1
+  end
+  i  # return iteration count
+end
+
+# Benchmark method — accepts a Proc via & operator
+def benchmark_block(count, &blk)
+  i = 0
+  while i < count
+    blk.call(i)
+    i += 1
+  end
+  i
+end
+
+# Workload to benchmark
+work_block = ->(x) { x * x + x / 2 }
+
+puts "Benchmark: #{n} iterations"
+puts '─' * 40
+
+case options[:type]
+
+when 'block'
+  # Pass block directly via yield
+  result = benchmark(n) { |x| work_block.call(x) }
+  puts "block  (yield): #{result} iterations completed"
+
+when 'proc'
+  # Create Proc, pass via &
+  p = Proc.new { |x| work_block.call(x) }
+  result = benchmark_block(n, &p)
+  puts "proc   (&call): #{result} iterations completed"
+
+when 'lambda'
+  # Create lambda, pass via &
+  l = ->(x) { work_block.call(x) }
+  result = benchmark_block(n, &l)
+  puts "lambda (&call): #{result} iterations completed"
+
+end
+
+puts '─' * 40
+puts 'All iterations completed successfully.'

@@ -1,0 +1,89 @@
+#!/usr/bin/env ruby
+# frozen_string_literal: true
+
+# dirsizer — directory size reporter
+#
+# WITHOUT Find/Pathname — manual tree walking:
+#   Dir.glob("**/*").select { |f| File.file?(f) }
+#   Misses hidden dirs, symlinks, edge cases
+#
+# WITH Find.find + Pathname — clean, correct traversal:
+#   dirsizer --dir /var/log --min-size 10485760
+#   dirsizer --dir ~/Downloads
+#
+# Uses only: Find.find, File.size, Pathname, OptionParser
+
+require 'optparse'
+require 'find'
+require 'pathname'
+
+options = { dir: '.', min_size: 10_485_760, verbose: false }
+
+OptionParser.new do |opts|
+  opts.banner = 'Usage: dirsizer [options]'
+
+  opts.on('-d', '--dir DIR', 'Directory to scan (default: .)') do |d|
+    options[:dir] = d
+  end
+
+  opts.on('-s', '--min-size BYTES', Integer, 'Minimum size in bytes (default: 10MB)') do |n|
+    options[:min_size] = n
+  end
+
+  opts.on('-v', '--verbose', 'Show scan progress') do
+    options[:verbose] = true
+  end
+
+  opts.on('-h', '--help', 'Show this message') do
+    puts opts
+    exit
+  end
+end.parse!
+
+abort "dirsizer: #{options[:dir]} not found" unless File.directory?(options[:dir])
+
+def human_size(bytes)
+  return '0 B' if bytes.zero?
+
+  units = %w[B KB MB GB TB]
+  size = bytes.to_f
+  exp = 0
+
+  while size >= 1024 && exp < units.size - 1
+    size /= 1024
+    exp += 1
+  end
+
+  format('%.1f %s', size, units[exp])
+end
+
+total_files = 0
+matched_files = 0
+total_size = 0
+
+Find.find(options[:dir]) do |path|
+  pathname = Pathname.new(path)
+
+  begin
+    stat = pathname.lstat
+  rescue Errno::ENOENT, Errno::EACCES
+    next
+  end
+
+  next unless stat.file?
+
+  total_files += 1
+  warn "Scanning: #{path}" if options[:verbose]
+
+  next unless stat.size >= options[:min_size]
+
+  matched_files += 1
+  total_size += stat.size
+
+  puts "#{human_size(stat.size).rjust(10)}  #{path}"
+end
+
+puts
+puts "Scanned: #{total_files} files"
+puts "Large:   #{matched_files} files >= #{human_size(options[:min_size])}"
+puts "Total:   #{human_size(total_size)}" if matched_files.positive?

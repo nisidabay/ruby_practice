@@ -1,0 +1,104 @@
+#!/usr/bin/env ruby
+# frozen_string_literal: true
+
+# coldemo — data structure demo
+#
+# WITHOUT collections — manual data management is error-prone:
+#   item1 = "a"; item2 = "b"; item3 = "c"  # what if 1000 items?
+#
+# WITH collections — one structure, many operations:
+#   coldemo --type stack --items a,b,c
+#   coldemo --type queue --items x,y,z
+#   coldemo --type heap --items 9,3,7,1,5
+#
+# Demonstrates Array (stack/queue), Set, Struct, Hash,
+# and Enumerable methods (each, map, select, reduce, sort_by)
+
+require 'optparse'
+require 'set'
+
+options = { type: 'stack', items: [] }
+
+OptionParser.new do |opts|
+  opts.banner = 'Usage: coldemo [options]'
+
+  opts.on('-t', '--type TYPE', %w[stack queue heap set demo],
+          'Data structure: stack, queue, heap, set, demo') do |t|
+    options[:type] = t
+  end
+
+  opts.on('-i', '--items LIST', 'Comma-separated items') do |s|
+    options[:items] = s.split(',').map(&:strip)
+  end
+
+  opts.on('-h', '--help', 'Show this message') do
+    puts opts
+    exit
+  end
+end.parse!
+
+abort 'coldemo: --items is required' unless options[:items].any?
+
+items = options[:items]
+nums = items.map(&:to_i)
+
+case options[:type]
+
+when 'stack'
+  # Array as stack (LIFO)
+  stack = []
+  items.each { |item| stack.push(item) }
+  puts "Stack after pushes: #{stack.inspect}"
+  print 'Pop sequence:'
+  print " #{stack.pop}" until stack.empty?
+  puts
+
+when 'queue'
+  # Array as queue (FIFO)
+  queue = []
+  items.each { |item| queue.push(item) }
+  puts "Queue after enqueues: #{queue.inspect}"
+  print 'Dequeue sequence:'
+  print " #{queue.shift}" until queue.empty?
+  puts
+
+when 'heap'
+  # Min-heap via sorted array
+  heap = []
+  items.each do |item|
+    heap.push(item.to_i)
+    heap.sort!
+  end
+  puts "Min-heap after inserts: #{heap.inspect}"
+  print 'Extract min:'
+  print " #{heap.shift}" until heap.empty?
+  puts
+
+when 'set'
+  # Set — unique elements
+  s = items.to_set
+  puts "Set (unique): #{s.inspect}"
+  puts "Size: #{s.size} (vs #{items.size} original)"
+  duplicates = items.select { |e| items.count(e) > 1 }.uniq
+  puts "Duplicates removed: #{duplicates.inspect}" unless duplicates.empty?
+
+when 'demo'
+  # Demonstrate Enumerable methods
+  puts "Original: #{nums.inspect}"
+
+  squares = nums.map { |n| n * n }
+  puts "map (squares): #{squares.inspect}"
+
+  evens = nums.select(&:even?)
+  puts "select (even): #{evens.inspect}"
+
+  sum = nums.reduce(0, :+)
+  puts "reduce (sum): #{sum}"
+
+  sorted = nums.sort_by { |n| -n }
+  puts "sort_by (desc): #{sorted.inspect}"
+
+  odds = nums.reject(&:even?)
+  puts "reject (odd): #{odds.inspect}"
+
+end
