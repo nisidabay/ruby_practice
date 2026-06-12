@@ -1,0 +1,143 @@
+#!/usr/bin/env ruby
+# frozen_string_literal: true
+
+# yt_dlp_fiber — download YouTube videos using Fiber-based concurrency
+#
+# Usage: yt_dlp_fiber [options] <url1> [url2] ...
+#     -f, --format [FMT]               Video format (default: bestvideo+bestaudio)
+#     -o, --output-dir [DIR]           Output directory (default:/home/nisidabay/Downloads/youtube_videos)
+#     -c, --concurrency [NUM]          Number of concurrent downloads (default: 3)
+#     -h, --help                       Show this help
+
+require 'optparse'
+
+YTDLP  = 'yt-dlp'
+NOTIFY = 'notify-send'
+REQUIREMENTS = [YTDLP, NOTIFY]
+OUTDIR = File.expand_path('~/Downloads/youtube_videos')
+
+# Custom Fiber Scheduler using IO.select for non-blocking I/O
+class FiberScheduler
+  def initialize(max_fibers: 10)
+    @max_fibers = max_fibers
+    @io_wait_fibers = []  # fibers waiting for I/O
+    @sleep_fibers = []    # fibers sleeping
+    @runnable_fibers = [] # fibers ready to run
+    @running = false
+  end
+
+  def io_wait(io, events, timeout)
+    readable = io unless events == :write
+    writable = io if events == :write
+    IO.select(readable, writable, nil, timeout)
+  end
+
+  def kernel_sleep(duration)
+    IO.select(nil, nil, nil, duration)
+  end
+
+  def run
+    @running = true
+    @fibers = []
+
+    # Create concurrent fibers for each URL
+    @fibers << @runnable_fibers.pop while @runnable_fibers.size < @max_fibers && @runnable_fibers.any?
+
+    until @runnable_fibers.empty? && @io_wait_fibers.empty? && @sleep_fibers.empty?
+      # Process runnable fibers
+      while @runnable_fibers.size < @max_fibers && @runnable_fibers.any?
+        fiber = @runnable_fibers.shift
+        fiber.resume
+      end
+
+      # Check I/O wait fibers
+      ready = IO.select(@io_wait_fibers.map(&:first), nil, nil, 0.01)
+      if ready && ready[0]
+        ready[0].each do |io|
+          fiber = @io_wait_fibers.assoc(io)
+          if fiber
+            @io_wait_fibers.delete(fiber)
+            @runnable_fibers << fiber
+          end
+        end
+      end
+
+      # Check sleep fibers
+      now = Time.now
+      @sleep_fibers.select! do |deadline, fiber|
+        if now >= deadline
+          @runnable_fibers << fiber
+          false
+        else
+          true
+        end
+      end
+
+      # If nothing is runnable, sleep briefly
+      if @runnable_fibers.empty?
+        sleep 0.01
+      end
+    end
+  end
+
+  def schedule(&block)
+    @runnable_fibers << Fiber.new(&block)
+  end
+
+  def close
+    @running = false
+  end
+end
+
+options = { format: 'bestvideo+bestaudio', output_dir: OUTDIR, concurrency: 3 }
+OptionParser.new do |opts|
+  opts.banner = "Usage: #{File.basename($0)} [options] <url1> [url2] ..."
+  opts.on('-f', '--format [FMT]', "Video format (default: #{options[:format]})") { |f| options[:format] = f }
+  opts.on('-o', '--output-dir [DIR]', "Output directory (default:#{options[:output_dir]})") do |o|
+    options[:output_dir] = File.expand_path(o)
+  end
+  opts.on('-c', '--concurrency [NUM]', Integer, "Number of concurrent downloads (default: #{options[:concurrency]})") do |c|
+    options[:concurrency] = c
+  end
+  opts.on('-h', '--help', 'Show this help') do
+    puts opts
+    exit
+  end
+end.parse!
+
+abort "Usage: #{File.basename($0)} <url1> [url2] ..." if ARGV.empty?
+
+REQUIREMENTS.each do |req|
+  abort "Error: #{req} not found. Install with: pacman -S yt-dlp" unless system("command -v #{req} > /dev/null 2>&1")
+end
+
+urls = ARGV
+Dir.mkdir(options[:output_dir]) unless Dir.exist?(options[:output_dir])
+
+name = '%(title)s.%(ext)s'
+out  = File.join(options[:output_dir], name)
+
+puts "Downloading #{urls.size} video(s) with concurrency=#{options[:concurrency]}"
+puts "Output directory: #{options[:output_dir]}"
+puts
+
+scheduler = FiberScheduler.new(max_fibers: options[:concurrency])
+
+# Schedule all downloads
+urls.each do |url|
+  scheduler.schedule do
+    puts "[#{Fiber.current.object_id}] Starting: #{url}"
+    IO.popen([YTDLP, '-o', out, '-f', options[:format], url]) do |io|
+      io.each { |line| print line }
+    end
+    puts "[#{Fiber.current.object_id}] Completed: #{url}"
+  rescue => e
+    puts "[#{Fiber.current.object_id}] Error: #{e.message}"
+  end
+end
+
+# Run the scheduler
+scheduler.run
+
+system(NOTIFY, '📥 Ruby downloader', "\tDownload completed")
+puts 'Done.'
