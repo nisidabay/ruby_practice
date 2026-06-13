@@ -27,15 +27,14 @@ ruby args_02_kwarg_forwarding.rb                  # forward **flags to another m
 ruby args_03_block_argument.rb                    # &block explicit block parameter
 ruby args_04_argument_forwarding.rb               # (...) forwards everything
 
-# 3. OptionParser series (crescendo: each builds on the one before)
-ruby optparse_01_basic_flags.rb -v --debug --no-quiet
+# 3. OptionParser series (crescendo: each builds on the one before — all use ytdl)
+ruby optparse_01_basic_flags.rb -v --dry-run --no-metadata
 ruby optparse_02_parse_vs_parse_bang.rb
-ruby optparse_03_string_args.rb -n "Alice" --email "alice@example.com"
-ruby optparse_04_type_conversion.rb -p 8080 -r 2.5
-ruby optparse_05_validation.rb --api-key abc123 --endpoint https://api.example.com
-ruby optparse_06_advanced_types.rb -t ruby -t python -i abc,def -f json -w 5
-ruby optparse_07_separators_banners.rb --host 0.0.0.0 --port 3000 --verbose
-ruby optparse_08_subcommands.rb deploy --environment production --servers web1,web2
+ruby optparse_03_string_args.rb -u 'https://youtube.com/watch?v=abc123' -o my_video.mp4
+ruby optparse_04_type_conversion.rb -c 5 -r 1.5 -t 60
+ruby optparse_05_validation.rb -u 'https://youtube.com/watch?v=abc' -f mp4 -p 8080 -j
+ruby optparse_06_advanced_types.rb -q high -g ruby,python,go -p stdin
+ruby optparse_08_subcommands.rb download -u 'https://youtube.com/watch?v=abc' -f mp4 -q high --dry-run
 ```
 
 ## Learning Path
@@ -62,16 +61,17 @@ ruby optparse_08_subcommands.rb deploy --environment production --servers web1,w
 
 ### OptionParser Series (~2 hours) — Crescendo: each file builds on the one before
 
+All examples use the same `ytdl` (YouTube downloader) tool identity so you focus on option mechanics, not re-learning what each script does.
+
 | Script | Concepts | Builds on | Time |
 |---|---|---|---|
 | `optparse_01_basic_flags.rb` | Boolean flags, `--[no-]option` pattern | — | 10 min |
 | `optparse_02_parse_vs_parse_bang.rb` | `parse!` mutates ARGV vs `parse` returns | 01 (now you understand the bang) | 10 min |
 | `optparse_03_string_args.rb` | Value-taking args, required vs optional brackets | 01 (block receives value instead of nothing) | 15 min |
 | `optparse_04_type_conversion.rb` | Integer, Float auto-conversion | 03 (block gets typed value, not String) | 15 min |
-| `optparse_05_validation.rb` | `begin/rescue/end`, `$stderr`, required validation, custom validators | 03+04 (errors + pipe problem) | 25 min |
+| `optparse_05_validation.rb` | `begin/rescue/end`, required validation, custom validators | 03+04 (errors + required enforcement) | 25 min |
 | `optparse_06_advanced_types.rb` | Array, restricted values, optional typed args | 04 (more type patterns) | 20 min |
-| `optparse_07_separators_banners.rb` | Option groups, `separator`, version flag, dynamic banner | 01+03+04 (now organized) | 15 min |
-| `optparse_08_subcommands.rb` | Subcommands, `order!` vs `parse!`, full CLI tool | 01–07 capstone | 30 min |
+| `optparse_08_subcommands.rb` | Subcommands, full CLI tool | 01–06 capstone | 30 min |
 
 ### Reference
 
@@ -124,18 +124,18 @@ opts.on("-v", "--verbose", "Enable verbose output") do
 end
 
 # Required string
-opts.on("-n", "--name NAME", "Your name") do |name|
-  options[:name] = name
+opts.on("-u", "--url URL", "Video URL") do |url|
+  options[:url] = url
 end
 
 # Type conversion
-opts.on("-p", "--port PORT", Integer, "Port number") do |port|
-  options[:port] = port
+opts.on("-c", "--concurrent-downloads N", Integer, "Concurrent downloads") do |n|
+  options[:concurrent] = n
 end
 
 # Restricted values
-opts.on("-e", "--env ENV", %w[dev staging prod], "Environment") do |env|
-  options[:env] = env
+opts.on("-f", "--format FORMAT", %w[mp3 mp4 mkv], "Output format") do |fmt|
+  options[:format] = fmt
 end
 
 # Custom validator

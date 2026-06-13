@@ -3,14 +3,14 @@
 
 # 08_subcommands.rb — Subcommands: the capstone
 #
-# Builds on everything from 01–07. A real CLI tool with two commands
-# (deploy, status), each with its own options, grouped with separators.
+# Builds on everything from 01–07. A real CLI tool with three commands
+# (download, info, list-formats), each with its own options, grouped with separators.
 #
-#   ruby optparse_08_subcommands.rb deploy --environment production --servers web1,web2,web3
-#   ruby optparse_08_subcommands.rb deploy --environment staging --dry-run
-#   ruby optparse_08_subcommands.rb status --environment dev --json
-#   ruby optparse_08_subcommands.rb status           # missing command
+#   ruby optparse_08_subcommands.rb download --url https://youtube.com/watch?v=xyz --format mp4 --verbose
+#   ruby optparse_08_subcommands.rb info --url https://youtube.com/watch?v=abc
+#   ruby optparse_08_subcommands.rb list-formats --url https://youtube.com/watch?v=xyz
 #   ruby optparse_08_subcommands.rb -h
+#   ruby optparse_08_subcommands.rb --version
 
 require 'optparse'
 require 'json'
@@ -21,8 +21,8 @@ VERSION = '1.0.0'
 
 def parse_options(argv)
   options = {
-    environment: nil, servers: [], branch: 'main',
-    dry_run: false, verbose: false, format: :text
+    url: nil, format: nil, quality: nil, output: nil,
+    concurrent_downloads: 3, dry_run: false, verbose: false, json: false
   }
 
   parser = build_parser(options)
@@ -41,7 +41,7 @@ def build_parser(options)
 
     add_command_section(opts)
     add_target_options(opts, options)
-    add_deployment_options(opts, options)
+    add_download_options(opts, options)
     add_output_options(opts, options)
     add_general_options(opts)
     add_examples(opts)
@@ -51,35 +51,45 @@ end
 def add_command_section(opts)
   opts.separator ''
   opts.separator 'Commands:'
-  opts.separator '  deploy    Deploy to environment'
-  opts.separator '  status    Show deployment status'
+  opts.separator '  download    Download video'
+  opts.separator '  info        Show video info'
+  opts.separator '  list-formats    List available formats'
 end
 
 def add_target_options(opts, options)
   opts.separator 'Target:'
   opts.separator '────'
-  opts.on('-e', '--environment ENV', %w[dev staging production],
-          'Target environment (required for deploy)') do |env|
-    options[:environment] = env
+  opts.on('-u', '--url URL', 'Video URL (required for download/info)') do |url|
+    options[:url] = url
   end
-  opts.on('-s', '--servers S1,S2,S3', Array, 'Server list') do |s|
-    options[:servers] = s
+  opts.on('-f', '--format FORMAT', %w[mp3 mp4 mkv],
+          'Output format (required for download)') do |fmt|
+    options[:format] = fmt
+  end
+  opts.on('-q', '--quality QUALITY', %w[low medium high best],
+          'Video quality (default: best)') do |q|
+    options[:quality] = q
   end
 end
 
-def add_deployment_options(opts, options)
+def add_download_options(opts, options)
   opts.separator ''
-  opts.separator 'Deployment:'
+  opts.separator 'Download:'
   opts.separator '────'
-  opts.on('-b', '--branch BRANCH', 'Git branch (default: main)') { |b| options[:branch] = b }
-  opts.on('--dry-run', "Simulate, don't execute")                { options[:dry_run] = true }
+  opts.on('-c', '--concurrent-downloads N', Integer, 'Concurrent downloads (default: 3)') { |n|
+    options[:concurrent_downloads] = n
+  }
+  opts.on('--dry-run', 'Simulate, don\'t download') { options[:dry_run] = true }
 end
 
 def add_output_options(opts, options)
   opts.separator ''
   opts.separator 'Output:'
   opts.separator '────'
-  opts.on('--json', 'JSON output')       { options[:format] = :json }
+  opts.on('-o', '--output FILE', 'Output file (default: inferred from title)') do |o|
+    options[:output] = o
+  end
+  opts.on('--json', 'JSON output') { options[:json] = true }
   opts.on('--verbose', 'Verbose output') { options[:verbose] = true }
 end
 
@@ -102,12 +112,11 @@ def add_examples(opts)
   opts.separator ''
   opts.separator 'Examples:'
   opts.separator '────'
-  opts.separator "  #{exe} deploy --environment production --servers web1,web2,web3 --branch release/v2"
-  opts.separator "  #{exe} deploy -e staging -s web1,web2 --dry-run"
-  opts.separator "  #{exe} deploy -e dev -b hotfix --verbose"
-  opts.separator "  #{exe} status --environment production --json"
-  opts.separator "  #{exe} status -e dev --json --verbose"
-  opts.separator "  #{exe} status --verbose"
+  opts.separator "  #{exe} download --url 'https://youtube.com/watch?v=xyz' --format mp4 --verbose"
+  opts.separator "  #{exe} download -u https://youtube.com/watch?v=abc -f mp3 -q best -o song.mp3"
+  opts.separator "  #{exe} info -u 'https://youtube.com/watch?v=xyz' --json"
+  opts.separator "  #{exe} list-formats -u 'https://youtube.com/watch?v=xyz'"
+  opts.separator "  #{exe} download --dry-run --verbose"
   opts.separator "  #{exe} --version"
 end
 
@@ -116,8 +125,8 @@ end
 def extract_command(argv)
   command = argv.shift
 
-  unless command && %w[deploy status].include?(command)
-    warn 'Error: Expected one of: deploy, status'
+  unless command && %w[download info list-formats].include?(command)
+    warn 'Error: Expected one of: download, info, list-formats'
     warn "Try '#{File.basename($PROGRAM_NAME)} --help'."
     exit 1
   end
@@ -126,32 +135,48 @@ def extract_command(argv)
 end
 
 def validate_command(command, options)
-  return unless command == 'deploy' && !options[:environment]
+  return if command != 'download' || options[:url]
 
-  warn 'Error: --environment is required for deploy'
+  warn 'Error: --url is required for download'
   exit 1
 end
 
 # ── Command handlers ────────────────────────────────────────────────────────
 
-def run_deploy(options)
+def run_download(options)
   {
-    command: 'deploy',
-    action: 'deploying',
-    env: options[:environment],
-    branch: options[:branch],
-    servers: options[:servers],
+    command: 'download',
+    action: 'downloading',
+    url: options[:url],
+    format: options[:format],
+    quality: options[:quality],
+    output: options[:output] || infer_filename(options[:url], options[:format]),
+    concurrent: options[:concurrent_downloads],
     dry_run: options[:dry_run],
     timestamp: Time.now.iso8601
   }
 end
 
-def run_status(options)
+def run_info(options)
   {
-    command: 'status',
-    action: 'checking status',
-    env: options[:environment] || 'all',
-    servers: { web1: 'healthy', web2: 'healthy', db: 'healthy' },
+    command: 'info',
+    action: 'fetching video info',
+    url: options[:url],
+    title: 'Sample Video Title',
+    duration: '3:45',
+    views: 123_456,
+    author: 'Sample Channel',
+    timestamp: Time.now.iso8601
+  }
+end
+
+def run_list_formats(options)
+  formats = %w[mp3 mp4 mkv webm].map { |f| { format: f, quality: 'best', size: '25MB' } }
+  {
+    command: 'list-formats',
+    action: 'listing available formats',
+    url: options[:url],
+    formats: formats,
     timestamp: Time.now.iso8601
   }
 end
@@ -159,7 +184,7 @@ end
 # ── Output formatting ───────────────────────────────────────────────────────
 
 def format_result(result, options)
-  if options[:format] == :json
+  if options[:json]
     puts JSON.pretty_generate(result)
   else
     format_text(result, options)
@@ -168,11 +193,30 @@ end
 
 def format_text(result, options)
   puts "[VERBOSE] Starting #{result[:command]}..." if options[:verbose]
-  puts "#{result[:action].capitalize} → #{result[:env]}"
-  puts "Branch:  #{result[:branch]}" if result[:branch]
-  puts "Servers: #{result[:servers].join(', ')}" if result[:servers].is_a?(Array) && result[:servers].any?
-  puts '[DRY RUN — no changes made]' if result[:dry_run]
-  result[:servers].each { |name, status| puts "  #{name}: #{status}" } if result[:servers].is_a?(Hash)
+
+  case result[:command]
+  when 'download'
+    puts "Downloading: #{result[:url]}"
+    puts "Format:      #{result[:format]}"
+    puts "Quality:     #{result[:quality]}"
+    puts "Output:      #{result[:output]}"
+    puts '[DRY RUN — no files written]' if result[:dry_run]
+  when 'info'
+    puts "Title:   #{result[:title]}"
+    puts "Author:  #{result[:author]}"
+    puts "Duration: #{result[:duration]}"
+    puts "Views:   #{result[:views]}"
+  when 'list-formats'
+    puts "Available formats:"
+    result[:formats].each { |f| puts "  #{f[:format]} - #{f[:quality]} - #{f[:size]}" }
+  end
+end
+
+def infer_filename(url, format)
+  # Simple extraction from YouTube URL for demo purposes
+  match = url.match(/v=([a-zA-Z0-9_-]+)/)
+  id = match&.captures&.first || 'video'
+  "#{id}.#{format}"
 end
 
 # ── Main ────────────────────────────────────────────────────────────────────
@@ -183,8 +227,9 @@ def main(argv = ARGV)
   validate_command(command, options)
 
   result = case command
-           when 'deploy' then run_deploy(options)
-           when 'status' then run_status(options)
+           when 'download' then run_download(options)
+           when 'info' then run_info(options)
+           when 'list-formats' then run_list_formats(options)
            end
 
   format_result(result, options)

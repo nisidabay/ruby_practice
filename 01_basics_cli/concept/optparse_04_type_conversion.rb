@@ -1,3 +1,4 @@
+#!/usr/bin/env ruby
 # frozen_string_literal: true
 
 # 04_type_conversion.rb — OptionParser auto-converts arguments to types
@@ -9,20 +10,20 @@
 
 require 'optparse'
 
-options = { port: 8080, rate: 1.0, count: 1 }
+options = { concurrent_downloads: 3, rate_limit: 0.0, timeout: 30 }
 
 OptionParser.new do |opts|
   opts.banner = "Usage: #{File.basename($0)} [options]"
-  opts.on('-p', '--port PORT', Integer, 'Port number (default: 8080)') do |port|
-    options[:port] = port
+  opts.on('-c', '--concurrent-downloads N', Integer, 'Number of concurrent downloads (default: 3)') do |n|
+    options[:concurrent_downloads] = n
   end
 
-  opts.on('-r', '--rate RATE', Float, 'Rate value (default: 1.0)') do |rate|
-    options[:rate] = rate
+  opts.on('-r', '--rate-limit KBPS', Float, 'Rate limit in KB/s (default: unlimited)') do |r|
+    options[:rate_limit] = r
   end
 
-  opts.on('-c', '--count COUNT', Integer, 'Number of items (default: 1)') do |count|
-    options[:count] = count
+  opts.on('-t', '--timeout SECS', Integer, 'Timeout in seconds (default: 30)') do |t|
+    options[:timeout] = t
   end
 
   opts.on('-h', '--help', 'Show this help') do
@@ -31,11 +32,12 @@ OptionParser.new do |opts|
   end
 end.parse!
 
-puts "Port:  #{options[:port]}   (#{options[:port].class})"
-puts "Rate:  #{options[:rate]}   (#{options[:rate].class})"
-puts "Count: #{options[:count]}   (#{options[:count].class})"
+puts "Concurrent:   #{options[:concurrent_downloads]}   (#{options[:concurrent_downloads].class})"
+puts "Rate limit:   #{options[:rate_limit]}   (#{options[:rate_limit].class})"
+puts "Timeout:      #{options[:timeout]}   (#{options[:timeout].class})"
 puts
 
 # These comparisons work because OptionParser already converted the types
-puts "Port #{options[:port]} > 1024? #{options[:port] > 1024}"
-puts "Rate #{options[:rate]} > 1.0? #{options[:rate] > 1.0}"
+puts "Rate limit > 0?     #{options[:rate_limit] > 0}"
+puts "Timeout > 60?       #{options[:timeout] > 60}"
+puts "Concurrent >= 2?    #{options[:concurrent_downloads] >= 2}"
