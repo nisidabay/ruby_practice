@@ -3,7 +3,7 @@
 A progressive, code-first curriculum for learning Ruby through CLI scripting.
 No Rails, no frameworks — just the standard library and real problems.
 
-**23 groups. 69 CLI tools. All Ruby, all stdlib.**
+**24 groups. 70 CLI tools. All Ruby, all stdlib.**
 
 ## Who This Is For
 
@@ -47,7 +47,7 @@ ruby basics_01_hello_lesson.rb   # first concept
 | # | Group | What You'll Learn | Project |
 |---|-------|-------------------|---------|
 | 01 | **Basics & CLI** | Loops, `gets`, `*args`, `**kwargs`, `(...)` forwarding, OptionParser, ARGF | `argdemo` |
-| 02 | **Strings & Regex** | Heredocs, interpolation, `gsub`, `scan`, Unicode, pattern matching | `retest` |
+| 02 | **Strings & Regex** | Heredocs, interpolation, `gsub`/`scan`, capturing groups, lazy quantifiers, lookaround, `Regexp` class | `retest` |
 | 03 | **Control & Collections** | `if`/`case`/`unless`, `each`/`map`/`select`/`reduce`, Array, Hash, Set, Stack, Queue, Heap, Graph | `coldemo` |
 | 04 | **OOP** | Classes, `attr_accessor`, inheritance, `super`, composition, mixins, `method_missing`, `Comparable`, `Enumerable` | `gpacalc` |
 | 05 | **Filesystem** | `File.read`/`write`, `Pathname`, `StringIO`, `Tempfile`, `Dir`, `FileUtils` | `dirsizer` |
@@ -69,6 +69,7 @@ ruby basics_01_hello_lesson.rb   # first concept
 | 21 | **Serialization & Objects** | `Marshal`, `ObjectSpace`, `WeakRef`, `OpenStruct`, `Observable`, `Singleton` |
 | 22 | **Network & System** | `Resolv` (DNS), `IPAddr`, UDP/Unix sockets, `Find`, `TSort` |
 | 23 | **Rake for Real** | Task arguments, `TestTask`, `FileList`, `clean`/`clobber`, `PackageTask`, `multitask`, CI pipelines |
+| 24 | **Databases & SQL** | SQLite3, CRUD, JOINs, schema migrations, transactions, Sequel ORM | `log_db` |
 
 ## Curriculum Restructuring
 
@@ -113,6 +114,8 @@ See `projects/README.md` for a guided tour.
 | `fnet` | 22 | DNS resolution, TCP checks, subnet iteration |
 | `Rakefile` | 23 | Production-ready task runner: test, lint, build, release |
 | `web_search` | 14+15 | TUI web search — `gum` input/filter, `CGI.escape`, `spawn` browser |
+| `log_db` | 24 | Import, query, and analyze log files in SQLite |
+| `bin_cleaner` | 01+02 | Find and remove ELF binaries using regex + `file` command |
 
 ## Reading
 

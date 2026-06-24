@@ -31,13 +31,24 @@ ruby strings_methods.rb                 # Quick-lookup catalog (not a concept fi
 | `split_chars.rb` | Split a string into characters |
 | `grapheme_clusters.rb` | `each_grapheme_cluster` — Unicode visual characters |
 
-### Regex (~30 min)
+### Regex: Fundamentals (~30 min)
 
 | Script | Concept |
 |---|---|
 | `matching.rb` | `=~` returns match position or nil |
 | `regular_expressions.rb` | `sub` (first), `gsub` (all), `scan` (iterate) |
 | `ip_address.rb` | Regex validation + `!!` boolean coercion |
+
+### Regex: Advanced (~40 min)
+
+| Script | Concept |
+|---|---|
+| `regex_groups.rb` | Capturing groups, named captures `(?<name>...)`, backreferences `\1` |
+| `regex_non_capturing.rb` | `(?:...)` groups — alternatives without polluting match data |
+| `regex_lazy.rb` | Greedy `+` vs lazy `+?` — don't let `.` eat too much |
+| `regex_lookaround.rb` | Lookahead `(?=...)` / `(?!)` and lookbehind `(?<=...)` / `(?<!)` |
+| `regex_match_methods.rb` | `match?` vs `match` vs `=~` — performance and side effects |
+| `regexp_object.rb` | `Regexp.new`, `Regexp.union`, interpolation, `Regexp.escape` |
 
 ### Crypto (~15 min)
 
@@ -48,18 +59,8 @@ ruby strings_methods.rb                 # Quick-lookup catalog (not a concept fi
 ### Exercises
 
 ```bash
-ruby exercises.rb                       # Core regex problems
-ruby ex-sum-strings_1.rb                # Sum number strings
-ruby ex-longest-word_2.rb               # Find longest word
-ruby ex-custom_join_3.rb                # Custom join implementation
-ruby ex-custom-split_4.rb              # Custom split implementation
-ruby ex-custom-count_5.rb              # Count matching characters
-ruby ex-custom-delete_6.rb              # Delete selected characters
-ruby ex-custom-index_7.rb               # Find first index of substring
-
-# Crypto
-ruby 09_xor_cipher.rb cipher 'hello' secret /tmp/xor.txt
-ruby 09_xor_cipher.rb decipher secret /tmp/xor.txt
+ruby concept/exercises.rb               # Regex practice: match, scan, substitute, capture
+ruby exercises.rb                       # Real-world regex problems (log parsing, validation, extraction)
 ```
 
 ## Common Patterns
