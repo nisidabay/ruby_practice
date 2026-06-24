@@ -10,7 +10,6 @@
 #     -h, --help                       Show this help
 
 require 'optparse'
-require 'thread'
 
 YTDLP  = 'yt-dlp'
 NOTIFY = 'notify-send'
@@ -24,7 +23,8 @@ OptionParser.new do |opts|
   opts.on('-o', '--output-dir [DIR]', "Output directory (default:#{options[:output_dir]})") do |o|
     options[:output_dir] = File.expand_path(o)
   end
-  opts.on('-c', '--concurrency [NUM]', Integer, "Number of concurrent downloads (default: #{options[:concurrency]})") do |c|
+  opts.on('-c', '--concurrency [NUM]', Integer,
+          "Number of concurrent downloads (default: #{options[:concurrency]})") do |c|
     options[:concurrency] = c
   end
   opts.on('-h', '--help', 'Show this help') do
@@ -50,14 +50,17 @@ puts "Output directory: #{options[:output_dir]}"
 puts
 
 # Thread pool for concurrent downloads
-semaphore = Mutex.new
 download_queue = Queue.new
 urls.each { |url| download_queue << url }
 
 threads = []
 options[:concurrency].times do
   threads << Thread.new do
-    while (url = download_queue.pop(true) rescue nil)
+    while (url = begin
+      download_queue.pop(true)
+    rescue StandardError
+      nil
+    end)
       begin
         puts "[#{Thread.current.object_id}] Starting: #{url}"
         result = system(YTDLP, '-o', out, '-f', options[:format], url)
@@ -66,7 +69,7 @@ options[:concurrency].times do
         else
           puts "[#{Thread.current.object_id}] Failed: #{url}"
         end
-      rescue => e
+      rescue StandardError => e
         puts "[#{Thread.current.object_id}] Error: #{e.message}"
       end
     end
