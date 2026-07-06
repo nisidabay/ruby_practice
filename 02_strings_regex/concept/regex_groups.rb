@@ -29,3 +29,11 @@ puts 'Simpson, Homer'.gsub(/(\w+), (\w+)/, '\2 \1') # => Homer Simpson
 # This could also be done like this:
 # match = line.match(pattern) and manually doing $1, $2, $3 individually.
 # Named captures are better because the field names explain themselves.
+
+# Thinking in Ruby
+#
+# Ruby supports both positional ($1, $2...) and named (?<name>...) capture
+# groups. Named captures make regexes self-documenting — the field name
+# lives inside the pattern. Backreference in gsub (\\1 in replacement
+# strings) gives a concise way to reformat matched text without chaining
+# multiple operations.

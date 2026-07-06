@@ -42,3 +42,12 @@ PIPELINE
 #   top = all_rows.select { |r| r.score > 80 }.take(5)
 #
 # The lazy version never creates the million-element array.
+#
+# Thinking in Ruby
+#
+# This pipeline demonstrates Ruby's composable data processing: Data.define for
+# value objects, Enumerator.produce for streams, .lazy for deferred evaluation,
+# and method chaining for transformation — all working together without any
+# external library. Ruby's collection API is designed so that lazy and eager
+# processing share the same method names, making it easy to start simple and
+# optimize later by adding a single `.lazy` call.

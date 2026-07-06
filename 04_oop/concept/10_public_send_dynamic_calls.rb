@@ -29,3 +29,10 @@ end
 # public_send is safer — refuses private methods:
 # cfg.public_send(:host)   # works
 # cfg.public_send(:puts)   # NoMethodError — puts is private here
+
+# Thinking in Ruby
+#
+# send bypasses the need for if/elsif chains when calling methods by
+# name. public_send is the safe version — it respects method visibility.
+# This is how dynamic dispatch works in Ruby: methods are just messages
+# sent to objects, and the method name can be a runtime value.

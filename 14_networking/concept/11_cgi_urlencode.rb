@@ -37,5 +37,13 @@ puts "\nSearch URL: #{url}"
 query_string = "name=Carlos&lang=ruby&lang=nim&page=1"
 parsed = CGI.parse(query_string)
 puts "\nParsed query string:"
-parsed.each { |k, v| puts "  #{k} => #{v.inspect}" }
+# parsed.each { |k, v| puts "  #{k} => #{v.inspect}" }
 # name => ["Carlos"], lang => ["ruby", "nim"], page => ["1"]
+
+# Thinking in Ruby
+#
+# CGI.escape and CGI.unescape handle URL encoding with full RFC compliance,
+# while CGI.parse turns query strings into hashes with array values for
+# multi-valued keys. Ruby's CGI module is an unsung hero — it lives in
+# stdlib, works without Rails, and handles the edge cases you'd miss
+# if you rolled your own URL encoder.

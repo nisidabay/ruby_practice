@@ -27,3 +27,11 @@ puts book.name
 book.price = -100       # invalid, ignored
 puts book.price          # still 9.99
 
+
+# Thinking in Ruby
+#
+# Custom setters can silently reject invalid data (price= ignores
+# negative values) or substitute defaults (name= falls back to "TBD").
+# Ruby gives you the choice between loud failure (raise) and silent
+# correction — pick the one that matches your domain's correctness
+# requirements.

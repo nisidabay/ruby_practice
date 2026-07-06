@@ -31,3 +31,12 @@ end
 #   `dig +short ruby-lang.org`.lines
 #
 # Resolv is faster (no subprocess) and gives structured results.
+#
+# Thinking in Ruby
+#
+# Resolv is a pure-Ruby DNS resolver — no libc dependency, no shelling out to
+# dig or nslookup. This means DNS resolution behaves identically across all
+# platforms Ruby runs on, regardless of the system resolver's quirks. Resolv
+# gives you structured access to A, AAAA, MX, and other record types directly
+# as Ruby objects, making network programming in Ruby more predictable and
+# portable than shelling out to system tools.

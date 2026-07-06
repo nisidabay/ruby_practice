@@ -45,3 +45,11 @@ FileUtils.rm_rf(tmpdir)
 #     process_dir("data/")
 #   end
 # File.exist? alone is a trap.
+
+# Thinking in Ruby
+#
+# Ruby gives you File.file? and File.directory? so you never guess.
+# File.exist? returns true for both — using it alone is a bug waiting
+# to happen. Ruby's IO predicates mirror the "tell, don't ask" style:
+# instead of testing one thing and inferring, you ask the exact question
+# you need answered. File.world_readable? and File.zero? take this further.

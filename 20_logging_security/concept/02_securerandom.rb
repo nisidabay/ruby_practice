@@ -36,3 +36,11 @@ puts "Random bytes: #{bytes.unpack1('H*')}"  # hex representation
 #
 # rand uses a PRNG — given the same seed, same output. SecureRandom
 # uses /dev/urandom (OS entropy) — unpredictable even with the same seed.
+#
+# Thinking in Ruby
+#
+# Ruby draws a clear line between "random" and "secure" — rand() for games and
+# simulations, SecureRandom for cryptography. This separation is critical because
+# developers who reach for rand() for security tokens won't accidentally produce
+# predictable output. SecureRandom wraps OS-level entropy directly, giving Ruby
+# scripts access to the same cryptographic primitives that power HTTPS and SSH.

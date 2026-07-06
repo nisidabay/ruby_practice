@@ -35,3 +35,11 @@ order = Order.new
 order.total = 149.99
 order.status = :pending
 puts order.summary  # => pending order: $149.99
+
+# Thinking in Ruby
+#
+# Custom setters with raise guards are Ruby's answer to property
+# validation. By manually defining total= and status=, the class enforces
+# invariants on write — no valid? check needed later. The raise
+# convention (raise "message" without specifying exception class defaults
+# to RuntimeError) keeps guards concise.

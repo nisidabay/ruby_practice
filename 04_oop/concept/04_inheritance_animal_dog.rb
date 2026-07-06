@@ -72,3 +72,11 @@ buddy.breed           # => "Golden Retriever"
 whiskers = Cat.new('Whiskers', 5)
 whiskers.speak        # => "Whiskers says: Meow!"
 whiskers.eat('fish')  # => "Whiskers is eating fish" (inherited, not extended)
+
+# Thinking in Ruby
+#
+# Ruby inheritance uses < to derive from a parent class. The super keyword
+# calls the parent's version of the same method — optional, explicit, no
+# auto-call. child calls it when it wants to extend behavior. The
+# NotImplementedError pattern for abstract methods enforces the contract
+# at runtime rather than compile time.

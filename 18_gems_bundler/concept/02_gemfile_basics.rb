@@ -37,3 +37,11 @@ end
 #
 # But then other devs don't know which versions to install.
 # Gemfile + Gemfile.lock = reproducible builds.
+#
+# Thinking in Ruby
+#
+# Bundler and the Gemfile convention reflect Ruby's community-first approach to
+# dependency management. The Gemfile is pure Ruby (not a separate config format),
+# so you can use Ruby logic, variables, and conditionals inside it. The lockfile
+# guarantees that every developer and every deployment runs the exact same gem
+# versions — a practice Ruby popularized before it became standard elsewhere.

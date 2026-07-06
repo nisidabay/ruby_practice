@@ -44,3 +44,12 @@ end
 
 # FileUtils is the Ruby answer to shell scripting.
 # Every method mirrors a Unix command but works on Windows too.
+
+# Thinking in Ruby
+#
+# FileUtils brings shell scripting into Ruby with native objects and
+# cross-platform compatibility. cp_r, rm_rf, mkdir_p mirror their Unix
+# counterparts but return Ruby values and work identically on Windows.
+# The :verbose and :noop options give you dry-run mode — something shell
+# scripts achieve with echo prefixes and manual branches. Ruby wins
+# on safety, readability, and portability.

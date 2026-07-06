@@ -46,3 +46,13 @@ File.delete('/tmp/sysadmin.db') if File.exist?('/tmp/sysadmin.db')
 #
 # SQLite gives you SQL queries, constraints, and ACID transactions — all
 # without a database server process.
+#
+# Thinking in Ruby
+#
+# SQLite's integration into Ruby scripting reflects a pragmatic toolmaking
+# philosophy: when you need persistent structured data, reach for an embedded
+# SQL database, not CSV files. The sqlite3 gem gives Ruby scripts ACID
+# transactions, SQL queries, and concurrent access without the operational
+# overhead of a database server. This is especially valuable in sysadmin
+# scripts where deploying PostgreSQL or MySQL would be overkill — SQLite IS
+# the database server, embedded in your Ruby process.

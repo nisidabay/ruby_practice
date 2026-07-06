@@ -48,3 +48,11 @@ FileUtils.rm_rf(dir)
 #   - fall back to a different path
 #   - log to a file instead of stdout
 # The point: rescue logic lives in ONE place, not scattered across 20 calls.
+
+# Thinking in Ruby
+#
+# The safe_io_wrapper leverages Ruby's blocks to DRY up error handling.
+# Instead of wrapping every file operation in begin/rescue, you define
+# the rescue logic once in a method that yields to the caller. This is
+# the "sandwich method" pattern that Ruby's block syntax enables so
+# naturally — setup/rescue/teardown in one place, business logic separated.

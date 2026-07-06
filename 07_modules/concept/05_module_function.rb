@@ -51,3 +51,12 @@ class Test
 end
 
 p Test.calculate(10, 5)
+
+# Thinking in Ruby
+#
+# module_function is Ruby's nuanced answer to visibility in mixins.
+# Methods marked as module_function are public on the module itself but
+# private when included in classes — they become internal helpers rather
+# than public API. This is Ruby's way of saying "usable standalone, hidden
+# when mixed in." The alternative (extend self) keeps everything public.
+# Ruby gives you both because the right choice depends on your use case.

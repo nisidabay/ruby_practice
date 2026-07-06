@@ -54,3 +54,12 @@ end
 # Rake::TestTask gives you: `rake test` (muscle memory),
 # `rake test TEST=test/demo_test.rb` (run one file),
 # `rake test TESTOPTS='--verbose'` (pass options).
+#
+# Thinking in Ruby
+#
+# Rake::TestTask is a perfect example of convention over configuration in Ruby's
+# build tool. By providing a dedicated task type for running tests, Rake makes
+# the common case (running tests) trivial while supporting the uncommon case
+# (running a single test file, passing options) through simple overrides. The
+# `rake test` muscle memory is universal across Ruby projects — a testament to
+# how well Rake's design standardizes project automation.

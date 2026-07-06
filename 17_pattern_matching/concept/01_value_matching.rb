@@ -39,3 +39,11 @@ end
 #
 # case/in is more powerful (destructuring, guards, pin) but case/when
 # is fine for simple value matching.
+
+# Thinking in Ruby
+#
+# case/in is Ruby's pattern matching entry point — it replaces case/when
+# when you need more than === equality. Value matching is the simplest
+# pattern: match a literal, or use | for alternatives, or else for
+# everything else. Ruby's pattern matching scales from simple value
+# checks to deep structural destructuring, all with the same syntax.

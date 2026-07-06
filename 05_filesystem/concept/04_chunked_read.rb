@@ -38,3 +38,10 @@ end
 #   end
 #
 # f.read returns nil when position hits EOF, so the loop stops.
+
+# Thinking in Ruby
+#
+# Ruby's read(N) makes file cursors invisible — you don't track offsets,
+# you just read chunks and the position advances automatically. The idiom
+# `while (chunk = f.read(8192))` is a hallmark of Ruby IO: readable,
+# self-terminating, and memory-safe. No manual seek math needed.

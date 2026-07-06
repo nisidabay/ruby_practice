@@ -30,3 +30,11 @@ puts numbers[5..2].inspect    # [] - return empty array
 
 # Negative length returns nil
 puts numbers.slice(2, -1).inspect
+
+# Thinking in Ruby
+#
+# Array slicing in Ruby uses range syntax (2..5) or start+length
+# (slice(2,3)). Both return a new Array — non-destructive by default,
+# following Ruby's convention that methods return a copy unless they end
+# with !. Negative ranges also work, making end-relative slicing
+# intuitive.

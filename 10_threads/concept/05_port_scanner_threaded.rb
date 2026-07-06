@@ -55,3 +55,12 @@ host = ARGV.shift || "127.0.0.1"
 puts "Scanning #{host} (ports 1-1024)..."
 PortScanner.new(host).run
 puts "Done."
+
+# Thinking in Ruby
+#
+# port_scanner_threaded demonstrates real-world threaded Ruby in action.
+# It distributes port scanning across threads using Queue (work distribution),
+# Mutex (output synchronization), and Timeout (prevent hangs from unresponsive
+# ports). The pattern — fill a queue with work, spawn N consumers, have them
+# pop-and-process — is the standard Ruby approach to parallel I/O-bound tasks.
+# TCPSocket with Timeout is the go-to for any network probing in Ruby.

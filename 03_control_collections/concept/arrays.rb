@@ -47,3 +47,11 @@ p [5, 2, 8].minmax                    # => [2, 8]
 # Iteration helpers
 (1..3).each_slice(2) { |s| p s }      # => [1,2] then [3]
 (1..3).each_cons(2) { |s| p s }       # => [1,2] then [2,3]
+
+# Thinking in Ruby
+#
+# Ruby arrays are dynamic and untyped — they hold any object. The
+# set-like operations (& | -) treat arrays as mathematical sets while
+# preserving order. Each method is designed for a specific operation
+# (flatten, uniq, compact, sort) rather than requiring manual loop +
+# conditional logic.

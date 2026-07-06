@@ -57,3 +57,12 @@ def external(&)
 end
 external { puts 'Passed through!' }
 
+# Thinking in Ruby
+#
+# yield is Ruby's most fundamental block mechanism — it calls the block
+# without naming it as a parameter. block_given? makes blocks optional,
+# and the anonymous block parameter (&) in Ruby 3.0+ allows passing blocks
+# through to nested calls without naming them. The sandwich method pattern
+# (setup + yield + ensure/teardown) is Ruby's answer to resource management,
+# predating and outlasting Python's with statement and Java's try-with-resources.
+

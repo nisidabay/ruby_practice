@@ -18,3 +18,11 @@ end
 puts Computer.new
 puts Computer.new('M3', 32, '1 TB')
 
+
+# Thinking in Ruby
+#
+# Overriding to_s customizes string representation — Ruby uses this
+# method for interpolation ("#{}"), puts, and string concatenation.
+# Default to_s shows the class name and object ID; a custom to_s makes
+# objects self-documenting when printed. Default parameter values (cpu =
+# 'Intel i7') also show Ruby's flexible constructor patterns.

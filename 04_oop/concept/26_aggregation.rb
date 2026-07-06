@@ -46,3 +46,10 @@ granada.add_player(carlos)
 
 puts madrid
 puts granada
+
+# Thinking in Ruby
+#
+# Aggregation: a Team has Player objects created independently. Players
+# can exist across multiple teams or be reassigned. The Team's #to_s
+# method calls a private #roster helper that maps over players — showing
+# how private methods encapsulate formatting logic within the class.

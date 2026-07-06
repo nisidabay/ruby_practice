@@ -41,3 +41,11 @@ end
 #   req = Gem::Requirement.new('~> 1.2')
 #   req.satisfied_by?(Gem::Version.new('1.2.5'))  # => true
 #   req.satisfied_by?(Gem::Version.new('2.0.0'))  # => false
+#
+# Thinking in Ruby
+#
+# Ruby's pessimistic version operator (~>) is a pragmatic Rubyism rarely seen in
+# other languages. It encodes a common-sense policy: "allow bug fixes but prevent
+# breaking changes." The operator works at the granularity you choose — ~> 1.2.3
+# is tighter than ~> 1.2 — giving you precise control over how much change you're
+# willing to accept from your dependencies.

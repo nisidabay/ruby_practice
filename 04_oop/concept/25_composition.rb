@@ -38,3 +38,10 @@ puts car
 engine2 = Engine.new('V6')
 car2 = Car.new('Honda', engine2)
 puts car2
+
+# Thinking in Ruby
+#
+# Composition: a Car has an Engine, created externally and passed in.
+# Because Ruby objects are passed by reference, mutating the Engine after
+# construction affects the Car — demonstrating that composition in Ruby
+# is about reference ownership, not value copying.

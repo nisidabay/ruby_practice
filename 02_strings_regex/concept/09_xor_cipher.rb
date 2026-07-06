@@ -40,3 +40,11 @@ else
   puts "  ruby 09_xor_cipher.rb cipher 'hello world' secret /tmp/encrypted.txt"
   puts "  ruby 09_xor_cipher.rb decipher secret /tmp/encrypted.txt"
 end
+
+# Thinking in Ruby
+#
+# Ruby's pack/unpack with format strings gives raw byte-level access
+# while keeping the code readable. The case/in pattern matching (Ruby 3+)
+# makes multi-command CLI dispatch declarative — a syntax that eliminates
+# entire classes of off-by-one ARGV errors. Zip + map + XOR in one
+# expression shows how Ruby's Enumerable API composes elegantly.

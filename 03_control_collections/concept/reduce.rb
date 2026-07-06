@@ -16,3 +16,11 @@ color_counts = %w[Red Blue Red].each_with_object({}) do |value, counts|
   end
 end
 p color_counts
+
+# Thinking in Ruby
+#
+# reduce (inject) folds a collection into a single value — sum, product,
+# hash, or any aggregation. The block receives the accumulator and each
+# element; the last expression becomes the new accumulator. Ruby also
+# offers each_with_object for the common case of building a Hash from an
+# enumerable.

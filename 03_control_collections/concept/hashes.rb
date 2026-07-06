@@ -63,3 +63,11 @@ data = { user: { address: { city: 'NYC' } } }
 p data.dig(:user, :address, :city)  # => "NYC"
 p data.dig(:user, :address, :zip) || 'N/A'  # => "N/A"
 
+
+# Thinking in Ruby
+#
+# Ruby hashes preserve insertion order (since Ruby 1.9), can use any
+# object as a key, and support default values via Hash.new(default) or
+# Hash.new { |h, k| h[k] = [] }. The transform_keys/transform_values
+# methods provide batch mutation, and dig() navigates nested hashes
+# without nil errors.

@@ -40,3 +40,10 @@ puts "About to exit..."
 
 # Multiple at_exit blocks stack: last registered runs first (LIFO).
 # Useful for: tempfile cleanup, lock releases, metric flushing, log closing.
+
+# Thinking in Ruby
+#
+# at_exit registers cleanup hooks that run when the program exits — even
+# on raise or exit (but not exit!). Multiple at_exit blocks stack in LIFO
+# order. This is Ruby's answer to destructor-based RAII: register cleanup
+# at resource creation time, guaranteed execution on teardown.

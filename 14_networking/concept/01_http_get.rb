@@ -15,3 +15,11 @@ puts "Body length: #{response.body.length} bytes"
 data = JSON.parse(response.body)
 puts "URL: #{data["url"]}"
 puts "Args: #{data["args"]}"
+
+# Thinking in Ruby
+#
+# Net::HTTP.get_response is one method call for a complete HTTP GET.
+# Ruby parses the response, handles redirects, and gives you access
+# to status code, headers, and body. Combined with JSON.parse, a
+# REST API call is 3 lines: build URI, fetch, parse. No HTTP client
+# gem required — Ruby ships with everything you need.

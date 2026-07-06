@@ -52,3 +52,10 @@ tasks = MinHeap.new
 puts tasks.pop  # => 1 (highest priority = smallest number)
 puts tasks.pop  # => 2
 puts tasks.peek # => 3 (next to go, without removing)
+
+# Thinking in Ruby
+#
+# The min heap is implemented with array-based sift-up/sift-down — Ruby's
+# dynamic arrays and parallel assignment (a, b = b, a) make the swap
+# operations concise. The heap property (parent <= children) is maintained
+# with recursive methods that read as natural definitions of the algorithm.

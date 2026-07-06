@@ -21,3 +21,13 @@ end
 
 threads.each(&:join)
 puts "Expected: 100_000  Got: #{balance}"
+
+# Thinking in Ruby
+#
+# Data races happen when multiple threads read and write the same variable
+# without synchronization. The GIL (Global Interpreter Lock) in MRI does
+# NOT prevent this — it only prevents two threads from running Ruby code
+# at the exact same time, but thread switching can happen BETWEEN bytecode
+# instructions. The read-modify-write sequence (tmp = balance; tmp += 1;
+# balance = tmp) is NOT atomic. Thread.pass is used here to force the
+# scheduler to switch threads, making the race condition reproducible.

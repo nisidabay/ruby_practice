@@ -58,3 +58,12 @@ end
 #
 # multitask integrates with rake's dependency graph — you get
 # parallel execution without managing threads yourself.
+#
+# Thinking in Ruby
+#
+# Rake's multitask is a pragmatic solution to a common build problem: independent
+# tasks shouldn't run sequentially. By introducing a single keyword (`multitask`
+# instead of `task`), Rake gives you parallel execution without changing your
+# task definitions or managing threads. This reflects Ruby's philosophy of
+# "optimizing for the common case" — most build scripts have independent steps
+# that can run concurrently, and multitask makes this trivial to express.

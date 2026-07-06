@@ -39,3 +39,10 @@ list.prepend("Ford")
 list.prepend("Mazda")
 list.prepend("Toyota")
 p list.to_a  # => ["Toyota", "Mazda", "Ford"]
+
+# Thinking in Ruby
+#
+# Ruby's Node and LinkedList classes show that data structure fundamentals
+# are still worth knowing — even in a high-level language. Array#unshift
+# is O(n); a linked list prepend is O(1). Ruby doesn't hide this — it
+# trusts you to choose the right tool for your performance characteristics.

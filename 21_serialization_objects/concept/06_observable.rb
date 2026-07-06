@@ -61,3 +61,12 @@ stock.price = 105
 #   end
 #
 # Observable decouples the subject from observers — add/remove them freely.
+#
+# Thinking in Ruby
+#
+# Ruby's Observable mixin brings the Observer pattern to any class with a single
+# include. The `changed` + `notify_observers` two-step protocol is intentionally
+# explicit — you must mark state as changed before notifying, giving you control
+# over when notifications fire. This design reflects Ruby's preference for
+# explicit over implicit: the mixin gives you the mechanism, but you decide
+# when and how to use it.

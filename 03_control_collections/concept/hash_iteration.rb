@@ -15,3 +15,11 @@ p salaries.keys
 p salaries.values
 
 
+
+# Thinking in Ruby
+#
+# Hash iteration is dual-channel — each_key, each_value, and each (which
+# yields key-value pairs as a two-element block parameter). This
+# separation makes intent explicit: iterating over keys only? each_key.
+# Need both? each with two block parameters. Ruby's block destructuring
+# makes this natural.

@@ -57,3 +57,11 @@ player.play("movie.vlc")
 player.play("video.mp4")
 player.play("file.xyz")
 
+
+# Thinking in Ruby
+#
+# The Adapter pattern makes incompatible interfaces work together — the
+# MediaAdapter wraps AdvancedMediaPlayer and presents a play() interface
+# that UniversalPlayer can call. Ruby's inheritance (UniversalPlayer <
+# AudioPlayer) combined with composition (adapter holds AdvancedMediaPlayer)
+# shows how Ruby naturally supports both structural patterns.

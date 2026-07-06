@@ -15,3 +15,13 @@ puts t.strftime('%a %b %e %R')    # => Fri May  8 14:30
 
 # Custom formats
 puts t.strftime('Logged at %H:%M on %Y-%m-%d') # => Logged at 14:30 on 2026-05-08
+
+# Thinking in Ruby
+#
+# strftime is Ruby's string formatting powerhouse for time — it inherits
+# the POSIX strftime format specifiers and adds nothing new, because the
+# standard is already comprehensive. The beauty is composition: you embed
+# % directives inside any string template. %Y-%m-%d (ISO date), %I:%M %p
+# (12-hour clock), %A, %B %d, %Y (full date) — all from a single method.
+# Ruby trusts you to learn the format specifiers rather than wrapping them
+# in convenience methods.

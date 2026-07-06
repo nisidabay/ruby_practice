@@ -32,3 +32,11 @@ end
 #
 # This lets the SAME file be both a library (require it, use its classes)
 # and a standalone script (run it from the command line).
+
+# Thinking in Ruby
+#
+# The __FILE__ == $PROGRAM_NAME pattern lets a file serve dual purpose:
+# library (when required) and executable (when run directly). __FILE__ is
+# always this file's path; $PROGRAM_NAME ($0) is the user's entry point.
+# This Ruby convention replaces the separate main() guard found in many
+# other languages.

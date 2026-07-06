@@ -65,3 +65,11 @@ account.withdraw(30)        # => [LOG] withdraw: 30 | New balance: 120
 #     self.counter = counter + 1  # ✓ Works for setters only
 #   end
 # end
+
+# Thinking in Ruby
+#
+# Private methods in Ruby have a specific rule: no explicit receiver
+# (no self., no obj.). This differs from Java/C++ where private means
+# "not inherited." Ruby's private means "functional helper of self" —
+# called from within the class but not on another instance, even of
+# the same class.

@@ -62,3 +62,13 @@ end
 # Rule: always inherit from StandardError, NEVER from Exception.
 # Exception catches things like SignalException (Ctrl+C) and NoMemoryError
 # which you almost never want to trap.
+
+# Thinking in Ruby
+#
+# Custom exceptions are Ruby's way of making errors semantically meaningful.
+# Instead of rescuing StandardError and checking e.message, you rescue
+# ProductNotFound and handle it differently from InsufficientStock. Each
+# custom exception can carry structured data (attr_reader :code, :product,
+# :requested, :available) — no string parsing needed. The rule "inherit
+# from StandardError, never Exception" protects you from catching system-level
+# signals that should terminate the program.

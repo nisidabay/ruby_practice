@@ -56,3 +56,12 @@ File.delete('/tmp/sequel_demo.db') if File.exist?('/tmp/sequel_demo.db')
 #
 # Sequel is optional. For scripting, raw SQL is fine. For complex apps,
 # Sequel reduces boilerplate and prevents SQL syntax errors.
+#
+# Thinking in Ruby
+#
+# Sequel demonstrates a distinctly Ruby approach to database interaction: instead
+# of writing SQL strings, you build queries through method chaining — turning
+# `SELECT * FROM servers WHERE status = 'online'` into `DB[:servers].where(status: 'online').all`.
+# This isn't about hiding SQL; it's about making Ruby code read more naturally
+# while still generating efficient SQL. Sequel's DSL is pure Ruby (not a separate
+# query language), so your editor, linter, and type checker all understand it.

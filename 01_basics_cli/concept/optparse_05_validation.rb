@@ -43,3 +43,10 @@ puts "Timeout:  #{options[:timeout]}s"
 puts "Port:     #{options[:port] || '(not set)'}"
 puts "JSON:     #{options[:json]}"
 puts "XML:      #{options[:xml]}"
+
+# Thinking in Ruby
+#
+# OptionParser wraps parse! in a rescue for InvalidOption, InvalidArgument,
+# and MissingArgument — a single catch block for all CLI errors. Combined
+# with post-parse guard clauses (abort unless url), Ruby makes CLI error
+# handling explicit without being verbose.

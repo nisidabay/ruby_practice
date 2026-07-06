@@ -125,3 +125,11 @@ if __FILE__ == $PROGRAM_NAME
     end
   end
 end
+
+# Thinking in Ruby
+#
+# A 5-state FSM parser built with Ruby's String#each_char and case/in
+# shows that you don't need parser generators for custom formats.
+# The state machine is explicit, the coercion is automatic (Integer vs
+# Float vs String), and the whole thing fits in one module. Ruby gives
+# you the tools to build exactly what you need, no framework required.

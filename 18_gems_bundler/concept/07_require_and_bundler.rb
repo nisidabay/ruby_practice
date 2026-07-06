@@ -37,3 +37,12 @@ RUBY
 #
 # Fine for small scripts. For projects with 10+ gems, Bundler.require
 # saves you from forgetting one.
+#
+# Thinking in Ruby
+#
+# Ruby's require system is straightforward yet powerful — it leverages the
+# $LOAD_PATH ($:) to resolve names to files, making gem loading a simple path
+# lookup. Bundler.require extends this with batch loading and group awareness,
+# but the fundamental mechanism remains the same. This design lets you start
+# with a single-file script and scale up to a multi-gem application without
+# changing how dependencies are loaded.

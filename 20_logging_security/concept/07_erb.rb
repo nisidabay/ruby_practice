@@ -47,3 +47,12 @@ puts template2.result(binding)
 #   "server { listen #{port}; server_name #{host}; }"
 #
 # ERB is for when you have loops, conditionals, or reusable templates.
+#
+# Thinking in Ruby
+#
+# ERB (Embedded Ruby) is Ruby's built-in templating system — no Rails, no gems,
+# just stdlib. It embeds Ruby logic directly in text templates using <% %> tags,
+# making it ideal for generating config files, HTML, or any structured text from
+# Ruby variables. This "Ruby inside text" approach is simpler than dedicated
+# template languages and leverages the full power of Ruby for conditionals and
+# loops without learning a separate syntax.

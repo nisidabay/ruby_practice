@@ -35,3 +35,11 @@ o3 = SushiLunchOrder.new(3, 4, 5)
 
 puts "Total pieces sold: #{SushiLunchOrder.total_pieces}"  # => 57
 
+
+# Thinking in Ruby
+#
+# Factory class methods (salmon_special, family_combo) encapsulate
+# common instance configurations. Combined with @@ class variables for
+# shared state (total_pieces), they show how class-level methods and
+# instance-level data interact. The class << self block groups all class
+# methods under one syntactic roof.

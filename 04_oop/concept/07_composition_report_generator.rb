@@ -34,3 +34,11 @@ report.export  # => Q1 Sales: PDF (12 pages)
 
 report = nil   # report gone → generator gone too
 puts "After report destroyed, the PdfGenerator no longer exists."
+
+# Thinking in Ruby
+#
+# Composition: the child object (PdfGenerator) is created inside the
+# parent (Report) and dies with it. This ownership relationship is
+# enforced by lifecycle — the generator has no existence outside the
+# report. In Ruby, composition is just an object created in initialize
+# and referenced only by the parent.

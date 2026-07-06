@@ -18,3 +18,11 @@ puts future      # => 2033-05-18 05:33:20 +0200
 precise = Time.at(1000.5)
 puts precise     # => 1970-01-01 01:16:40 +0100
 puts precise.usec  # => 500000 (microseconds)
+
+# Thinking in Ruby
+#
+# Time.at converts epoch integers to Time objects, and Time#to_i does the
+# reverse. Ruby also supports sub-second precision via floats (Time.at(1000.5))
+# with .usec for microsecond access. The symmetry is clean: at(timestamp)
+# goes forward, to_i goes backward. For even higher precision, Ruby 3.0+
+# has Time.now with nanosecond precision via Process.clock_gettime.

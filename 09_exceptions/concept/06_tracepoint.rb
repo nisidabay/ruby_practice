@@ -43,3 +43,13 @@ trace.disable
 
 # Use for: debuggers, profilers, coverage tools, tracing frameworks.
 # Warning: TracePoint has overhead — don't use in production hot paths.
+
+# Thinking in Ruby
+#
+# TracePoint is Ruby's metaprogramming superpower — it hooks into the
+# interpreter itself (:call, :return, :line, :class, :raise events) and
+# fires callbacks. No bytecode instrumentation, no AOP frameworks, no
+# monkey-patching every method. It's how debug gems and profilers work
+# under the hood. The power comes with a warning: TracePoint intercepts
+# EVERY event of that type, so it has real performance cost. Use it for
+# tools, not for production business logic.

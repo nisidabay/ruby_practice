@@ -41,3 +41,10 @@ puts
 puts "Rate limit > 0?     #{options[:rate_limit] > 0}"
 puts "Timeout > 60?       #{options[:timeout] > 60}"
 puts "Concurrent >= 2?    #{options[:concurrent_downloads] >= 2}"
+
+# Thinking in Ruby
+#
+# OptionParser auto-converts arguments to Integer or Float before your
+# block runs — catching type errors at parse time rather than deep in
+# business logic. This reflects Ruby's philosophy: push validation to
+# the boundary, keep domain code clean of parsing concerns.

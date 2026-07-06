@@ -42,3 +42,10 @@ puts "  to_s   → #{Config.instance_method(:to_s).owner}"     # Object
 #   m = Config.instance_method(:to_s)
 #   puts m.owner           # => Object
 #   puts m.super_method.owner  # => Kernel (or nil if at top)
+
+# Thinking in Ruby
+#
+# ancestors exposes Ruby's elegant method resolution order — every class
+# has a chain, and you can inspect it at runtime. instance_method(:name).owner
+# tells you exactly who provides what. This transparency means no mystery
+# dispatch: Ruby shows you the chain, and you can walk it.

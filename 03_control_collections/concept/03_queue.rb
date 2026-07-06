@@ -25,3 +25,10 @@ line.enqueue("Maria")
 puts line.dequeue  # => "Ana"    (first in, first out)
 puts line.dequeue  # => "Luis"
 puts line.front    # => "Maria"  (next to go)
+
+# Thinking in Ruby
+#
+# Ruby's stdlib Queue class (from 'thread') is thread-safe and provides
+# O(1) amortized enqueue/dequeue. For learning, a simple array-backed
+# queue with shift works — but Ruby's built-in Queue is a reminder that
+# the language ships solutions for concurrency patterns too.

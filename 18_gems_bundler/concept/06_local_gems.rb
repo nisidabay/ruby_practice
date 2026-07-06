@@ -35,3 +35,11 @@ puts "  gem 'string_helpers', git: '...', branch: 'develop'"
 #   require 'string_helpers'
 #
 # But path: in Gemfile is cleaner — Bundler manages versions and dependencies.
+#
+# Thinking in Ruby
+#
+# Ruby's approach to local gem development reflects a pragmatic "works the same
+# everywhere" mindset. Whether a gem comes from RubyGems.org, a git repository,
+# or a local path, your code uses `require` identically. Bundler abstracts the
+# source so you can develop locally without publishing, then switch to the
+# published version for production — zero code changes required.

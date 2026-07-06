@@ -22,3 +22,12 @@ end
 p Dir.pwd
 
 
+# Thinking in Ruby
+#
+# Dir class methods give you all the directory operations you need without
+# shelling out: pwd, chdir, entries, foreach, glob, mkdir, rmdir, exist?,
+# mktmpdir, empty?. Ruby's Dir also supports block-form chdir that
+# automatically restores the original directory — a safety pattern that
+# shell scripts handle with subshells and manual cd/back juggling.
+
+

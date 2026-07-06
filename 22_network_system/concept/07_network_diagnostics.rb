@@ -57,3 +57,12 @@ end
 #   `nc -zv -w3 #{host} #{port}`
 #
 # Ruby stdlib does it all in one process — faster, structured results.
+#
+# Thinking in Ruby
+#
+# This diagnostic script demonstrates a key Ruby philosophy: the standard library
+# provides everything needed for real-world tasks. DNS resolution (Resolv), IP
+# validation (IPAddr), and socket connectivity checks (Socket) all work together
+# in a single process with zero external dependencies. Where sysadmins would
+# traditionally chain dig, ping, and nc as shell commands, Ruby does it all
+# in-process with structured, composable objects.

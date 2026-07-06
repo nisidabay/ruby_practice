@@ -37,3 +37,12 @@ end
 #   gem spec json           # full gemspec in YAML
 #   gem contents json       # list all files
 #   gem dependency json     # show dependency tree
+#
+# Thinking in Ruby
+#
+# Gem::Specification gives Ruby developers full runtime introspection into
+# every installed gem — a capability that reflects Ruby's open and reflective
+# nature. You can query any gem's files, dependencies, metadata, or version at
+# runtime. This introspection makes it possible to build tools like Bundler's
+# dependency resolver, security scanners, and gem analysis utilities as pure
+# Ruby libraries, not external tools.

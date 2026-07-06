@@ -37,3 +37,11 @@ puts "Year 2: #{years[1]}"
 puts "Year 3: #{years[2]}"
 puts "Year 4: #{years[3]}" # nil
 puts "Year 100: #{years[99]}" # nil
+
+# Thinking in Ruby
+#
+# Ruby arrays support positive indexing (from start), negative indexing
+# (from end), and out-of-bounds access returning nil — not an exception.
+# This nil-returning contract is intentional: you guard with || or fetch
+# when you need safety, but the common case stays simple. Negative
+# indices are a Ruby original that C-style languages later adopted.

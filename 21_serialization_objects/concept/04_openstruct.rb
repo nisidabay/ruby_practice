@@ -36,3 +36,12 @@ puts "a == b? #{a == b}"  # => true  (value equality)
 #
 # Use OpenStruct for dynamic/unknown attributes (CSV parsing, API responses).
 # Use Data for known, fixed attributes (value objects).
+#
+# Thinking in Ruby
+#
+# OpenStruct fills a specific niche in Ruby's type system: dynamic objects where
+# you don't know the attribute names ahead of time. It bridges the gap between
+# rigid classes and flexible hashes, letting you call methods that don't exist
+# at compile time. This reflects Ruby's dynamic nature — objects can grow and
+# change at runtime. Use it when parsing unpredictable data, reach for Data or
+# Struct when the shape is known.

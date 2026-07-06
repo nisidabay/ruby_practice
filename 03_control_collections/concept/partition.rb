@@ -8,3 +8,10 @@ good_foods, bad_foods= foods.partition{ |food| food.include?("Steak")}
 p good_foods
 p bad_foods
 
+
+# Thinking in Ruby
+#
+# partition splits a collection into two arrays in one pass — matching
+# and non-matching. Where other languages require two separate filter
+# calls (partition = [].select(&pred) + [].reject(&pred)), Ruby does it
+# in a single enumeration with tuple assignment.

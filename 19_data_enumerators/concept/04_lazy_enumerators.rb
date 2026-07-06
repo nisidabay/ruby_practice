@@ -32,4 +32,12 @@ puts infinite.take(5).force  # => [4, 16, 36, 64, 100]
 #     break if count >= 5
 #   end
 #
-# .lazy is more declarative — "select evens, map to squares, take 5."
+# .lazy is more declarative - "select evens, map to squares, take 5."
+#
+# Thinking in Ruby
+#
+# Ruby's lazy enumerators solve a tension in the language: how to provide a rich
+# collection API (select, map, reject) while still handling large or infinite
+# datasets efficiently. By adding `.lazy`, Ruby lets you write the same
+# declarative chain you'd write eagerly, but the computation happens on demand.
+# No separate "stream" API — just a method call that changes evaluation strategy.

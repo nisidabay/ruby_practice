@@ -17,3 +17,11 @@
 %w[/api/v1 /api/v2 /admin].each do |path|
   puts "GET #{path}"
 end
+
+# Thinking in Ruby
+#
+# .each is the foundational Enumerable method. Implement it, include
+# Enumerable, and get 50+ methods free. Unlike indexed loops, .each
+# abstracts away the data structure — same syntax for Array, Hash, Range,
+# or custom collections. This is the heart of Ruby's collection
+# philosophy.

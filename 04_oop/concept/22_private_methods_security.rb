@@ -43,3 +43,11 @@ phone.display_details
 
 # phone.generate_password  # => private method error
 
+
+# Thinking in Ruby
+#
+# private methods hide internal logic — generate_password and
+# generate_puk_number are implementation details that callers shouldn't
+# depend on. Ruby's private means "no explicit receiver" (not "hidden
+# from subclasses"). Combined with the SecureRandom stdlib, Ruby makes
+# encapsulation practical, not just theoretical.

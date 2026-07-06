@@ -41,3 +41,11 @@ puts "  $\\  → $OUTPUT_RECORD_SEPARATOR (default: nil)"
 #
 # No reason to use $! when $ERROR_INFO exists. English is stdlib —
 # always available, zero cost.
+#
+# Thinking in Ruby
+#
+# The English library is a perfect example of Ruby's commitment to readability.
+# Ruby's global variables ($!, $?, $:) are concise but cryptic — remnants of
+# Perl's influence. The English module lets you alias them to self-documenting
+# names without changing behavior. It's purely cosmetic, but cosmetic matters
+# in a language where "code is read far more often than it is written."

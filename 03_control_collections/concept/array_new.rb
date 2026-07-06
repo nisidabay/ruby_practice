@@ -38,3 +38,11 @@ puts "All same object? #{names[0].equal?(names[1])}" # => false
 
 names[0] << ', world!'      # only mutates names[0]
 p names                     # => ["hello, world!", "hello", "hello"]
+
+# Thinking in Ruby
+#
+# Array.new with a default value creates a SHARED reference — all elements
+# point to the same object. This is a classic Ruby gotcha documented here
+# because the block form (Array.new(size) { default }) creates independent
+# objects. Ruby's philosophy: the default-value form is a convenience
+# shortcut; the block form is the safe default.

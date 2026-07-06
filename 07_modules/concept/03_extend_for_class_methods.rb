@@ -29,3 +29,11 @@ end
 puts MathOperations.add(10, 5)
 puts MathOperations.subtract(10, 5)
 puts MathOperations.multiply(10, 5)
+
+# Thinking in Ruby
+#
+# extend adds module methods as CLASS methods, not instance methods.
+# This is the flip side of include: same module, different receiver.
+# MathOperations.add(10, 5) works, but MathOperations.new.add does not.
+# The distinction between include (instance) and extend (class) is unique to
+# Ruby — most languages have only one mechanism for sharing behavior.

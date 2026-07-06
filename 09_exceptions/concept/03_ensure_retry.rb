@@ -49,3 +49,13 @@ end
 # ensure also fires when there's NO exception — it's unconditional.
 # retry: re-runs the begin block from the top. Useful for transient failures
 # (network timeouts, locked files). Always put a counter so you don't loop forever.
+
+# Thinking in Ruby
+#
+# ensure is Ruby's unconditional cleanup block — it runs whether the
+# code succeeds, fails, or even hits a return statement. This makes it
+# more reliable than Python's finally (same idea) in that ensure fires
+# before the method returns the rescued value. retry is unique to Ruby —
+# it jumps back to the beginning of the begin block, not the surrounding
+# method. Always use a counter with retry to prevent infinite loops on
+# persistent failures.

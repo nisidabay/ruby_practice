@@ -50,3 +50,12 @@ end
 # - Thread safety (mutex on first creation)
 # - Marshal serialization
 # - Clone/dup prevention
+#
+# Thinking in Ruby
+#
+# Ruby's Singleton mixin is the idiomatic Ruby way to implement the Singleton
+# pattern — a single include, a `.instance` method, and you're done. Unlike
+# manual implementations that require careful thread-safety and clone prevention,
+# the mixin handles all the edge cases. This is Ruby at its best: a complex
+# design pattern reduced to a single line of code, with the implementation
+# details handled by the standard library.

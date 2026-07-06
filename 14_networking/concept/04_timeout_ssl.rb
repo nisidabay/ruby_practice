@@ -22,3 +22,11 @@ rescue Net::ReadTimeout
 end
 
 puts "\nSSL check: #{uri.scheme} uses encryption" if uri.scheme == "https"
+
+# Thinking in Ruby
+#
+# Net::HTTP with explicit open_timeout and read_timeout gives you
+# fine-grained control over network resilience. SSL is a single flag
+# (use_ssl = true), and timeout exceptions (Net::OpenTimeout,
+# Net::ReadTimeout) are first-class Ruby exceptions you rescue
+# normally. Secure, timed HTTP in 24 lines — all stdlib.

@@ -56,3 +56,12 @@ p Set.new(1..10).select(&:even?)  # => Set of evens
 # Conversion
 p s.to_a
 p s.sort  # returns sorted array
+#
+# Thinking in Ruby
+#
+# Ruby includes Set as a standard library class, not a built-in type,
+# because its Hash-based implementation naturally fits the duck-typing
+# philosophy — Set is literally "a Hash where values are ignored."
+# The overlap with Array methods (map, select, each) is intentional:
+# in Ruby, collection types share a common Enumerable interface,
+# so you think in terms of operations, not data structures.

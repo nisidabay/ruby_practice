@@ -31,3 +31,11 @@ puts "Total: #{Customer.total}"  # => 2
 # Note: @@vars are shared across entire hierarchy (gotcha!)
 # Prefer class instance variables (@total inside the class body) for most cases.
 
+
+# Thinking in Ruby
+#
+# @@class_variables are shared across all instances AND the entire
+# inheritance hierarchy — a subtle gotcha. For class-level state, Ruby
+# prefers class instance variables (@counter declared at class scope),
+# which give each subclass its own independent value. The @@ pattern is
+# kept here for recognition, not recommendation.

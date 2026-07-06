@@ -137,3 +137,11 @@ puts '=' * 60
 puts 'Approach 1 (Singleton module):  safest, thread-safe, zero boilerplate.'
 puts 'Approach 2 (manual new-hiding): educational, no dependencies, not thread-safe.'
 puts "Approach 3 (module namespace):  simplest — use when you don't need an object."
+
+# Thinking in Ruby
+#
+# Ruby offers three idiomatic singletons: the Singleton module (built-in,
+# thread-safe, blocks send(:new)), manual private_class_method (zero
+# dependencies, educational), and module-as-namespace (lightest, no
+# instance semantics). Each trades off between safety, simplicity, and
+# flexibility — pick the one that fits your needs.

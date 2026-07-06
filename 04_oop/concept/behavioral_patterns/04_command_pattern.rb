@@ -73,3 +73,11 @@ puts "\n--- Redo ---"
 history.redo
 history.redo
 
+
+# Thinking in Ruby
+#
+# The Command pattern encapsulates an action as an object with execute
+# and undo. Ruby's blocks can also serve as lightweight commands — but
+# the full class form supports undo/redo history stacks. The command
+# history with separate undo and redo stacks is a clean Ruby
+# implementation of a common editor pattern.

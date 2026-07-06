@@ -53,3 +53,12 @@ end
 #   Etc.passwd.take(5)  # => ["root", "bin", "daemon", ...]
 #
 # With a block, it yields full Passwd structs with name, uid, gid, etc.
+#
+# Thinking in Ruby
+#
+# The Etc library gives Ruby scripts direct access to the system's user and
+# group databases — a capability that many higher-level languages hide behind
+# platform-specific APIs. Ruby exposes /etc/passwd and /etc/group as iterable
+# structs, making system administration scripts straightforward. This reflects
+# Ruby's origins as a language for practical scripting: it doesn't abstract away
+# the OS; it makes OS interaction more convenient.

@@ -13,3 +13,11 @@ y = <<~END_MY_STRING
   And a second line
 END_MY_STRING
 puts y
+
+# Thinking in Ruby
+#
+# Ruby heredocs (<<~STRIP) and multi-line single quotes give string
+# literals the flexibility of here-docs without the ceremony. The squiggly
+# heredoc (<<~) auto-strips leading whitespace — a Ruby innovation that
+# keeps indented code clean while preserving the string content exactly
+# as intended.

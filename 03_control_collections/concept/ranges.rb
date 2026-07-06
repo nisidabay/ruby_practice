@@ -40,3 +40,10 @@ p (1..5).map { |n| n * 2 }  # => [2, 4, 6, 8, 10]
 p (1..5).reduce(:+)         # => 15
 p (1..5).any? { |n| n > 3 } # => true
 p (1..100).bsearch { |n| n >= 42 } # => 42
+
+# Thinking in Ruby
+#
+# Ranges implement include? (iterates the sequence) vs cover? (bounds
+# check) — a performance distinction most languages ignore. cover? is
+# O(1) while include? on non-integer ranges requires iteration. Ruby
+# gives you both because it trusts you to know which you need.

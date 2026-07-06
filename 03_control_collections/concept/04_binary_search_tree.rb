@@ -48,3 +48,10 @@ bst = BST.new
 [50, 30, 70, 20, 40].each { |v| bst.insert(v) }
 puts bst.find(70)  # => true  (found in 2 steps: right child of 50)
 puts bst.find(99)  # => false
+
+# Thinking in Ruby
+#
+# Recursive tree operations in Ruby read naturally because the language
+# supports early returns and implicit return values. The BST's O(log n)
+# search is built with pattern matches (value < node.value ? left : right)
+# that mirror the mathematical definition — code reads like the textbook.

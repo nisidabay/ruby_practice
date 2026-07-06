@@ -20,3 +20,11 @@ puts "Unique: #{unique.inspect}"
 # Hash keys == Set semantics
 config = {"debug" => true, "env" => "prod"}
 puts "Has debug? #{config.key?("debug")}"
+
+# Thinking in Ruby
+#
+# Set#include? is O(1) while Array#include? is O(n) — Ruby's stdlib
+# gives you the choice. The Set class wraps a hash internally, so
+# membership tests and dedup are fast and natural. to_set.to_a is
+# the idiomatic dedup pipeline: convert, deduplicate, convert back.
+# Ruby trusts you to know which data structure fits your access pattern.

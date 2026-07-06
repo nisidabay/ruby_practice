@@ -44,3 +44,10 @@ puts config.debug?  # => true  (refinement active here)
 #
 # This changes Config EVERYWHERE in the program. Other code might break.
 # Use refine/using when you need the extension but don't own the class.
+
+# Thinking in Ruby
+#
+# Refinements solve one of Ruby's oldest tensions: monkey-patching power vs.
+# global contamination. They let you reopen classes safely — the changes only
+# apply where `using` is called. This is Ruby growing up without losing its
+# flexibility: the dynamic you love, scoped to where you need it.

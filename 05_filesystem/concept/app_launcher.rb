@@ -84,3 +84,12 @@ unless selected.nil? || selected.empty?
   Process.detach(pid)
 end
 
+# Thinking in Ruby
+#
+# app_launcher.rb is a real-world desktop app built entirely with Ruby's
+# standard library — Open3, File, Dir, Pathname — and zero external gems.
+# It parses .desktop files line-by-line, queries flatpak via Open3,
+# pipes into fzf via popen2, and spawns the selected process. This is
+# Ruby's "scripting language roots" at their best: small utilities that
+# grow into full applications without leaving the standard library.
+

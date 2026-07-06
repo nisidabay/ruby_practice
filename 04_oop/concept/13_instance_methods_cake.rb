@@ -22,3 +22,10 @@ puts cake.bake
 puts cake.slice
 puts cake.sell
 
+
+# Thinking in Ruby
+#
+# Instance methods (defined with def inside the class body without self.)
+# belong to instances, not the class itself. Each Cake instance responds
+# to bake, slice, and sell. The return value of each method is the last
+# expression evaluated — implicit returns keep the code clean.

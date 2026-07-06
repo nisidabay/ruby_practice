@@ -36,3 +36,12 @@ puts "\nMemory: '#{str[0..20]}...' = #{ObjectSpace.memsize_of(str)} bytes"
 #   GC.stat  # => {count: 42, heap_allocated_pages: 100, ...}
 #
 # ObjectSpace is for deep introspection. GC.stat is for quick GC health checks.
+#
+# Thinking in Ruby
+#
+# ObjectSpace is Ruby's window into its own memory — you can count, find, and
+# measure every live object in the process. This level of introspection is rare
+# in managed languages and reflects Ruby's commitment to developer visibility.
+# While you won't use ObjectSpace daily, it's invaluable when debugging memory
+# leaks or understanding object lifetimes. Ruby doesn't hide the runtime from you;
+# it gives you tools to inspect it.

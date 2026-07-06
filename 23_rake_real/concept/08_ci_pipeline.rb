@@ -76,3 +76,12 @@ end
 #
 # Rake gives you: `rake -T` to see the pipeline, per-task timing,
 # and the ability to run individual stages (`rake test` only).
+#
+# Thinking in Ruby
+#
+# CI pipelines in Rake are just dependency chains — `task ci: [:test, :lint, :build, :package]`.
+# There's no special CI syntax, no YAML configuration, no plugin system. Rake's
+# dependency model is expressive enough to model your entire CI pipeline: tasks
+# fail fast (stopping at the first failure), run in order, and can be executed
+# individually for debugging. This simplicity is intentional — tooling should
+# not be more complex than the work it automates.

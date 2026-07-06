@@ -88,3 +88,12 @@ end
 #
 # A Rakefile centralizes everything — `rake -T` shows all tasks,
 # dependencies are explicit, and it's the Ruby community standard.
+#
+# Thinking in Ruby
+#
+# A well-structured Rakefile is the Ruby equivalent of a Makefile — it centralizes
+# all project tasks into a single, runnable file. The convention of `rake -T` for
+# listing tasks, `task default: :test` for common commands, and dependency chains
+# for multi-step workflows creates a universal interface that every Ruby developer
+# understands. This Rakefile template can bootstrap any new Ruby project with
+# test, lint, build, and release tasks in minutes.

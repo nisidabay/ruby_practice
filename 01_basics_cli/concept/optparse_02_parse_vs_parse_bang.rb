@@ -40,3 +40,10 @@ puts "Parsed:       #{options2.inspect}"
 puts
 puts "parse! => mutates the array, use with ARGV."
 puts "parse  => returns remaining, use when you need original intact."
+
+# Thinking in Ruby
+#
+# Ruby's ! (bang) convention signals destructiveness: parse! mutates ARGV,
+# parse does not. This naming pattern — bang for side effects — is
+# consistent across the entire standard library. Once you know the
+# convention, you know what every bang method does without reading docs.

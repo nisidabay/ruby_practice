@@ -39,3 +39,10 @@ puts account.balance    # => 150
 #     @balance
 #   end
 # end
+
+# Thinking in Ruby
+#
+# Public methods are Ruby's default — no access modifier needed. Every
+# method is public unless explicitly declared otherwise. This "optimize
+# for the common case" design means most methods start public and are
+# made private only when a clear internal-API boundary is needed.

@@ -35,3 +35,11 @@ end
 #
 # Pin is cleaner for single-variable checks. Guards are better for
 # complex conditions (file 06).
+
+# Thinking in Ruby
+#
+# The pin operator ^ turns a variable reference into a matcher — match
+# against the variable's value instead of rebinding it. Without ^, the
+# variable gets overwritten in the match. This subtle distinction is
+# critical: do you want to capture (no pin) or compare (pin)? Ruby's
+# pattern matching makes the intent explicit.

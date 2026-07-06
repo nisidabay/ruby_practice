@@ -35,3 +35,10 @@ puts b2.eval('count * 2')  # => 84
 #   TOPLEVEL_BINDING.eval('RUBY_VERSION')  # => "3.4.8"
 #
 # Prefer binding over TOPLEVEL_BINDING — it limits what code can access.
+
+# Thinking in Ruby
+#
+# binding captures the entire execution context as an object — local
+# variables, self, instance variables, everything in scope at that moment.
+# eval later rehydrates that context and runs code inside it. This is Ruby's
+# ultimate introspection: scope is a concrete thing you can grab, store, and use.

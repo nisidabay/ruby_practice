@@ -45,3 +45,13 @@ end
 # raise with a class + message is precise:
 #   raise ArgumentError, "bad input"
 #   raise Errno::ENOENT, "file missing"  # you can raise system errors too
+
+# Thinking in Ruby
+#
+# raise in Ruby is both statement and expression — it stops execution and
+# sends a message up the call stack. Unlike many languages where you can
+# only throw predefined exception types, Ruby lets you raise any class
+# inheriting from StandardError, including system errors like Errno::ENOENT.
+# The two-argument form (raise Class, message) is precise: the class
+# identifies the error type, the message carries the context. No separate
+# throw/catch distinction — just raise and rescue.

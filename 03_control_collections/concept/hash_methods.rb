@@ -72,3 +72,11 @@ p h.rassoc(2)                                # => [:alicia, 2]
 # identity hash: keys compared by object_id, not value
 h = {}.compare_by_identity
 h['hello'] = 1; h['hello'] = 2; p h          # => {"hello"=>1, "hello"=>2}
+
+# Thinking in Ruby
+#
+# The Hash class offers a comprehensive API: fetch (with default/block),
+# fetch_values, dig (nested access), slice, except, and even subset
+# comparison with <=. Ruby's Hash is not just an associative array — it's
+# a full data-structuring toolkit designed for real-world data
+# manipulation.

@@ -60,3 +60,11 @@ puts account1 > account3    # => true (100 > 50)
 # end
 #
 # Use protected when the attribute is internal but needed for same-class operations.
+
+# Thinking in Ruby
+#
+# Protected methods in Ruby allow access between instances of the same
+# class — essential for comparison (==) operators. Unlike private,
+# protected lets you call the method on another instance (other.balance),
+# but unlike public, it's invisible to external code. This fills the gap
+# between "internal helper" and "public API."

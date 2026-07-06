@@ -44,3 +44,12 @@ end
 #   if $?.success?  # cryptic!
 #
 # Logger + SecureRandom + Shellwords + English = production-ready scripts.
+#
+# Thinking in Ruby
+#
+# This script demonstrates Ruby's "compose stdlib" philosophy — four standard
+# libraries working together to build a production-grade CLI tool without a
+# single external dependency. Logger for structured output, SecureRandom for
+# secrets, Shellwords for safe command execution, and English for readable
+# globals. This is the Ruby way: build real, secure tools using only what ships
+# with the language.

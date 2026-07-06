@@ -33,3 +33,11 @@ puts order.summary  # => pending order: $149.99
 # attr_accessor has NO validation — anything gets through:
 order.total = -50   # silently accepted (bad!)
 puts order.summary  # => pending order: $-50
+
+# Thinking in Ruby
+#
+# attr_accessor is Ruby's declaration of intent: one line replaces six
+# lines of getter/setter boilerplate. But it's naive — no validation,
+# no guards. Ruby gives you the shortcut AND the escape hatch (custom
+# setters). This reflects Ruby's philosophy: fast path first, full
+# control when you need it.

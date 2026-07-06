@@ -15,3 +15,10 @@ YAML
 puts "DB host: #{config["database"]["host"]}"
 puts "Workers: #{config["workers"]}"
 puts "Enabled: #{config["enabled"]}"
+
+# Thinking in Ruby
+#
+# YAML.safe_load converts human-readable config into a Ruby hash in
+# one call. No parsing library configuration needed — require "yaml"
+# and you're done. Ruby's YAML integration is so seamless that config
+# files feel like native Ruby data, not external formats.

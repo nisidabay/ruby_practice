@@ -27,3 +27,11 @@ r2 = Restaurant.new(name: "Hell's Kitchen", address: "345 LV Blvd", cuisine: "Br
 puts r2.head_chef  # => "" (default)
 puts r2.rating     # => 3 (default)
 
+
+# Thinking in Ruby
+#
+# Keyword arguments make object initialization self-documenting — at the
+# call site, each value is labeled. Required keywords (name:, address:)
+# enforce completeness at parse time, while optional keywords with
+# defaults (rating: 3) handle the common case concisely. This is Ruby's
+# answer to the "builder pattern" without the boilerplate.

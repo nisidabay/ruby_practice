@@ -27,3 +27,11 @@ puts config.host   # No method defined — method_missing catches it
 puts config.port
 p config.respond_to?(:host)  # true (respond_to_missing? handles it)
 p config.respond_to?(:zZz)   # false
+
+# Thinking in Ruby
+#
+# method_missing catches calls to methods that don't exist, routing them
+# dynamically — in this case, treating unknown method names as hash key
+# lookups. The companion respond_to_missing? ensures respond_to? returns
+# true for the dynamically handled methods. This pattern is the basis of
+# OpenStruct and many Ruby DSLs.

@@ -35,3 +35,12 @@ logger.info('With custom format')
 #
 # Logger gives you levels (filter noise), automatic timestamps,
 # file rotation, and multiple outputs — all for free.
+#
+# Thinking in Ruby
+#
+# Ruby's Logger is a prime example of "batteries included" — a production-grade
+# logging system ships with every Ruby install. With level filtering, timestamps,
+# file rotation, and custom formatters built in, you can go from zero to structured
+# logging in one line of code. Unlike many ecosystems where logging requires heavy
+# framework integration, Ruby's Logger works identically in a one-off script and a
+# multi-service application.

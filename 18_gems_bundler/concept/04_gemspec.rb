@@ -35,3 +35,11 @@ puts "  # Then in your code: require 'string_helpers'"
 #   # Creates: lib/, spec/, Gemfile, .gemspec, README, LICENSE
 #
 # bundle gem is the standard way to start a new gem.
+#
+# Thinking in Ruby
+#
+# A .gemspec is executable Ruby code, not a static manifest file. This means you
+# can compute file lists, read environment variables, or conditionally add
+# dependencies using real programming logic. Ruby treats gem metadata with the
+# same flexibility as any other code — your gem's definition is as dynamic as
+# the library it describes.

@@ -35,3 +35,12 @@ puts timestamps.take(3).map { |t| t.strftime('%H:%M:%S') }
 #   end
 #
 # Enumerator.produce is lazy — values are computed only when you ask.
+#
+# Thinking in Ruby
+#
+# Enumerator.produce embodies Ruby's embrace of lazy evaluation within an
+# otherwise eager language. It generates infinite sequences on demand without
+# pre-allocating memory — a functional programming concept made accessible with
+# minimal syntax. The pattern mirrors Ruby's philosophy of making powerful
+# abstractions feel natural: a block, a seed value, and a rule to generate the
+# next element. That's all it takes.

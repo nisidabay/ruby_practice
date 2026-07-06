@@ -61,3 +61,11 @@ puts config.options  # => {debug: true, cache: false, timeout: 30}
 #   end
 #
 # define_method is safer (no typos) but less flexible than method_missing.
+
+# Thinking in Ruby
+#
+# instance_eval + method_missing is Ruby's most expressive metaprogramming
+# combo — it lets you build domain-specific languages that read like prose.
+# The block runs inside the DSL object, so method calls become natural
+# configuration statements. Ruby trusts you to create the language your
+# problem deserves.

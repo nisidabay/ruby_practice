@@ -236,3 +236,11 @@ def main(argv = ARGV)
 end
 
 main if $PROGRAM_NAME == __FILE__
+
+# Thinking in Ruby
+#
+# The subcommand pattern is built with plain Ruby: OptionParser for
+# parsing, case/when for dispatch, methods for organization. No framework
+# needed. Ruby's approach to CLI architecture is the same as its approach
+# to everything else — the language constructs are enough; bring a library
+# only when the problem truly demands it.

@@ -31,3 +31,11 @@ class Customer
   end
 end
 
+
+# Thinking in Ruby
+#
+# This class is imported via require_relative — Ruby's canonical way to
+# split code across files while keeping the namespace flat. The private
+# validate! method checks arguments before they're stored, following the
+# "fail fast" pattern: reject invalid data at the boundary, not after
+# it's been stored.

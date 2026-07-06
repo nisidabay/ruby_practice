@@ -42,3 +42,11 @@ puts "Group:  #{pipe.group_by { |s| s[0] }}"                 # => {"b"=>["build"
 # This is how Array, Hash, Range, Set all work.
 # They define `each`, include Enumerable, and get the entire
 # functional programming toolbox for free.
+
+# Thinking in Ruby
+#
+# include Enumerable + implement each = get map, select, reduce, sort,
+# group_by, chunk, tally, grep, and 40+ more methods free. This is the
+# single most impactful Ruby pattern: it means EVERY collection in Ruby
+# shares the same iteration API. Custom collections become as expressive
+# as Array and Hash with just one method definition.

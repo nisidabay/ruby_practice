@@ -12,3 +12,11 @@ text.chars.each { |c| puts "  #{c}  (bytes: #{c.bytesize})" }
 
 puts "\neach_grapheme_cluster (correct):"
 text.each_grapheme_cluster { |c| puts "  #{c}  (bytes: #{c.bytesize})" }
+
+# Thinking in Ruby
+#
+# each_grapheme_cluster iterates over visual characters (graheme clusters)
+# rather than codepoints or bytes — essential for proper Unicode handling.
+# While many languages treat strings as byte arrays, Ruby gives you the
+# abstraction that matches human perception, reflecting its design
+# philosophy of programmer empathy.

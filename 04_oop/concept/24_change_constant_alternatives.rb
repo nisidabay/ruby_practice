@@ -66,3 +66,11 @@ end
 MessageV4.speak('GOT')
 MessageV4.speak
 
+
+# Thinking in Ruby
+#
+# Ruby constants warn on reassignment but don't enforce immutability.
+# This file shows four alternatives: class instance vars (recommended),
+# class vars (@@), Struct-based config objects (most flexible), and true
+# immutable constants. Each trades off between mutability control and
+# ergonomics — Ruby trusts you to choose.

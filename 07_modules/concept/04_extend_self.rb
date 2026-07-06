@@ -42,3 +42,12 @@ class AnotherClass
 end
 
 puts AnotherClass.subtract(10, 5)
+
+# Thinking in Ruby
+#
+# extend self makes a module's instance methods double as module-level methods.
+# It's a clever Ruby trick: inside the module body, `extend self` adds the
+# module's own instance methods to itself as class methods. The result is a
+# module that works both as Calculator.add (standalone) and obj.add (included).
+# Unlike module_function, methods stay PUBLIC when mixed in — the programmer
+# chooses the visibility, not the language.

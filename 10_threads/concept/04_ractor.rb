@@ -21,3 +21,14 @@ adder.send(30)
 adder.send(:done)
 
 puts adder.take                 # => 60
+
+# Thinking in Ruby
+#
+# Ractor (Ruby 3.0+) introduces true parallelism with isolated state.
+# Unlike threads (which share all memory and need mutexes), each Ractor
+# has its own execution context and communicates via message passing
+# (send/receive). Ractors bypass the GIL entirely, enabling true parallel
+# execution on multi-core CPUs. The trade-off: you can't share mutable
+# objects between Ractors — you must copy or move them. This is Ruby's
+# answer to the "freeze or copy" concurrency model, inspired by CSP
+# (Communicating Sequential Processes) from Go and Erlang.

@@ -55,3 +55,12 @@ end
 #   end
 #
 # Pattern matching handles all shapes in one flat structure — no nesting.
+
+# Thinking in Ruby
+#
+# Pattern matching transforms nested if/else trees into a flat, readable
+# case/in block. Each response shape gets its own branch with inline
+# destructuring: status, data, meta, and error all extracted in the
+# pattern itself. Ruby's pattern matching is the anti-telephone-game
+# for data — what you see is what you match, and what you match is
+# what you get.

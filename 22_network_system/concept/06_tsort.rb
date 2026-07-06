@@ -56,3 +56,12 @@ end
 #   end
 #
 # TSort handles edge cases (cycles, disconnected graphs) correctly.
+#
+# Thinking in Ruby
+#
+# TSort brings topological sorting into Ruby's standard library as a mixin — any
+# class can become a dependency graph by implementing two methods. This is Ruby's
+# answer to a classic systems problem: "in what order do these tasks run?" Instead
+# of requiring external graph libraries, Ruby provides the algorithm in stdlib
+# and lets you integrate it into your domain model through a minimal interface.
+# The cyclic dependency detection is a bonus that saves hours of debugging.

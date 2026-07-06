@@ -44,3 +44,11 @@ end
 puts Config.default
 puts Config.test
 puts Config.prod
+
+# Thinking in Ruby
+#
+# class << self opens the singleton class (eigenclass) of the class
+# object, grouping all class methods without repetitive def self. prefix.
+# This is the same mechanism as singleton methods on any object — Ruby's
+# consistency means the pattern works for classes, instances, or even
+# specific objects.

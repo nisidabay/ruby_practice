@@ -56,3 +56,10 @@ end
 # before_all / after_all: use class-level methods (runs once)
 # Minitest doesn't have them built-in — use Minitest::Test class methods
 # or the minitest-hooks gem.
+
+# Thinking in Ruby
+#
+# setup/teardown reflect Ruby's philosophy of convention over ceremony.
+# Minitest automatically runs them before/after every test, keeping
+# state isolated without boilerplate. The teardown runs even on failure,
+# so resources like temp dirs are always cleaned up — no deferred blocks needed.

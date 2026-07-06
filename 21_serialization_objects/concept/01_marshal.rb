@@ -38,3 +38,11 @@ end
 #
 # Marshal preserves exact Ruby types (Time, Symbol, Regexp) but is
 # Ruby-only and binary (not human-readable).
+#
+# Thinking in Ruby
+#
+# Marshal is Ruby's native serialization format — it preserves exact Ruby object
+# types (Symbol, Time, Regexp) that JSON and YAML would mangle. This deep object
+# graph preservation reflects Ruby's reflective nature: the runtime knows how to
+# serialize and deserialize its own objects with full fidelity. The trade-off is
+# clear — use Marshal for Ruby-to-Ruby communication, JSON for interoperability.

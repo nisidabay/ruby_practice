@@ -15,3 +15,11 @@ Dir.glob('*.log').each do |file|
   FileUtils.mv file, "/var/log/archive/#{file}_#{Time.now.strftime('%Y%m%d')}"
   puts "Archived large log: #{file}"
 end
+
+# Thinking in Ruby
+#
+# archive_large_logs.rb captures the brevity of Ruby for sysadmin tasks.
+# Dir.glob finds log files, File.size checks the threshold, FileUtils.mv
+# moves them — all in under 15 lines. The `next unless` guard keeps the
+# flow clean. Ruby's expressive syntax lets you write shell-script-level
+# conciseness with program safety and cross-platform compatibility.

@@ -37,3 +37,12 @@ puts "Squares: #{result}"  # => [1, 4, 9, 16, 25]
 #   end
 #
 # with_object is cleaner — no need to initialize and return the accumulator.
+#
+# Thinking in Ruby
+#
+# Enumerator chaining (with_index, with_object) is Ruby's solution to a common
+# need: carrying state through iteration without external variables. Instead of
+# declaring an accumulator outside the loop and mutating it inside, Ruby lets
+# you carry state as part of the enumerator chain itself. This keeps iteration
+# logic self-contained and avoids the "what mutated my variable?" problem that
+# plagues manual accumulator patterns in many languages.

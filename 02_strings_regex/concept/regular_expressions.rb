@@ -11,3 +11,10 @@ puts 'http://example.com/http'.gsub('http', 'https') # => https://example.com/ht
 
 # scan: extract all matches — useful for parsing
 'Deploy v2.4.1 to staging (2026-05-10)'.scan(/\d+\.\d+\.\d+/) { |v| puts v }
+
+# Thinking in Ruby
+#
+# sub, gsub, and scan form Ruby's regex trinity: replace-first, replace-all,
+# and iterate-matches. They're methods on String, not standalone functions,
+# so regex operations chain naturally with other method calls. The block
+# form of gsub/scan also doubles as an iterator — two patterns, one API.

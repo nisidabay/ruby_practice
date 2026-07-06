@@ -85,3 +85,11 @@ if __FILE__ == $PROGRAM_NAME
 
   Md5Cracker.new(ARGV[0]).crack(ARGV[1])
 end
+
+# Thinking in Ruby
+#
+# Ruby's Digest::MD5, file I/O, and caching combine into a compact
+# hash cracker. File.foreach streams without loading the whole file,
+# and the cache file doubles as persistence. This is Ruby's stdlib
+# philosophy: batteries included, so you build real tools in under
+# 90 lines — no external dependencies needed.

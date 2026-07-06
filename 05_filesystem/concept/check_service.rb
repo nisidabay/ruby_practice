@@ -25,3 +25,11 @@ else
   puts "Error message from Linux: #{standard_error.strip}"
   puts "Exit code: #{status.exitstatus}"
 end
+
+# Thinking in Ruby
+#
+# check_service.rb uses Open3.capture3 to safely run external commands.
+# Unlike backticks or system(), capture3 gives you stdout, stderr, and
+# exit status — without shell injection risks. Open3 is Ruby's standard
+# library answer to "I need to run a command and read its output":
+# no parsing, no temp files, no security foot-guns.

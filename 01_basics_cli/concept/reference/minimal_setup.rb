@@ -29,3 +29,10 @@ end.parse!
 
 puts "Options: #{options.inspect}"
 puts "Remaining ARGV: #{ARGV.inspect}"
+
+# Thinking in Ruby
+#
+# This minimal OptionParser skeleton shows the essential pattern: create
+# a parser, define options with blocks, call parse!. The dynamic $0
+# reference makes help text adapt to the script name automatically — a
+# small ergonomic detail that exemplifies Ruby's programmer-first design.

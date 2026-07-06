@@ -68,3 +68,12 @@ talk_about_2('Carlos') { |name| p "#{name} is a someone special" }
 
 # Call with an existing Proc, converting it to a block for the yield.
 talk_about_2('Carlos', &good_thing)
+
+# Thinking in Ruby
+#
+# Procs are first-class objects that represent blocks of code. The & operator
+# is the bridge between blocks (syntactic) and Procs (objects). Once you
+# understand that every method's block parameter is secretly a Proc, Ruby's
+# block system opens up — you can pass procs to methods that yield, store
+# procs in variables, pass them between methods, and compose them like any
+# other object. The & callable conversion also works with symbols and methods.

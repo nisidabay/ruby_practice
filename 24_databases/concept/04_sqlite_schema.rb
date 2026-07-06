@@ -63,3 +63,12 @@ File.delete('/tmp/schema.db') if File.exist?('/tmp/schema.db')
 #
 # ALTER TABLE is safe. SQLite transactions ensure migrations either
 # complete fully or roll back cleanly — no partial schema changes.
+#
+# Thinking in Ruby
+#
+# Ruby's approach to database schema management reflects a respect for data
+# integrity. PRAGMA queries for introspection, ALTER TABLE for safe migrations,
+# and `db.transaction` for atomic multi-step operations give you production-grade
+# schema management with a simple, file-based database. The `schema_version`
+# PRAGMA even provides a built-in migration tracking mechanism — you can check
+# the current schema version before deciding if a migration needs to run.

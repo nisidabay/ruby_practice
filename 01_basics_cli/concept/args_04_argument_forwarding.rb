@@ -29,3 +29,11 @@ log_and_call('deploy', 'staging', dry_run: true) { puts '  block ran!' }
 #   end
 #
 # (...) is shorthand for "forward everything."
+
+# Thinking in Ruby
+#
+# The (...) forwarding syntax (Ruby 3.0+) is the culmination of Ruby's
+# argument-design journey: it delegates *args, **kwargs, &block in one
+# token. No other mainstream language has a shorthand this compact for
+# complete argument forwarding — it captures Ruby's philosophy that
+# common patterns should require zero ceremony.

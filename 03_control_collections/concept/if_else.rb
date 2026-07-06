@@ -26,3 +26,11 @@ end
 puts http_label(200)    # => OK
 puts http_label(404)    # => Not Found
 puts http_label(302)    # => Unknown (302)
+
+# Thinking in Ruby
+#
+# Ruby's if/elsif/else is an expression — it returns a value, not just
+# a control-flow statement. This eliminates the need for ternary chains
+# or early returns for conditional assignment. Every branch's last
+# expression becomes the result, keeping multi-way logic flat and
+# readable.

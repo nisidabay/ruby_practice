@@ -23,3 +23,10 @@ create_user(name: 'Ana', email: 'ana@dev.io', plan: 'pro', region: 'eu-west-1', 
 #   end
 #
 # Adding a new option means changing every caller. ** avoids that.
+
+# Thinking in Ruby
+#
+# The double-splatted parameter (**) captures undeclared keyword arguments
+# into a Hash, decoupling method signatures from callers. This is Ruby's
+# answer to forward-compatible option hashes — add new options without
+# changing the signature or breaking existing callers.

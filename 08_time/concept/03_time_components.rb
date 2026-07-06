@@ -15,3 +15,12 @@ puts departure.wday    # => 1 (0=Sunday, 1=Monday)
 puts departure.yday    # => 166 (day of year, 1-366)
 puts departure.monday? # => true
 puts departure.dst?    # => true (summer in Europe)
+
+# Thinking in Ruby
+#
+# Ruby's Time object gives you every component as a named method — .year,
+# .month, .day, .hour, .min, .sec — plus semantic queries: .monday?,
+# .dst?, .wday (weekday number), .yday (day of year). This is far more
+# readable than extracting fields from a struct or calling getter functions.
+# The predicate methods (monday?, dst?) are especially Ruby — they read
+# like natural language questions you ask a Time object.

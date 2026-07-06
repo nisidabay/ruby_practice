@@ -53,3 +53,12 @@ end
 #
 # Rule: rescue Errno::* for system errors, rescue your own custom classes
 # for business logic errors, rescue StandardError as the last-ditch catch-all.
+
+# Thinking in Ruby
+#
+# Ruby's rescue order matters — it matches top to bottom, like a case
+# statement. Put the most specific errors first (Errno::ENOENT, Errno::EACCES)
+# and StandardError last as the catch-all. This is the opposite of try/catch
+# in many languages where the generic exception is often the only option.
+# Ruby's error hierarchy is a tree, not a flat list — rescuing a parent
+# catches all its children, so ordering is critical for correct behavior.

@@ -28,3 +28,12 @@ puts "After IRB: config=#{config.inspect}"  # changes you made in IRB persist
 
 # binding.irb is heavier than binding.break (debug gem) — it's a full Ruby REPL.
 # Use when you want to explore objects, not just step through code.
+
+# Thinking in Ruby
+#
+# binding.irb drops you into a full interactive REPL at the exact point
+# where execution paused — you can inspect variables, call methods, even
+# modify state, then resume. This is Ruby's pragmatic approach to debugging:
+# instead of having a separate debugger with its own commands, you get a
+# REPL with full access to the runtime. binding.break (from the debug gem)
+# gives you step-through debugging; binding.irb gives you open-ended exploration.

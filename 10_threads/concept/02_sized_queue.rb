@@ -24,3 +24,12 @@ end
 
 producer.join
 consumer.join
+
+# Thinking in Ruby
+#
+# SizedQueue adds backpressure to the producer-consumer pattern. The max
+# capacity means #push blocks when the queue is full — the producer can't
+# outrun the consumer. This prevents unbounded memory growth (the queue
+# can't grow larger than its capacity) and naturally balances production
+# and consumption rates. SizedQueue is Queue's more predictable sibling
+# for real-world work distribution where downstream capacity is limited.

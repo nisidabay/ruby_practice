@@ -24,3 +24,12 @@ def risky
   "Never reached"  # dead code!
 end
 p risky  # => "Boom"
+
+# Thinking in Ruby
+#
+# Procs and lambdas look similar but behave differently on returns, arguments,
+# and arity. Procs return from the enclosing method (like a goto), while lambdas
+# return from themselves. This distinction exists because Procs are designed
+# to replace literal blocks (which also return from the enclosing scope), while
+# lambdas are more like standalone methods. Knowing the difference is essential
+# for writing correct Ruby.

@@ -25,3 +25,10 @@ undo.push("applied bold")
 puts undo.pop  # => "applied bold" (undo last action)
 puts undo.pop  # => "typed 'world'"
 puts undo.top  # => "typed 'hello'" (peek without removing)
+
+# Thinking in Ruby
+#
+# Ruby's Array already provides O(1) push/pop — the Stack class is a
+# wrapper that restricts the API while leveraging the underlying
+# performance. This is Ruby's "wrap, don't rewrite" approach: standard
+# data structures are performant enough; add types for intent, not speed.

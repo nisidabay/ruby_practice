@@ -62,3 +62,11 @@ station.attach(AlertDisplay.new)
 station.measurements_changed(25, 60)
 station.measurements_changed(36, 45)
 
+
+# Thinking in Ruby
+#
+# The Observer pattern in Ruby: the subject maintains a list of
+# observers and calls .update(self) on each when state changes.
+# Observers are any objects that respond to update — no interface
+# required. Ruby's dynamic typing means the attachment/detachment
+# API is minimal: just add or remove from an array, then iterate.

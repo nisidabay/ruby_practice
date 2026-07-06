@@ -72,3 +72,12 @@ puts obj.compare_with(obj2)
 # obj.respond_to?(:protected_method)        # => false
 # obj.respond_to?(:private_method)          # => false
 # obj.respond_to?(:private_method, true)    # => true (include private)
+
+# Thinking in Ruby
+#
+# This file demonstrates all three visibility levels in one class for
+# side-by-side comparison. Public: callable anywhere. Protected:
+# callable by same-class instances (using other.protected_method in
+# compare_with). Private: callable only within the class with no
+# explicit receiver. The test_internal_calls method shows all three
+# working internally.

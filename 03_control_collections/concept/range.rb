@@ -19,3 +19,11 @@ when 200..299 then puts "Success"
 when 400..499 then puts "Client error"  # => this one
 when 500..599 then puts "Server error"
 end
+
+# Thinking in Ruby
+#
+# Ranges are lazy — (1..1000) doesn't allocate an array. They work with
+# case/when (via ===), slicing, iteration, and ActiveRecord queries. The
+# two-dot (inclusive) vs three-dot (exclusive) syntax is Ruby's most
+# elegant off-by-one solution: you choose the semantics when you write
+# the range.

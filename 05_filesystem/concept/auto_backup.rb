@@ -33,3 +33,11 @@ end
 
 puts 'Backup complete!'
 
+# Thinking in Ruby
+#
+# auto_backup.rb shows how a few lines of Ruby replace a complex shell script.
+# Dir.glob finds .conf files, FileUtils.cp backs them up, File.join builds
+# cross-platform paths — all without subprocesses, shell escaping, or
+# platform-specific commands. Ruby's standard library is self-sufficient
+# for filesystem automation.
+

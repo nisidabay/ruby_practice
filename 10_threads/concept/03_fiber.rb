@@ -24,3 +24,12 @@ end
 puts words.resume     # "hello"
 puts words.resume     # "world"
 puts words.resume.inspect   # nil
+
+# Thinking in Ruby
+#
+# Fibers are Ruby's take on cooperative concurrency — they yield explicitly
+# and resume explicitly, with no OS scheduler involved. Unlike threads,
+# fibers don't run in parallel and don't need mutexes; only one fiber runs
+# at a time, and it yields control at known points. They're perfect for
+# generators, lazy enumerators, and async-await patterns (via Fiber.scheduler
+# in Ruby 3.0+). Think of fibers as "pausable methods" rather than threads.

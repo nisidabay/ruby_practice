@@ -38,3 +38,13 @@ provision_server("web-01.internal")
 
 # Use for: logging frameworks, custom profilers, audit trails
 # Skip it for: normal error handling (use raise + backtrace instead)
+
+# Thinking in Ruby
+#
+# caller_locations gives you structured stack frames instead of raw strings.
+# Each Thread::Backtrace::Location object has .path, .lineno, .label —
+# no string parsing, no fragile regex on "file:line:in `method'".
+# This is Ruby's progressive disclosure at work: caller for quick scripts,
+# caller_locations for production logging frameworks. The structured API
+# exists for when you need it, but the string version is always there for
+# simple cases.

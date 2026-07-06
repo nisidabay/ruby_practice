@@ -34,3 +34,11 @@ end
 
 puts Config.development  # => postgres://localhost:5432
 puts Config.production   # => postgres://prod-db.internal:5432
+
+# Thinking in Ruby
+#
+# def self.method defines a class method — a method on the Class object
+# itself. These serve as factory methods (Config.development) that
+# encapsulate construction logic. In Ruby, "class methods" are really
+# singleton methods on the class object, consistent with "everything is
+# an object."

@@ -36,3 +36,12 @@ puts "UTC: #{utc_event.utc?}" # => UTC: true
 # Web server format (RFC 2616)
 web_time = Time.httpdate('Wed, 15 Jul 2026 06:30:00 GMT')
 puts web_time # => 2026-07-15 06:30:00 UTC
+
+# Thinking in Ruby
+#
+# Ruby's time parsing has layers: Time.parse (flexible, best-effort),
+# Time.strptime (strict, you define the format), and dedicated parsers
+# (Time.iso8601, Time.httpdate) for standard formats. This layered approach
+# means you start with .parse for quick scripts, graduate to .strptime
+# for production, and use the dedicated methods for known formats. Each
+# level trades convenience for safety — Ruby lets you choose the trade-off.

@@ -39,3 +39,12 @@ puts lines.to_a  # => contents of /etc/hostname
 #
 # Use Enumerator.new when you need complex logic (multiple yields,
 # file reading, external API calls). Use produce for simple sequences.
+#
+# Thinking in Ruby
+#
+# Enumerator.new with a Yielder gives you full control over generator logic in
+# a way that's hard to achieve in many languages. The Yielder acts as a bridge
+# between imperative generation logic (inside the block) and lazy consumption
+# (outside the block). This pattern — yielding values one at a time from complex
+# state machines — is Ruby's answer to Python's generator functions, achieved
+# with blocks and closures rather than special syntax.

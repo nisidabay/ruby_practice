@@ -46,3 +46,11 @@ end
 
 # Rule: reach for each_line unless you explicitly need a full array.
 # grep, map, select, with_index — all work on the lazy enumerator.
+
+# Thinking in Ruby
+#
+# Ruby's Enumerable powers make #each_line far more practical than just
+# a memory optimization. Because #each_line returns an Enumerator, you can
+# chain #grep, #map, #with_index directly on the streaming data — no
+# intermediate arrays needed. Other languages require separate concepts
+# (iterators vs. streams). Ruby unifies them into one lazy chain.

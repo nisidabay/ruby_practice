@@ -30,3 +30,12 @@ obj = MathOperations.new
 puts obj.add(10, 5)
 puts obj.subtract(10, 5)
 puts obj.multiply(10, 5)
+
+# Thinking in Ruby
+#
+# include turns module methods into instance methods — they become part of
+# the object's method resolution order (the "mixin"). This is Ruby's answer
+# to multiple inheritance without the diamond problem. Unlike C++ virtual
+# inheritance or Python's MRO gymnastics, Ruby's include is straightforward:
+# modules go into the ancestor chain, and the last included module wins.
+# No class can have multiple parents, but any class can include many modules.

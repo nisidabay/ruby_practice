@@ -31,3 +31,12 @@ it = 5
 p it  # 5
 
 # Cannot mix `it` with explicit parameters
+
+# Thinking in Ruby
+#
+# Ruby's & operator works in both directions: &block captures a block as a
+# Proc in the parameter list, and &proc converts a Proc back to a block when
+# calling a method. Symbol#to_proc (numbers.map(&:to_s)) is a uniquely Ruby
+# shorthand — you're converting a symbol to a proc that sends that method.
+# Anonymous block parameters (_1, _2, it) are Ruby's evolving answer to
+# reducing block boilerplate without sacrificing readability.

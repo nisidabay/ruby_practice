@@ -21,3 +21,11 @@ end
 CSV.foreach("/tmp/ruby_users.csv", headers: true) do |row|
   puts "#{row["name"]} — #{row["role"]} (#{row["active"]})"
 end
+
+# Thinking in Ruby
+#
+# Ruby's CSV library turns tabular data into familiar row objects.
+# CSV.open writes arrays, CSV.foreach with headers: true gives you
+# hash-like access by column name. The ergonomics mirror Ruby's
+# philosophy: data formats should feel like Ruby data structures,
+# not require a separate data-processing language.

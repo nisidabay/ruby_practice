@@ -34,3 +34,11 @@ amy.print_pay_stub
 peter = Employee.new
 peter.print_pay_stub
 
+
+# Thinking in Ruby
+#
+# Validated attributes (name= raises on empty, salary= raises on
+# negative) combined with a calculation method (print_pay_stub) show the
+# typical Ruby class pattern: enforce invariants on write, compute on
+# read. The pay calculation with (salary / 365.0) * 14 demonstrates
+# Ruby's division semantics — integer / float returns float.

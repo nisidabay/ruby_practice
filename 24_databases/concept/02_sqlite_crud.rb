@@ -64,3 +64,12 @@ File.delete('/tmp/inventory.db') if File.exist?('/tmp/inventory.db')
 #   File.write('inventory.yml', YAML.dump(servers))
 #
 # SQLite gives you SQL filtering, ACID transactions, and no file corruption.
+#
+# Thinking in Ruby
+#
+# The CRUD pattern in Ruby with SQLite is refreshingly direct: parameterized
+# queries (`?` placeholders) prevent SQL injection, `results_as_hash` gives
+# readable column access, and `get_first_row` provides convenient single-row
+# fetching. Ruby doesn't abstract away SQL — it makes SQL usage safe and
+# ergonomic. The emphasis on parameterized queries over string interpolation
+# is a security best practice that Ruby's API design makes easy to follow.

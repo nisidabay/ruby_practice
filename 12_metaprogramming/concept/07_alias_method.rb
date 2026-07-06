@@ -36,3 +36,10 @@ puts config.settings  # => {debug: true, cache: false}  (same thing)
 #   class Config
 #     undef_method :to_s  # even Object#to_s is blocked
 #   end
+
+# Thinking in Ruby
+#
+# alias_method keeps the original method alive while exposing it under a
+# new name — safe renaming without breaking callers. remove_method and
+# undef_method give you surgical control over method presence. Ruby treats
+# methods as manipulable objects, not fixed entries in a class table.

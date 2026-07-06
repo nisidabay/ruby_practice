@@ -76,3 +76,11 @@ begin
   p animals[w]
   w += 1
 end until w == animals.length
+
+# Thinking in Ruby
+#
+# This file demonstrates 9 ways to iterate an array — while, until, for,
+# loop, times, upto, downto, begin...while, begin...until. While .each
+# is the idiomatic choice, knowing the full spectrum lets you read legacy
+# code and choose the right tool when .each doesn't fit (e.g. unbounded
+# iteration, conditional termination).

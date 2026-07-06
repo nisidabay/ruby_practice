@@ -29,3 +29,11 @@ end
 
 with_db { query("SELECT * FROM users") }
 with_db { query("SELECT COUNT(*) FROM orders") }
+
+# Thinking in Ruby
+#
+# Blocks are Ruby's killer feature for resource management (the "sandwich method").
+# Instead of repeating setup/teardown around every call, you write it once in a
+# method that yields to a block. The block syntax (do...end or {}) is lightweight
+# enough that passing code as a parameter feels natural — unlike anonymous inner
+# classes in Java or explicit callback registration in other languages.

@@ -44,3 +44,13 @@ pool = ThreadPool.new(3)
 sleep 0.25                       # let work finish
 pool.stop
 puts "done"
+
+# Thinking in Ruby
+#
+# ThreadPool combines Mutex, ConditionVariable, and an array-backed queue
+# to create a reusable worker pool. Workers wait on the condition variable
+# until there's a job in the queue (#broadcast wakes them all, but only
+# one gets the job). The shutdown logic (#enqueue :exit to each worker or
+# set @alive = false + broadcast) is explicit and controllable. This raw
+# implementation shows what's happening inside high-level thread pool gems
+# — it's just Mutex + CV + Queue + a loop.

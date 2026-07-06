@@ -45,3 +45,11 @@ p my_hash2.common_keys_and_values   # ["goodbye"]
 #
 # using ArrayExtensions
 # [1, 2, 2, 3].more_than_once?(2)  # Works only in this scope
+
+# Thinking in Ruby
+#
+# Monkey patching — reopening a class to add methods — is Ruby's most
+# controversial feature. It gives tremendous power (adding methods to
+# Array or Hash globally) but can conflict with gems. Ruby 2.0+'s
+# Refinements (refine...using) provide scoped monkey patching, keeping
+# the power while limiting the blast radius.

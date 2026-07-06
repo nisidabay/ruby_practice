@@ -24,3 +24,12 @@ checkin = Time.new(2026, 3, 20)
 checkout = Time.new(2026, 3, 25)
 days = (checkout - checkin) / 86400
 puts "#{days.to_i} days"  # => 5 days
+
+# Thinking in Ruby
+#
+# Time arithmetic is simple in Ruby: subtraction gives seconds, addition
+#/subtraction shifts by seconds. There's no separate Duration or Period class
+# for basic operations — you just use integers (3600 for an hour, 86400 for
+# a day). This keeps the API minimal: Time + Integer = Time, Time - Time =
+# Integer. For complex calendars (months, years with variable lengths),
+# Ruby has the Date library and Active Support's Duration extensions.

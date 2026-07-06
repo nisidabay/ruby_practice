@@ -48,3 +48,12 @@ end
 #   end
 #
 # DelegateClass auto-delegates ALL methods. Forwardable is for selective delegation.
+#
+# Thinking in Ruby
+#
+# Ruby provides not one but two delegation mechanisms in stdlib — DelegateClass
+# for full method forwarding and Forwardable for selective delegation. This
+# abundance of choice reflects Ruby's philosophy: provide multiple patterns and
+# let developers choose. DelegateClass is ideal for wrapper/decorator patterns
+# where you want the wrapped object's entire interface, while Forwardable gives
+# fine-grained control. Both avoid the boilerplate of manual forwarding.

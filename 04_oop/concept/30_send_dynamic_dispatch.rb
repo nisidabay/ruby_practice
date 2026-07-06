@@ -41,3 +41,11 @@ puts s.public_send(:status)  # no args
 #   public_send   — only public methods (safe for user-facing dispatch)
 #
 # This is how Rails routes: `controller.public_send(action_name)`
+
+# Thinking in Ruby
+#
+# send and public_send call methods by name (string or symbol) at runtime.
+# The key distinction: send bypasses visibility (including private),
+# public_send respects it. Rails uses controller.public_send(action_name)
+# to route HTTP requests to controller actions — Ruby's metaobject
+# protocol at the heart of a web framework.

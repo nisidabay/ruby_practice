@@ -41,3 +41,11 @@ end
 #
 # Gemspec for gems, Gemfile for apps. A gem CAN have both:
 # gemspec declares its own deps, Gemfile adds extras for development.
+#
+# Thinking in Ruby
+#
+# Ruby distinguishes between runtime and development dependencies as a first-class
+# concept in the gemspec DSL. This separation reflects Ruby's philosophy of
+# "optimizing for the reader" — when you publish a gem, users see exactly what
+# they need at runtime, while contributors see what they need to work on the gem.
+# The same distinction carries through to Bundler's group syntax in Gemfiles.

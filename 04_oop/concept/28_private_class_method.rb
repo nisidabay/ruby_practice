@@ -36,3 +36,11 @@ end
 
 SecretVault.open_special_vault('let me in')  # => nil + denied msg
 
+
+# Thinking in Ruby
+#
+# private_class_method :new creates a singleton-like pattern where
+# instances can only be created through controlled factory methods.
+# The factory (open_special_vault) validates the key before calling new
+# internally — controlling construction at the class level. Ruby lets
+# you make ANY method private, including new itself.

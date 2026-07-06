@@ -42,3 +42,10 @@ puts "verbose:      #{options[:verbose]}"
 puts "quiet:        #{options[:quiet]}"
 puts "dry-run:      #{options[:dry_run]}"
 puts "no-metadata:  #{options[:no_metadata]}"
+
+# Thinking in Ruby
+#
+# OptionParser transforms command-line parsing from manual ARGV slicing
+# into declarative DSL. The --[no-] prefix convention is Ruby's pragmatic
+# touch: a single line generates two flags (set and unset). This mirrors
+# Ruby's philosophy that common CLI patterns should be one-liners.

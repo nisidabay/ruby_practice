@@ -34,3 +34,11 @@ class Video
   end
 end
 
+
+# Thinking in Ruby
+#
+# A reusable class designed for require_import. It uses keyword
+# arguments with nil defaults (title: nil) and validates state in
+# every public method via private validate!. This is a common Ruby
+# pattern: validate state on use (not on create) when validation
+# depends on how the object is subsequently configured.

@@ -47,3 +47,12 @@ end
 #
 # FileList adds .exclude, .include, .sub, and integrates with
 # Rake's file task resolution.
+#
+# Thinking in Ruby
+#
+# Rake::FileList extends the standard Dir.glob with chainable filtering methods
+# (.exclude, .include), giving build scripts the power of glob patterns with the
+# composability of method chaining. This is a distinctly Ruby approach: instead
+# of a separate template or DSL for file selection, FileList is an array-like
+# object you can query, filter, and transform using familiar Ruby methods. It
+# bridges the gap between simple globs and custom file selection logic.

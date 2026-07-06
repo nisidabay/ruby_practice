@@ -71,3 +71,11 @@ puts i  # => 128
 i = 1
 i *= 2 while i < 100
 puts i  # => 128
+
+# Thinking in Ruby
+#
+# Ruby provides multiple iteration primitives — times, upto, downto, step,
+# loop, while, until, each — each designed for a specific pattern. This
+# is Ruby's "many ways, choose the expressive one" philosophy. The begin
+# ... end while/until modifiers also guarantee at least one execution,
+# like do-while in other languages.

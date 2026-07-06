@@ -20,3 +20,11 @@ until guess == target || attempts >= 10
 end
 
 puts guess == target ? "Got it in #{attempts}!" : "It was #{target}."
+
+# Thinking in Ruby
+#
+# until + elsif makes game logic read like natural language.
+# Ruby's ternary gracefully handles the final message in one line.
+# The interactive loop with gets/print is a direct translation of
+# how you'd describe the game to another person — Ruby prioritizes
+# human readability over syntactic minimalism.

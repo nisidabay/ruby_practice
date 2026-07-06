@@ -42,3 +42,10 @@ begin
 rescue Errno::ENOENT => e
   puts "Command not found: #{e.message}"
 end
+
+# Thinking in Ruby
+#
+# IO.popen treats a subprocess like a file — you read its output,
+# write its input, or both. The block form manages the pipe lifecycle
+# automatically. This is Ruby's Unix heritage: pipes are I/O streams,
+# and child processes are no different from files. Read, write, close.

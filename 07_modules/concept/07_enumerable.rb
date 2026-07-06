@@ -28,3 +28,12 @@ p collection.map { |x| x * 2 }.to_a # [2, 4, 8]
 p collection.select { |x| x > 1 }.to_a # [2, 4]
 p(collection.find { |x| x == 2 }) # 2
 p(collection.all?(&:positive?)) # true
+
+# Thinking in Ruby
+#
+# Enumerable demonstrates the power of Ruby's module system: include one
+# module, implement one method (#each), and get 40+ methods for free.
+# This is far more elegant than implementing an interface in Java (all methods
+# required) or inheriting from a framework base class. Enumerable is the
+# crown jewel of Ruby mixins — it's why map, select, find, and friends work
+# on arrays, hashes, ranges, and your custom classes alike.

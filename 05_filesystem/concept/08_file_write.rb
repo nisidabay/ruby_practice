@@ -35,3 +35,11 @@ FileUtils.rm_rf(dir)
 # Also: File.write creates missing parent directories via its own Dir.mkdir
 # path = "/tmp/app/v1/cache.json"  ← File.write won't create /tmp/app/v1/
 # Use FileUtils.mkdir_p(File.dirname(path)) first if the dirs don't exist.
+
+# Thinking in Ruby
+#
+# File.write is Ruby's answer to "I just want to save this file."
+# One call, no open/close ceremony, and it returns the byte count so you
+# can verify the write. The `mode: 'a'` option adds append behavior without
+# changing the method name — a clean API surface. Ruby trusts you to manage
+# parent directory creation separately rather than making guesses.

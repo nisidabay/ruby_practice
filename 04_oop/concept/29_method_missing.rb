@@ -41,3 +41,11 @@ puts r.respond_to?(:destroy)       # => false
 
 # method_missing is how ActiveRecord's dynamic finders work:
 #   User.find_by_email("...") → missing → extract "email" → build query
+
+# Thinking in Ruby
+#
+# method_missing is Ruby's ultimate dynamic dispatch — intercept ANY
+# method call and route it at runtime. The ALWAYS-required companion
+# respond_to_missing? makes invisible methods visible to respond_to?.
+# This is how ActiveRecord's find_by_email and friends work: Ruby's
+# metaprogramming powers entire frameworks.

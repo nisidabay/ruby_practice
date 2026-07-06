@@ -45,3 +45,11 @@ puts "Metadata: #{obj.metadata[:created_at]}"  # only THIS obj has metadata
 
 # Singleton methods and class methods are the same mechanism.
 # The difference is just WHOSE singleton class you're opening.
+
+# Thinking in Ruby
+#
+# Every Ruby object has a hidden singleton class (eigenclass). Methods
+# defined there exist on THAT object only. The revelation: "class methods"
+# (def self.method) ARE singleton methods on the Class object. class <<
+# self opens this class. Understanding the singleton class is the key to
+# Ruby's entire object model.

@@ -56,3 +56,12 @@ checkbox.render
 button.click
 checkbox.toggle
 
+
+# Thinking in Ruby
+#
+# The Abstract Factory pattern creates families of related objects —
+# GUIFactory defines create_button/create_checkbox, and WindowsFactory
+# and MacFactory each produce a consistent product family. Ruby's blocks
+# with short syntax (def create_button = WindowsButton.new) keep the
+# factory implementations concise. The pattern ensures all UI components
+# match the same look-and-feel.

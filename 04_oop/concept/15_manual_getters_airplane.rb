@@ -20,3 +20,10 @@ puts airplane.maker, airplane.model, airplane.seats
 
 # Prefer: attr_reader :maker, :model, :seats
 
+
+# Thinking in Ruby
+#
+# Manual getter methods (def maker; @maker; end) show what attr_reader
+# generates automatically. Ruby's metaprogramming starts here: attr_*
+# methods ARE code — they're just shorthand for the same Ruby code you
+# write by hand. Understanding the manual version demystifies the macro.

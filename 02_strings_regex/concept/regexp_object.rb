@@ -34,3 +34,11 @@ puts pattern.match?("HELLO\nworld")         # => true
 # This could also be done like this:
 # Regexp.new("(?:#{user_input})") — but without escape, a user typing ".*"
 # matches everything. Always escape user input before building a regex.
+
+# Thinking in Ruby
+#
+# Regexp.new and Regexp.union build patterns dynamically from runtime data
+# — critical when user input or configuration drives the search. Ruby's
+# Regexp.escape sanitizes special characters, and the Regexp::CONSTANT
+# flags compose with bitwise OR. Interpolation in literal /.../ also
+# works, keeping dynamic patterns readable without leaving regex syntax.

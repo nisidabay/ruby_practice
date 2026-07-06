@@ -18,3 +18,9 @@ host = ARGF.gets&.chomp || 'localhost'
 port = ARGF.gets&.chomp || '5432'
 
 puts "Connecting to #{host}:#{port}..."
+
+# Thinking in Ruby
+#
+# gets/$stdin and ARGF give Ruby scripts dual-mode I/O: piped or interactive
+# with zero config. The &. safe-navigation operator (Ruby 2.3+) makes nil-
+# handling ergonomic — chomp once, fall back to defaults, no boilerplate.

@@ -28,3 +28,11 @@ end
 # This could also be done like this:
 # Use (jpg|jpeg) — same result, but the alternative group clutters $1..$N.
 # Non-capturing keeps match indices clean for the captures you actually care about.
+
+# Thinking in Ruby
+#
+# Non-capturing groups (?:...) keep match indices clean when you need
+# grouping for alternation but don't care about the internal match. This
+# is a classic Ruby design choice: the language gives you the precise
+# tool for each nuance of regex behavior, so your intent is visible in
+# the syntax itself.

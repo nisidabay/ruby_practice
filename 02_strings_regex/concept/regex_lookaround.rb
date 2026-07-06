@@ -33,3 +33,11 @@ puts "Non-db prod hosts: #{web}" # => ["web-prod"]
 # This could also be done like this:
 # Without lookbehind: prices.scan(/\$(\d+\.\d+)/) then map $1 — works but captures
 # the $ group, polluting $1. Lookarounds keep the match exactly what you want.
+
+# Thinking in Ruby
+#
+# Ruby supports all four lookaround assertions (positive/negative,
+# lookahead/lookbehind) — zero-width checks that constrain a match
+# without consuming characters. This keeps the matched text exactly what
+# you want, avoiding the post-match stripping that other approaches
+# require.

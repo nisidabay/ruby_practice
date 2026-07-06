@@ -116,3 +116,12 @@ cart.checkout
 
 cart.set_payment { |amount| puts "₿ Crypto: $#{amount} - Mining transaction..." }
 cart.checkout
+
+# Thinking in Ruby
+#
+# The Strategy pattern in Ruby can use full classes OR lambdas — the
+# ShoppingCart class accepts any object responding to .pay(amount).
+# Ruby's duck typing makes the pattern simpler than in statically-typed
+# languages: no Strategy interface required, just objects that implement
+# the expected method. The lambda variant shows the lightweight
+# alternative for simple strategies.

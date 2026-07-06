@@ -24,3 +24,10 @@ def analyze_extensions(dir = Dir.pwd)
 end
 
 analyze_extensions(ARGV.first || Dir.pwd)
+
+# Thinking in Ruby
+#
+# Hash.new(0) creates a counting hash — every missing key defaults to 0,
+# enabling the terse counts[ext] += 1 pattern. Combined with Dir.glob for
+# recursive file traversal and File.extname for extension extraction, this
+# is a complete analysis tool in 25 lines of Ruby.

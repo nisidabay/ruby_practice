@@ -58,3 +58,11 @@ p hq.dig(:address, :city)     # => "Madrid"
 Point = Struct.new(:x, :y, keyword_init: true)
 p1 = Point.new(x: 10, y: 20)
 p p1.inspect  # => #<struct Point x=10, y=20>
+
+# Thinking in Ruby
+#
+# Struct is Ruby's lightweight data class — define attributes once, get
+# reader/writer, == by value, to_a, to_h, each_pair, dig, and
+# keyword_init (Ruby 3+) for free. It's the answer to "I need a simple
+# data container without writing a full class." The block form also
+# accepts method definitions.

@@ -21,3 +21,11 @@ def money_printer(value)
   value.times { puts 'Money' }
 end
 money_printer(3)
+
+# Thinking in Ruby
+#
+# Blocks with {} (single-line) and do...end (multi-line) are Ruby's
+# fundamental iteration construct. The times method accepts a block that
+# runs N times, with an optional block parameter for the current count.
+# Blocks are closures — they capture the surrounding scope — making them
+# more powerful than simple loop counters.

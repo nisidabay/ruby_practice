@@ -45,3 +45,10 @@ end
 # assert_raises(*exception_classes) returns the exception object.
 # The test FAILS if the block doesn't raise one of the expected classes.
 # assert_raises(InsufficientFunds) { acc.withdraw(50) }  # → FAIL (no raise)
+
+# Thinking in Ruby
+#
+# assert_raises turns Ruby's exception system into a testing asset.
+# Where other languages require try/catch scaffolding, Minitest
+# makes error-path testing declarative. The returned exception
+# object lets you verify the message too — no manual rescue blocks needed.

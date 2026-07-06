@@ -67,3 +67,11 @@ puts c
 d = Student.new('') # Will be rejected by validation, becomes "Unknown" via the getter
 puts d
 puts Student.counter_display
+
+# Thinking in Ruby
+#
+# This extended version adds private increment methods, name validation,
+# and a counter_display class method with pluralization. The use of
+# __send__ (not send) to call private methods demonstrates Ruby's
+# convention: use __send__ when you genuinely need to bypass visibility
+# guards (e.g., in testing or internal dispatch).

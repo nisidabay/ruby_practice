@@ -39,3 +39,10 @@ end
 
 # Rule of thumb: gets for loops, readline when you know exactly how many
 # lines to expect and you WANT it to blow up on bad input.
+
+# Thinking in Ruby
+#
+# Ruby offers both gets and readline so you can choose your failure mode.
+# gets returns nil (silent, safe for loops), readline raises EOFError
+# (loud, safe for validation). This mirrors Ruby's broader philosophy:
+# give the programmer the right tool for each situation, not a one-size-fits-all default.

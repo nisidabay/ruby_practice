@@ -44,3 +44,11 @@ FileUtils.rm_rf(dir)
 #   fix/alert/skip them
 #   THEN run the actual read loop
 # No surprises mid-batch.
+
+# Thinking in Ruby
+#
+# Ruby's Dir.children combined with File.read inside a rescue block gives
+# you a preflight check pattern: scan first, then act. This separates
+# discovery from execution — the "fail fast, fail early" philosophy that
+# Ruby encourages. Each Errno subclass tells you exactly WHY a file can't
+# be read, so you can decide whether to skip it or abort.

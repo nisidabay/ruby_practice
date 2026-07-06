@@ -16,3 +16,12 @@ end
 Process.wait(fork_pid)
 
 puts "Spawned: #{spawn_pid}, Forked: #{fork_pid}"
+
+# Thinking in Ruby
+#
+# fork, spawn, and exec give you three different process-creation
+# strategies: clone (fork), new (spawn), or replace (exec). fork runs
+# a block in the child, spawn returns a PID immediately, and exec
+# transforms the current process. Ruby exposes Unix process primitives
+# directly — no wrappers, no abstractions, just the kernel API with
+# Ruby's block syntax for the fork pattern.

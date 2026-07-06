@@ -26,3 +26,13 @@ puts "#{days_left.to_i} days until release" # => 116 days
 # Parse a date string
 start = Date.parse('2026-01-01')
 puts start # => 2026-01-01
+
+# Thinking in Ruby
+#
+# The Date class (require 'date') handles date-only operations without time
+# components. Date arithmetic returns Rational (days are rational numbers),
+# because a day isn't always exactly 86400 seconds (DST transitions).
+# Date.parse is flexible like Time.parse, and Date.today gives you the
+# current date. Use Date when you only care about dates, Time when you
+# need hours/minutes/seconds/timezones — Ruby's standard library separates
+# concerns cleanly.

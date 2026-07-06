@@ -24,3 +24,10 @@ queue << [3, 4]
 p queue  # => [1, 2, [3, 4]]
 queue.flatten!  # => [1, 2, 3, 4]
 
+
+# Thinking in Ruby
+#
+# The << (shovel) operator is Ruby's idiomatic append — it reads as "push
+# into" and chains naturally. Combined with the fact that Array is
+# untyped in Ruby (mixing strings, integers, nils in one array is
+# normal), << is used everywhere from collections to string building.

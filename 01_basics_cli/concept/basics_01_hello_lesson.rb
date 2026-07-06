@@ -19,3 +19,10 @@ orders = %w[ORD-001 ORD-002 ORD-003]
 orders.each do |order|
   puts "Processing #{order}..."
 end
+
+# Thinking in Ruby
+#
+# #each is Ruby's idiomatic replacement for index-based loops. Where other
+# languages force you to manage counters and bounds, Ruby's block-based
+# iteration keeps intent clear and eliminates off-by-one errors. The block
+# variable scopes naturally — no risk of leaking the loop index.

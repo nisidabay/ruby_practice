@@ -155,3 +155,12 @@ end
 
 run if __FILE__ == $0
 
+# Thinking in Ruby
+#
+# file_system_navigation.rb is an interactive REPL built with Ruby's
+# standard library — no gems. It demonstrates Pathname, FileUtils, JSON
+# persistence, Dir operations, and SystemCallError handling in a single
+# class. The `__FILE__ == $0` pattern at the end means the file works
+# as both a library (require) and a standalone script (run it directly).
+# Ruby's design enables this dual-purpose pattern naturally.
+

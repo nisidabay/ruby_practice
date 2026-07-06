@@ -32,3 +32,10 @@ puts "Updated: #{config.instance_variable_get(:@options)}"
 #   end
 #
 # instance_variable_get/set is best for single-ivar access by dynamic name.
+
+# Thinking in Ruby
+#
+# instance_variable_get/set bypass all access controls — they reach into an
+# object and read or write its internals by name. This is Ruby's philosophy
+# of trust: you CAN touch anything, but you SHOULD only do so when the public
+# API isn't enough. The power is there. Use it wisely.

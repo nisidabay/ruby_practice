@@ -41,3 +41,11 @@ tmp.unlink  # explicit cleanup — easy to forget!
 
 # Rule: ALWAYS use the block form unless you have a specific reason not to.
 # The block guarantees cleanup on success, error, or even abort.
+
+# Thinking in Ruby
+#
+# Tempfile.create and Dir.mktmpdir with blocks are Ruby's "autoclose"
+# pattern — the block guarantees cleanup even if an exception is raised.
+# This is safer-than-threadsafe resource management baked into the standard
+# library. The block form is the idiomatic Ruby way: pass a block, get
+# automatic lifecycle management, never leak temporary files.

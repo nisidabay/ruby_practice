@@ -40,3 +40,11 @@ end
 # Each error type gets its own handler. The user gets a useful message
 # instead of a stack trace. And different failures can trigger different
 # recovery: retry, skip, abort, fallback to a default file.
+
+# Thinking in Ruby
+#
+# Ruby's Errno::* hierarchy is unique — each system error is its own class
+# (Errno::ENOENT, Errno::EACCES, Errno::ENOSPC) so you can rescue exactly
+# what you need. Most languages give you a single integer error code.
+# Ruby gives you typed exceptions with descriptive class names, making
+# error handling as expressive as the rest of the language.

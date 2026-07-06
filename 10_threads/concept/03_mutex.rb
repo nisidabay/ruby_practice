@@ -22,3 +22,12 @@ end
 
 threads.each(&:join)
 puts "Expected: 100_000  Got: #{balance}"
+
+# Thinking in Ruby
+#
+# Mutex#synchronize creates a critical section — only one thread can enter
+# the block at a time. This eliminates the data race from 02_data_race.rb.
+# The Mutex is Ruby's lowest-level synchronization primitive, and it's all
+# you need for most thread safety problems. The synchronize block ensures
+# that read-modify-write happens atomically from any thread's perspective.
+# Higher-level primitives like Queue and SizedQueue use Mutex internally.

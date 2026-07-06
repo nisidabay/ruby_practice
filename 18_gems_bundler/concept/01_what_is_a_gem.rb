@@ -29,3 +29,11 @@ end
 #   gem environment   # paths, versions, config
 #
 # RubyGems is part of Ruby itself — no install needed.
+#
+# Thinking in Ruby
+#
+# RubyGems embodies Ruby's "batteries included" philosophy — a full package
+# manager ships with every Ruby install. Unlike many languages where third-party
+# tooling is required to manage dependencies, Ruby's gem ecosystem is a first-class
+# part of the runtime. The `gem` command, `Gem::Specification`, and the entire
+# package infrastructure are available from day one, no setup needed.

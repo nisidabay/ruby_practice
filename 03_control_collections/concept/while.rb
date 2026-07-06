@@ -21,3 +21,11 @@ while attempt < 3
   attempt += 1
 end
 # exits cleanly when attempt reaches 3
+
+# Thinking in Ruby
+#
+# Ruby's while is an expression too — if the body is a single statement,
+# you can write it inline: `i += 1 while i < 3`. While loops are less
+# common than .each in idiomatic Ruby, but they remain essential when the
+# termination condition is checked before every iteration (e.g. retry
+# loops).

@@ -67,3 +67,10 @@ end
 admin = Admin.new("tech_guru", %w[delete_user edit_post])
 puts "User: #{admin.username}, Perms: #{admin.permissions.join(', ')}"
 
+
+# Thinking in Ruby
+#
+# super has four distinct patterns: implicit (passes all args), explicit
+# (passes different args), super() (no args), and super in initialize.
+# Unlike C++ or Java where parent calls are virtual by default, Ruby's
+# super is explicit — you choose which parent behavior to reuse and how.

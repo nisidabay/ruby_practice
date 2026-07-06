@@ -53,3 +53,10 @@ end
 puts "Quality:    #{options[:quality] || '(not specified)'}"
 puts "Tags:       #{options[:tags].inspect}"
 puts "Playlist:   #{options[:playlist].inspect}"
+
+# Thinking in Ruby
+#
+# OptionParser supports Array, enum whitelists, and optional typed
+# arguments out of the box. Passing an array literal like %w[low medium
+# high best] as the type argument restricts input — a declarative
+# validation pattern that would require custom code in most languages.

@@ -23,3 +23,12 @@ end
 
 producer.join
 consumer.join
+
+# Thinking in Ruby
+#
+# Queue is Ruby's thread-safe FIFO — no Mutex needed for push/pop because
+# the synchronization is built in. #pop blocks until an item is available
+# (no busy-waiting), and #close signals consumers that no more items are
+# coming (consumers get nil from #pop). This producer-consumer pattern is
+# the foundation of Ruby's threading model: lock-free data structures for
+# safe communication, explicit close for graceful shutdown.

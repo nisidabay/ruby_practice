@@ -48,3 +48,12 @@ puts "Config: #{config}"  # still runs — warn doesn't stop execution
 # caller: inspect the stack programmatically (logging, debugging, metrics)
 # warn:  non-fatal error messages to stderr (won't halt the program)
 # raise: fatal — stops execution unless rescued
+
+# Thinking in Ruby
+#
+# caller and caller_locations give Ruby programs X-ray vision into the
+# call stack. caller returns strings, caller_locations returns structured
+# objects with path, lineno, and label — no regex needed. warn writes to
+# stderr without raising (unlike puts which goes to stdout). These three
+# tools — caller (inspect), warn (inform), raise (abort) — give you a
+# complete debugging toolkit without external dependencies.

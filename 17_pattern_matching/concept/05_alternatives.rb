@@ -40,3 +40,11 @@ end
 #
 # But case/when can't nest alternatives inside hash/array patterns.
 # case/in can: `in {status: (200 | 201)}` — that's the difference.
+
+# Thinking in Ruby
+#
+# Alternatives with | let you match one of several values in a single
+# pattern branch. Unlike case/when (which can match multiple values at
+# the top level only), case/in alternatives work anywhere inside a
+# pattern — including nested hash and array patterns. This composability
+# is what makes Ruby's pattern matching more powerful than its predecessors.

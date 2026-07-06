@@ -84,3 +84,12 @@ File.delete('/tmp/logs.db') if File.exist?('/tmp/logs.db')
 #
 # SQLite lets you ask questions across related tables — joins,
 # groups, filters — in a single query.
+#
+# Thinking in Ruby
+#
+# SQL queries from Ruby remain SQL — Ruby doesn't try to hide the relational
+# model behind a different abstraction. This honesty is a strength: your SQL
+# knowledge transfers directly, and complex queries (JOINs, GROUP BY, window
+# functions) work exactly as expected. The sqlite3 gem's block form for
+# `db.execute` makes result processing natural — each row is yielded to a
+# Ruby block, combining SQL's set-based logic with Ruby's procedural control.

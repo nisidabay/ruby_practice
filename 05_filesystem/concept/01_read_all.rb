@@ -28,3 +28,10 @@ end
 # Pathname alias — same thing with an object-oriented API:
 #   require "pathname"
 #   Pathname.new("config.yml").read
+
+# Thinking in Ruby
+#
+# File.read is a perfect example of Ruby's "convention over ceremony" philosophy.
+# Other languages need you to open, allocate a buffer, read, close, check errors.
+# Ruby gives you File.read — one call, one return value, zero ceremony.
+# The idiom is so clean that you reach for it before you think about edge cases.

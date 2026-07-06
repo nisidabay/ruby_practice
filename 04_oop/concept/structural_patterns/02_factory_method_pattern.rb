@@ -58,3 +58,11 @@ word_app = WordApplication.new
 doc2 = word_app.new_document
 word_app.save_document(doc2)
 
+
+# Thinking in Ruby
+#
+# The Factory Method pattern: the Application class defines
+# create_document as an abstract hook (raise NotImplementedError), and
+# subclasses decide which Document type to instantiate. Client code
+# calls new_document and save_document without knowing the concrete
+# class — polymorphism without if/elsif or case statements.

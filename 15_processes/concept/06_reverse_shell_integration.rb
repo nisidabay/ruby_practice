@@ -55,3 +55,12 @@ trap("SIGINT") do
 end
 
 sleep
+
+# Thinking in Ruby
+#
+# Open3.popen2e combined with TCPServer creates a remote command
+# executor. Thread.new handles the client loop concurrently while
+# the main thread manages signals. Ruby's process-control and
+# networking libraries are designed to work together — capture3
+# for one-shot commands, popen2e for interactive execution,
+# all piped through a single TCP socket.

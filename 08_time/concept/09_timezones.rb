@@ -23,3 +23,12 @@ puts nyc                   # => 2026-06-15 02:45:00 -0400
 # Convert back to system timezone
 system_time = nyc.getlocal
 puts system_time           # => 2026-06-15 08:45:00 +0200
+
+# Thinking in Ruby
+#
+# Ruby's Time object carries its timezone with it — .zone tells you the
+# offset string, .utc_offset gives seconds from UTC. You can convert between
+# timezones with .utc, .getlocal (returns a new Time), and .localtime
+# (mutates the receiver). Ruby surfaces the distinction between "give me
+# a new Time in a different zone" (getlocal) and "change this Time's zone"
+# (localtime) — explicit methods for explicit intent.

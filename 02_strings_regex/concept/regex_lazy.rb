@@ -25,3 +25,10 @@ puts "Tokens: #{tokens.inspect}"         # => ["ELF 64-bit LSB executable", "x86
 # This could also be done like this:
 # /<.+>/ — deceptively simple, but wrong when there are multiple tags.
 # Lazy quantifiers are the default choice for delimited text; greed is opt-in.
+
+# Thinking in Ruby
+#
+# Lazy quantifiers (+?, *?) are essential for delimited text — they stop
+# at the first valid end rather than consuming everything up to the last
+# one. Ruby's regex engine defaults to greediness but makes lazy matching
+# a single ? away, giving you full control without verbose workarounds.

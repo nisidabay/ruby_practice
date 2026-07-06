@@ -34,3 +34,12 @@ puts order
 
 # Alternative: $VERBOSE (-w flag) for warnings
 #   ruby -w script.rb: $VERBOSE is true (shows warnings from Ruby itself)
+
+# Thinking in Ruby
+#
+# $DEBUG and $VERBOSE are Ruby's global flags for conditional output.
+# The -d flag sets $DEBUG, -w sets $VERBOSE — no code changes needed.
+# Your production code can have puts [DEBUG] ... if $DEBUG sprinkled
+# throughout, and it's silent until you pass -d. This is Ruby's "the
+# runtime is configured, not the code" philosophy: debug output is a
+# command-line decision, not a code change.

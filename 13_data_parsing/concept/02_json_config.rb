@@ -16,3 +16,11 @@ end
 puts "Host:  #{config["host"]}"
 puts "Port:  #{config["port"]}"
 puts "Debug: #{config["debug"]}"
+
+# Thinking in Ruby
+#
+# JSON config with fallback defaults is a one-liner in Ruby: merge
+# the parsed file over your defaults. The built-in json library means
+# no gem installs, no schema declarations — just a hash. Ruby treats
+# configuration as data, and data as hashes, making the code read
+# like the config itself.

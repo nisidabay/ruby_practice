@@ -39,3 +39,11 @@ end
 #   end
 #
 # Array patterns are safer: they check length AND extract in one step.
+
+# Thinking in Ruby
+#
+# Array patterns destructure by position: [first, second, *rest] binds
+# elements and captures the remainder in one expression. Unlike manual
+# indexing (command[0], command[1]), array patterns verify the structure
+# matches before extracting. This is Ruby's pattern matching philosophy
+# — safe extraction by design, not by convention.

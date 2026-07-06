@@ -35,3 +35,10 @@ puts config.debug?  # => true
 #       end
 #     end
 #   end
+
+# Thinking in Ruby
+#
+# class_eval reopens a class from anywhere in your program and adds methods
+# to it. It's the runtime equivalent of reopening a class definition file.
+# module_eval is the same for modules. This is Ruby's open classes in action:
+# no class is ever truly finished — you can always add more.

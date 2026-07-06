@@ -48,3 +48,10 @@ end
 
 # assert_output(stdout = '', stderr = '')
 # assert_silent — no output to either stream
+
+# Thinking in Ruby
+#
+# assert_output captures Ruby's free-flowing output streams without
+# manual $stdout redirects. It accepts string literals or regex
+# patterns, and separates stdout from stderr. assert_silent goes
+# further — it fails if either stream produces anything at all.

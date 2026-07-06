@@ -34,3 +34,11 @@ puts "a unchanged: #{a.inspect}"  # => #<data Point x=3, y=4>
 #
 # Use Data for immutable value objects (like Rust's structs).
 # Use Struct when you need mutable records with optional defaults.
+#
+# Thinking in Ruby
+#
+# Data.define brings value semantics to Ruby — immutable objects with structural
+# equality, inspired by functional programming languages. Where most languages
+# require external libraries or boilerplate for this pattern, Ruby ships it as
+# a core language feature. The `with` method makes immutable updates ergonomic:
+# no mutators, just derived copies — a pattern that encourages safer code.

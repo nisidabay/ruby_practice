@@ -58,3 +58,12 @@ end
 threads.each(&:join)
 
 puts "Done."
+
+# Thinking in Ruby
+#
+# OptionParser + Thread pool + Queue creates a concurrent directory
+# buster in one file. Mutex protects the shared output, Thread.new
+# spawns workers, and Queue distributes work. Ruby's built-in
+# threading primitives are straightforward enough that concurrent
+# HTTP scanning becomes a short, readable script — no framework
+# required, just stdlib.

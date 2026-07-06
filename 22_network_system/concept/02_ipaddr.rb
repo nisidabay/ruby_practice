@@ -39,3 +39,12 @@ puts "Hex: #{ip4.to_i.to_s(16)}"    # => c0a80101
 #   in_subnet = parts[0..2] == subnet_parts[0..2]
 #
 # IPAddr handles edge cases (IPv6, CIDR, netmasks) correctly.
+#
+# Thinking in Ruby
+#
+# IPAddr is a domain-specific value class that makes IP address math feel natural
+# in Ruby. Subnet checks become simple `include?` calls, iteration over a range
+# uses standard Enumerable methods, and IPv6 is handled transparently alongside
+# IPv4. This reflects a Ruby design principle: when a domain has native concepts
+# (IP addresses, subnets), model them as objects with meaningful methods rather
+# than leaving developers to manipulate strings and integers.

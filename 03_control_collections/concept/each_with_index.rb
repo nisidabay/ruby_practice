@@ -15,3 +15,10 @@ puts '-'
 [1, 2, 3, 4, 5].each_with_index do |value, index|
   puts "value #{value} at index #{index} is odd" if value.odd?
 end
+
+# Thinking in Ruby
+#
+# each_with_index yields both element and position in one block — no
+# manual counter needed. Where other languages use C-style for (int i=0;
+# i<n; i++), Ruby's approach reads: "for each element at its index, do
+# this." The block captures intent directly in the parameter names.

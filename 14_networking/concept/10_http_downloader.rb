@@ -77,3 +77,12 @@ if __FILE__ == $PROGRAM_NAME
     exit 1
   end
 end
+
+# Thinking in Ruby
+#
+# rest-client + Addressable::URI provides a robust HTTP downloader
+# with timeout handling, error classification, and progress reporting.
+# Ruby's exception hierarchy (SocketError, RestClient::ResourceNotFound)
+# makes error handling declarative — you specify what to catch and what
+# message to show. The Downloadr module keeps the code organized and
+# reusable.

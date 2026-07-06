@@ -44,3 +44,10 @@ puts
 
 puts "Would download video to: #{options[:output]}"
 puts "dry-run mode enabled" if options[:dry_run]
+
+# Thinking in Ruby
+#
+# OptionParser's on() block receives the value the user typed — no manual
+# ARGV scanning. The placeholder names in help text (URL, FILE) are
+# conventions, not keywords, making the DSL flexible yet self-documenting.
+# This is Ruby's do-what-you-mean approach to CLI design.

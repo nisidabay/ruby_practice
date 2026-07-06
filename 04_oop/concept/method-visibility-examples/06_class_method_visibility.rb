@@ -49,3 +49,11 @@ puts account2.balance     # => 100
 #   private_class_method :private_method
 #   public_class_method :public_method
 # end
+
+# Thinking in Ruby
+#
+# Class methods can also have visibility: use private_class_method and
+# public_class_method to control access to singleton methods. The
+# private factory method (create_internal) is only callable from within
+# the class — even from other class methods. Ruby doesn't have
+# protected_class_method; class method visibility is public or private.

@@ -47,3 +47,11 @@ g.add_edge("Web", "CDN")
 
 puts "API neighbors: #{g.neighbors("API")}"             # => ["DB", "Web", "Worker"]
 puts "BFS from DB:   #{g.bfs("DB").join(' → ')}"        # => DB → API → Web → Worker → CDN
+
+# Thinking in Ruby
+#
+# Ruby's Hash default_proc (Hash.new { |h, k| h[k] = [] }) creates
+# adjacency lists lazily — each new key auto-initializes to an empty
+# array. The BFS uses Set for visited tracking and Array as a queue,
+# showing how Ruby's standard library covers the essential data
+# structure needs for algorithm implementation.

@@ -31,3 +31,11 @@ puts $1          # => "second" (silently overwritten)
 # This could also be done like this:
 # Using .match just to check existence: email.match?(/.../) is ~30% faster and
 # won't leak MatchData references. Save .match for when you actually need captures.
+
+# Thinking in Ruby
+#
+# Ruby offers three match APIs with distinct trade-offs: .match? (boolean,
+# zero allocation, no globals), .match (MatchData for captures), and =~
+# (integer offset, sets $~). Choosing .match? by default and .match only
+# when captures are needed reflects Ruby's pragmatic performance
+# awareness — the fast path is also the simplest API.

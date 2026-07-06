@@ -39,3 +39,12 @@ server.join
 #
 # UDP is for when you don't need reliability (DNS, syslog, gaming,
 # discovery protocols). TCP is for when you do (HTTP, SSH, databases).
+#
+# Thinking in Ruby
+#
+# Ruby's UDPSocket exposes connectionless communication as a first-class Socket
+# subclass — the same socket API used for TCP, just without the connection
+# overhead. This design reflects Ruby's approach to networking: provide direct
+# access to OS socket primitives through a clean, consistent API. Whether you're
+# sending syslog messages, implementing a discovery protocol, or prototyping a
+# game server, the socket is always there in stdlib.

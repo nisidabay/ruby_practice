@@ -84,3 +84,11 @@ data.chunk { |n| n }.each { |k, v| p [k, v] }
 
 # Lazy (for infinite ranges)
 p (1..Float::INFINITY).lazy.select(&:even?).map { |n| n**2 }.first(3)  # => [4, 16, 36]
+
+# Thinking in Ruby
+#
+# Enumerable is Ruby's superpower — implement each, include Enumerable,
+# and get 50+ methods free (map, select, reduce, sort, group_by, chunk,
+# tally, grep, lazy, and more). All major collections (Array, Hash,
+# Range, Set) work this way. This is Ruby's approach to the Iterator
+# pattern at the language level.

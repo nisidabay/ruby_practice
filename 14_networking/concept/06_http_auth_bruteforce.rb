@@ -44,3 +44,11 @@ File.open(wordlist, "r").each_line do |password|
 end
 
 puts "\n[-] No valid credentials found"
+
+# Thinking in Ruby
+#
+# Net::HTTP combined with pack("m0") for Base64 encoding creates a
+# compact HTTP Basic Auth brute forcer. Ruby's stdlib handles SSL,
+# custom headers, and response codes without any gem dependencies.
+# The pattern — read wordlist, try passwords, check response — is a
+# direct expression of the brute force algorithm in Ruby's clean syntax.

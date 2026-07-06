@@ -46,3 +46,12 @@ PATTERN
 #
 # WeakRef lets the GC reclaim memory when needed. Good for caches
 # where recomputing is acceptable.
+#
+# Thinking in Ruby
+#
+# WeakRef embodies Ruby's philosophy of "trust the garbage collector." By
+# providing a reference that doesn't prevent collection, Ruby lets you build
+# self-tuning caches that automatically shed memory under pressure. This is
+# especially valuable in long-running processes where cache bloat is a common
+# memory leak source. Ruby gives you the tool to participate in GC decisions
+# rather than fighting against them.

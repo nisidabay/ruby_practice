@@ -18,3 +18,11 @@ Benchmark.bm(25) do |x|
     test_values.each { |v| set.include?(v) }
   end
 end
+
+# Thinking in Ruby
+#
+# Benchmark.bm gives you labeled, formatted timing output in one block.
+# You define the label width, the benchmark runs the block multiple
+# times (default: 1), and the report shows user CPU, system CPU, and
+# real wall clock. No external profiler needed — Ruby's stdlib includes
+# everything you need to compare array vs set lookups empirically.

@@ -54,3 +54,11 @@ puts Dir.exist?(root) ? "Still exists" : "Gone (and /etc/hostname untouched)" # 
 
 # Without the symlink? check, File.delete would have followed the link
 # and blown away /etc/hostname. The check prevents that.
+
+# Thinking in Ruby
+#
+# Ruby gives you File.symlink? so you can distinguish the link from the
+# target. Most filesystem APIs silently follow symlinks, which means a
+# recursive delete can escape the intended directory and destroy real data.
+# Ruby's approach: give the programmer the introspection tools (symlink?,
+# realpath, lstat) and let them handle it explicitly. Empowerment over protection.

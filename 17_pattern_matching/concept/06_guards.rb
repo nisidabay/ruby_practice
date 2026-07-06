@@ -42,3 +42,11 @@ end
 #   end
 #
 # Guards keep the condition at the pattern level — cleaner separation.
+
+# Thinking in Ruby
+#
+# Guards combine structural matching with logical conditions: match the
+# shape first, then check the condition. The guard runs after the pattern
+# matches, so you have access to the bound variables. This is Ruby's
+# answer to "match this, but only if...". The pattern handles structure,
+# the guard handles semantics — clean separation of concerns.

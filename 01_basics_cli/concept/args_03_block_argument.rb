@@ -24,3 +24,10 @@ answer = benchmark('calculation') do
   42
 end
 puts "result: #{answer}"
+
+# Thinking in Ruby
+#
+# Capturing a block as a Proc with &block elevates blocks from syntactic
+# sugar to first-class objects. Unlike languages where callbacks require
+# interfaces or function pointers, Ruby gives you a bare do...end that
+# becomes a real object you can store, inspect, and invoke on your terms.

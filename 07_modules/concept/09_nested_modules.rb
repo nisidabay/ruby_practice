@@ -37,3 +37,12 @@ module SmartHome::Entertainment
 end
 SmartHome::Entertainment::Speaker.new.play
 
+# Thinking in Ruby
+#
+# Nested modules create namespaces — SmartHome::Lighting::Bulb and
+# SmartHome::Heating::Thermostat can coexist without name collisions.
+# Ruby's :: operator navigates the namespace hierarchy. The alternative
+# syntax `module SmartHome::Entertainment` creates the module without
+# nesting the definition inside SmartHome's lexical scope — a subtle but
+# important distinction when you need to reference outer-scope constants.
+

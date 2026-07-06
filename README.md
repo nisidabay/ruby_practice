@@ -3,7 +3,31 @@
 A progressive, code-first curriculum for learning Ruby through CLI scripting.
 No Rails, no frameworks — just the standard library and real problems.
 
-**24 groups. 70 CLI tools. All Ruby, all stdlib.**
+**24 groups. 70+ CLI tools. All Ruby, all stdlib.**
+
+## Fibonacci Study System
+
+This repo includes a built-in spaced-repetition study schedule based on the
+Fibonacci sequence (1-2-3-5-8 days). Each of the 24 units is introduced and
+then reviewed 4 times at expanding intervals.
+
+```bash
+# Generate all 120 study session reminders
+./regenerate_crons.sh
+
+# See what's next
+ls .fibonacci/queue/ | head -1
+
+# How many remaining?
+ls .fibonacci/queue/ | wc -l
+
+# When you finish a session, delete its marker:
+rm .fibonacci/queue/session_NNN.md
+```
+
+Each session marker in `.fibonacci/queue/` tells you the day number, unit,
+and exactly what to practice. Run `./regenerate_crons.sh` any time to
+regenerate — it's idempotent and won't duplicate markers.
 
 ## Who This Is For
 

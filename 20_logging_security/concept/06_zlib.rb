@@ -37,3 +37,12 @@ puts "Deflate/Inflate works? #{inflated == original}"
 #   system('gzip data.txt')
 #
 # Zlib is faster (in-process, no fork) and works anywhere Ruby runs.
+#
+# Thinking in Ruby
+#
+# Zlib brings gzip compression directly into Ruby's process space — no subprocess,
+# no shelling out to gzip. This is a recurring Ruby philosophy: common operations
+# should be library calls, not system commands. By providing Zlib::GzipWriter and
+# Zlib::GzipReader as IO-like objects, Ruby lets you compress data streams using
+# the same patterns you use for file I/O, making compression a transparent layer
+# rather than a separate tool.

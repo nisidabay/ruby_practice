@@ -38,3 +38,11 @@ end
 #
 # Hash patterns are cleaner when you need multiple keys and want to
 # ignore the rest. No `fetch` calls, no nil checks.
+
+# Thinking in Ruby
+#
+# Hash patterns destructure by key and bind in one step. Keys you don't
+# mention are ignored, keys you do mention must exist or the pattern
+# doesn't match. Nested hashes destructure recursively. This is Ruby's
+# answer to the "dig and check" pattern — instead of fetch then check
+# nil, you say "is it this shape?" and get the values if yes.

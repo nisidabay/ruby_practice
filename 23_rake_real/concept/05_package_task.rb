@@ -42,3 +42,12 @@ end
 #
 # PackageTask gives you .gem AND .tar.gz in one command.
 # The tarball is useful for non-Ruby users or system packages.
+#
+# Thinking in Ruby
+#
+# Rake::PackageTask demonstrates Ruby's awareness of the broader ecosystem:
+# packaging goes beyond gem files. By generating both .gem and .tar.gz formats
+# from a single definition, Rake acknowledges that Ruby libraries may be consumed
+# by system package managers (apt, yum) or non-Ruby tools. The convention of
+# packaging into a `pkg/` directory is another community standard that Rake
+# codifies — every Ruby developer knows where to find build artifacts.

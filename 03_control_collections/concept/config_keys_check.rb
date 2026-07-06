@@ -11,3 +11,10 @@ if missing.any?
 else
   puts "All required keys present"
 end
+
+# Thinking in Ruby
+#
+# Array subtraction (required - config.keys) acts as a set difference on
+# arrays, finding missing keys without explicit iteration. Combined with
+# Hash#keys, this is a concise validation pattern: declare requirements
+# as an array, subtract what's present, check if anything remains.

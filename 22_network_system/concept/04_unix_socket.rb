@@ -48,3 +48,12 @@ puts "Parent received: #{parent_sock.gets.chomp}"
 #
 # UNIXSocket is faster (no TCP stack, no network) and uses filesystem
 # permissions for access control.
+#
+# Thinking in Ruby
+#
+# UNIXSocket lets Ruby scripts communicate between processes using the fastest
+# IPC method available on Unix systems — no TCP stack overhead, no network
+# configuration. The insight is that local processes shouldn't pay the cost of
+# a full network stack to talk to each other. Ruby provides both UNIXSocket (for
+# named sockets visible in the filesystem) and UNIXSocket.pair (for anonymous
+# socket pairs), covering the two main local IPC patterns.

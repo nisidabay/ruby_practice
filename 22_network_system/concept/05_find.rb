@@ -37,3 +37,12 @@ end
 #
 # Find is for when you need logic during traversal (prune, stat checks,
 # conditional skipping). Dir.glob is for simple pattern matching.
+#
+# Thinking in Ruby
+#
+# Ruby's Find library provides recursive directory traversal with a twist: you
+# can prune subtrees using Find.prune. This is the kind of pragmatic feature
+# that emerges from real sysadmin needs — "find all Ruby files but skip the
+# .git directory and vendor/bundle." Combined with Find.prune, you get the
+# power of the Unix find command with the expressiveness of Ruby blocks for
+# conditional logic.

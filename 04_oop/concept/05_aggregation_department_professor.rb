@@ -38,3 +38,11 @@ puts "Department has #{history.professors.length} professors."
 history = nil
 puts "#{dr_smith.name} still exists and can join another department."
 
+
+# Thinking in Ruby
+#
+# Aggregation: objects are created independently and passed in. The
+# Department holds references to Professor objects, but destroying the
+# department doesn't destroy the professors. This "has-a" relationship
+# with independent lifecycle is modeled naturally in Ruby — objects are
+# just references, and lifetime is managed by the garbage collector.

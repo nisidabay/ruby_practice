@@ -10,3 +10,11 @@ puts "---"
 
 ok = system("ls", "/tmp", out: File::NULL, err: File::NULL)
 puts "system() returns boolean: #{ok}"
+
+# Thinking in Ruby
+#
+# Backticks capture command output as a string, system() returns a
+# boolean exit status — two different tools for two different needs.
+# Ruby's design principle is clear: choose the tool that matches your
+# intent. Capture output? Backticks. Check success? system(). Run
+# interactively? exec(). Each has a distinct syntax and semantics.

@@ -56,3 +56,12 @@ end
 #   end
 #
 # CLEAN/CLOBBER is the Rails convention — every Ruby dev knows it.
+#
+# Thinking in Ruby
+#
+# Rake's CLEAN and CLOBBER convention establishes a clear hierarchy of cleanup
+# in Ruby projects: `rake clean` removes rebuildable artifacts (object files,
+# caches), while `rake clobber` removes everything including distributable
+# packages. This two-tier cleanup reflects real-world needs — during development
+# you want fast rebuilds (clean), but when packaging for release you want a
+# pristine state (clobber). Rake formalizes a pattern that every project needs.

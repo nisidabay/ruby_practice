@@ -40,3 +40,11 @@ puts "\nFile lines: #{count_lines(StringIO.new("a\nb\nc\n"))}"  # => 3 — no di
 
 # StringIO is how you unit-test File-processing code.
 # Any method that takes a File can take a StringIO instead.
+
+# Thinking in Ruby
+#
+# StringIO is Ruby's answer to "duck typing for IO" — any method that
+# accepts a File object can accept a StringIO instead, because they share
+# the same interface (#gets, #read, #each_line, #rewind). This eliminates
+# the need for mock objects or temp files in tests. Ruby's philosophy:
+# if it walks like an IO and quacks like an IO, it IS an IO.

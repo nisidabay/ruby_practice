@@ -28,3 +28,10 @@ puts config.instance_eval { @options[:debug] }  # => true
 #   level = :verbose
 #   config.instance_exec(level) { |lvl| @options[:log_level] = lvl }
 #   puts config.instance_eval { @options[:log_level] }  # => verbose
+
+# Thinking in Ruby
+#
+# instance_eval changes self to any object, letting you touch its private
+# parts as if you were inside it. Ruby's encapsulation is a convention,
+# not a wall — instance_eval says "I know what I'm doing, let me in."
+# It's the master key for testing, debugging, and metaprogramming.

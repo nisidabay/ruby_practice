@@ -39,3 +39,12 @@ puts "Student: #{Student.counter}"  # => 3
 puts "Teacher: #{Teacher.counter}"  # => 1
 
 # If we used @@counter, ALL three would show 6.
+
+# Thinking in Ruby
+#
+# Class instance variables (@var on the class object itself) are the
+# recommended replacement for @@class_variables. Each subclass gets its
+# own independent @counter — avoiding the hierarchy-wide sharing that
+# @@ produces. The self.class.counter += 1 pattern in initialize
+# increments the correct counter regardless of which subclass was
+# instantiated.

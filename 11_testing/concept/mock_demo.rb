@@ -33,3 +33,11 @@ class TaskRunnerTest < Minitest::Test
     mock.verify   # fails if send("Task complete") was NOT called
   end
 end
+
+# Thinking in Ruby
+#
+# Ruby's Minitest::Mock makes behavior verification first-class.
+# Instead of building stub classes by hand, you declare expectations
+# upfront and verify them in one call. This keeps tests focused on
+# what objects DO, not what they ARE — a hallmark of Ruby's
+# dynamic, duck-typed testing philosophy.

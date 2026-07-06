@@ -32,3 +32,11 @@ conf_files.each do |file|
 end
 
 puts 'Backup complete!'
+
+# Thinking in Ruby
+#
+# backup_ruby_files demonstrates FileUtils.install — which copies files AND
+# sets permissions — and Dir.glob with ** for recursive matching. The reject!
+# filter prevents backing up the backup itself. This is Ruby's "batteries
+# included" standard library: everything needed for filesystem automation
+# is already there, no gems required.

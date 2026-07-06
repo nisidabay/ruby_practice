@@ -34,3 +34,11 @@ user.login
 
 Order.new.confirm
 
+
+# Thinking in Ruby
+#
+# Modules with include provide Ruby's mixin pattern — share behavior
+# across unrelated classes without inheritance. The module defines
+# methods that become instance methods of the including class. This is
+# Ruby's answer to multiple inheritance: compose behaviors, not
+# hierarchies.

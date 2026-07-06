@@ -7,3 +7,10 @@ end
 
 p ip_address?('192.168.1.1')
 p ip_address?('192.168.1')
+
+# Thinking in Ruby
+#
+# The !! idiom converts any truthy/falsy value to a strict boolean. In
+# this case, =~ returns an integer (position) or nil, and !! coerces it
+# to true/false. Ruby never pretends nil is false — this conversion is
+# explicit when you need a boolean contract.

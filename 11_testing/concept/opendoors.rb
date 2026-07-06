@@ -13,3 +13,11 @@
 
 (2..10).step(2) { |n| puts n }  # => 2, 4, 6, 8, 10
 (3..15).step(3) { |n| puts n }  # => 3, 6, 9, 12, 15
+
+# Thinking in Ruby
+#
+# Range#step embodies Ruby's "skip the loop, not the values" philosophy.
+# Instead of visiting every element and filtering, step jumps directly
+# to the Nth position. Combined with ranges, it models intervals
+# naturally — step 2 means "every other," step 3 means "every third."
+# The pattern reads as math, not machinery.

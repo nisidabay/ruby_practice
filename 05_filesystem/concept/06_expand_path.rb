@@ -31,3 +31,11 @@ end
 
 # Common alternative: expand relative to user's home
 # File.expand_path(".config/kitty/kitty.conf", Dir.home)
+
+# Thinking in Ruby
+#
+# File.expand_path is pure string resolution — it doesn't touch the filesystem,
+# so it never raises. This is Ruby's "fail late" philosophy in action: resolve
+# the path early, check File.exist? only when you actually need the file.
+# Combined with __dir__, it eliminates the #1 class of file bugs: paths
+# that break when the working directory changes.

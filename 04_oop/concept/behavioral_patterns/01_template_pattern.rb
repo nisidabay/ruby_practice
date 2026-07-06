@@ -39,4 +39,12 @@ end
 
 CSVReport.new.build_report
 HTMLReport.new.build_report
-
+#
+# Thinking in Ruby
+#
+# Ruby's Template Method is particularly elegant because the protected
+# method convention and raise NotImplementedError pattern mirror the
+# language's duck-typing philosophy: the base class declares the contract,
+# subclasses fulfill it without compile-time enforcement. Combined with
+# endless method definitions (def method_name = expr), template steps
+# become one-liners — minimal ceremony for the skeleton pattern.

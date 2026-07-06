@@ -63,3 +63,11 @@ end
 
 socket.close
 puts "Disconnected."
+
+# Thinking in Ruby
+#
+# TCPSocket + Open3.popen2e builds a reverse shell that executes
+# commands remotely and streams output back. Ruby's retry mechanism
+# handles connection failures gracefully (retry on ECONNREFUSED),
+# and the trap block ensures clean shutdown. The pattern shows how
+# Ruby's networking and process tools combine into one fluid loop.

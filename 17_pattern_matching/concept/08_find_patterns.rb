@@ -46,3 +46,11 @@ end
 #   end
 #
 # Find patterns are more declarative — "I want this shape, find it."
+
+# Thinking in Ruby
+#
+# Find patterns [*, target, *] let you search inside arrays as part
+# of pattern matching — find the first or last occurrence without
+# manual index logic. The * acts as a wildcard matching zero or more
+# elements. This is Ruby's answer to "where is it?" embedded in the
+# same syntax as "what is it?" — shape and position in one pattern.

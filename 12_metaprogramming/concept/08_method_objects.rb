@@ -37,3 +37,10 @@ methods.each { |meth| puts "#{meth.name} → #{meth.call}" }
 #   config2.instance_eval { @options[:debug] = false }
 #   bound = unbound.bind(config2)
 #   puts bound.call  # => false
+
+# Thinking in Ruby
+#
+# Method objects make Ruby methods first-class citizens — you can store them,
+# pass them around, and ask who owns them. An UnboundMethod is a method
+# detached from any instance; rebind it to a different object of the same
+# class. This is Ruby's object model exposed: methods are things, not just behaviors.

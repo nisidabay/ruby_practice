@@ -44,3 +44,12 @@ end
 #
 # Task arguments are self-documenting (appear in rake -T) and
 # validate that required args are present.
+#
+# Thinking in Ruby
+#
+# Rake task arguments show Ruby's commitment to developer experience: passing
+# arguments to tasks uses a clean bracket syntax (`task[arg1,arg2]`) that feels
+# natural on the command line. Inside the task block, args are accessed through
+# a typed object with defaults, not environment variables or ARGV parsing. This
+# design makes Rake tasks self-documenting — running `rake -T` shows both the
+# task name and its expected arguments.

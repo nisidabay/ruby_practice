@@ -54,3 +54,12 @@ puts parse('hello')               # => Text: hello
 #       "Text: #{input}"
 #     end
 #   end
+
+# Thinking in Ruby
+#
+# Pattern matching in method bodies turns dispatch into a declarative
+# table. Each branch says "if the input looks like this, do that."
+# Combined with endless methods (def classify(status) = case...), the
+# entire method becomes a single expression. Ruby treats pattern matching
+# as a first-class control structure, not a library feature — it's
+# syntax, not a gem.

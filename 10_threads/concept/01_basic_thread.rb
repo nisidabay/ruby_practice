@@ -14,3 +14,13 @@ end
 puts "Main thread is still running..."
 threads.each(&:join)
 puts "All threads finished."
+
+# Thinking in Ruby
+#
+# Thread.new creates a concurrent execution context that runs alongside
+# the main thread. Unlike Go's goroutines (managed by a runtime scheduler)
+# or Python's asyncio (single-threaded cooperative), Ruby threads are OS
+# threads managed by the GIL for MRI — they give you concurrency but not
+# parallelism for Ruby code. Thread#join is how you synchronize: the main
+# thread blocks until the joined thread finishes. Without join, the program
+# exits when the main thread ends, killing all other threads.

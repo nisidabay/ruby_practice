@@ -81,3 +81,10 @@ class CarTest < Minitest::Test
   end
 end
 
+# Thinking in Ruby
+#
+# Minitest makes composition testing natural — each class has its own
+# test class with focused setup. The Car + Engine relationship is tested
+# independently (EngineTest, CarTest), then the integration through
+# Car's setup. Ruby's attr_accessor means no getter/setter boilerplate;
+# the tests read as plain assertions on plain objects.

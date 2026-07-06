@@ -29,3 +29,11 @@ puts config.instance_exec(:debug, :cache) { |a, b| "#{a}=#{@options[a]}, #{b}=#{
 #   config.instance_eval { @options[:timeout] }
 #
 # instance_exec is only needed when the block needs data from the outside world.
+
+# Thinking in Ruby
+#
+# instance_exec takes the best part of instance_eval — changing self — and
+# adds the ability to pass external data into the block. This is critical
+# when the block logic depends on variables from the caller's scope, not the
+# object's internals. Ruby's block-scoping design means you never have to
+# choose between access and parameter passing.

@@ -48,3 +48,12 @@ puts "  end"
 # Fibers + Scheduler — cooperative, user-managed, less overhead.
 # The Async gem (https://github.com/socketry/async) is the most popular
 # Fiber Scheduler implementation.
+#
+# Thinking in Ruby
+#
+# Ruby's Fiber Scheduler interface is a unique approach to async I/O: instead of
+# baking in a specific concurrency model (like async/await in JavaScript or
+# green threads in Go), Ruby defines a pluggable hook interface and lets the
+# community provide implementations. This reflects Ruby's philosophy of
+# "providing the interface, not the implementation" — the Async gem, EventMachine,
+# and others can all integrate at the runtime level via the same scheduler API.

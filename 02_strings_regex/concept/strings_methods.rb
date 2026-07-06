@@ -41,3 +41,10 @@ p 'user@domain.com'.match?(/@/) # => true
 p '42'.to_i                              # => 42
 p :status.to_s                           # => "status"
 p :status # => :status
+
+# Thinking in Ruby
+#
+# Ruby strings ship with a rich standard library — case conversion,
+# splitting, substitution, querying — all as built-in methods. Ruby's
+# "everything is an object" philosophy means these operations read
+# naturally: 'hello'.upcase instead of upcase('hello') or String.upper().

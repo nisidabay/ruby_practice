@@ -38,3 +38,12 @@ end
 #     stat.size, stat.mode, stat.uid, stat.gid, stat.blksize, stat.blocks
 #   File.world_readable?(path)  — quick permission check
 #   File.zero?(path)            — true if file exists and is 0 bytes
+
+# Thinking in Ruby
+#
+# File.size, File.mtime, File.atime are pure stat(2) calls — they never
+# open the file. In many languages you'd need to open a handle just to
+# check the size. Ruby's File class exposes filesystem metadata as direct
+# class methods, making it trivial to inspect files without touching their
+# contents. File.stat gives you everything in one struct for when you
+# need the full picture.

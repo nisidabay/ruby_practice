@@ -24,3 +24,10 @@ end
 
 deploy(env: 'staging', dry_run: true, verbose: true)
 deploy(env: 'production', dry_run: false, verbose: true, retries: 3)
+
+# Thinking in Ruby
+#
+# Ruby's ** forwarding pattern lets wrappers pass keyword arguments
+# through unchanged. The receiver declares its own defaults while the
+# middleware stays oblivious — this is the same duck-typing philosophy
+# applied to method arguments themselves.

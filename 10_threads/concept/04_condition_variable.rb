@@ -28,3 +28,13 @@ Thread.new do
 end
 
 consumer.join
+
+# Thinking in Ruby
+#
+# ConditionVariable implements the "wait/signal" pattern that's fundamental
+# to threaded programming. A thread waits on a condition (releasing the
+# mutex temporarily), and another thread signals when the condition is met.
+# The waiting thread re-acquires the mutex and continues. This is more
+# efficient than busy-waiting (polling in a loop). cv.signal wakes one
+# waiter; cv.broadcast wakes all. Always pair ConditionVariable with a
+# Mutex — they're designed to work together.

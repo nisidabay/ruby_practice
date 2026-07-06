@@ -42,3 +42,10 @@ puts "#{v1}.between?(#{v3}, #{v2}) = #{v1.between?(v3, v2)}"  # => true
 # <=> returns -1, 0, or 1. Comparable builds EVERYTHING from that.
 # Also gives: sort (via <=>), clamp, and the spaceship itself.
 # All of Ruby's built-in comparable classes (String, Integer, Time) use this.
+
+# Thinking in Ruby
+#
+# include Comparable + implement <=> = get 6 comparison methods free.
+# The spaceship operator returns -1, 0, or 1, and Comparable derives <,
+# >, <=, >=, ==, between?, clamp from it. This is Ruby's most elegant
+# mixin: one method unlocks a complete comparison interface.

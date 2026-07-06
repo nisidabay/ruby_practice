@@ -45,6 +45,9 @@ coverage/
 htmlcov/
 .coverage
 
+# Fibonacci study queue
+.fibonacci/
+
 # Compressed files
 *.zip
 *.gz

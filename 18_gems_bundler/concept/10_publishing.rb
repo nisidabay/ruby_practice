@@ -44,3 +44,12 @@ puts "  # Existing installs still work, new installs get the previous version"
 #
 #   # Or self-host with geminabox:
 #   # https://github.com/geminabox/geminabox
+#
+# Thinking in Ruby
+#
+# RubyGems.org is one of the first language-specific package registries, and its
+# design reflects Ruby's community values: simple to publish, simple to install.
+# The `gem push` / `gem yank` workflow is intentionally minimal — a single command
+# to share your work. Versioning follows SemVer conventions, and the idea that
+# "you cannot republish the same version" enforces immutability and trust in the
+# supply chain.

@@ -50,3 +50,11 @@ puts "Pages:   #{rpt.page_count}"  # => 42 (delegated @doc.pages → renamed)
 # def_delegators for multiple methods to same target.
 # def_delegator  for single method (supports renaming).
 # Targets can be instance variables (@doc), methods (doc), or constants.
+
+# Thinking in Ruby
+#
+# Forwardable eliminates delegation boilerplate — extend it, declare
+# def_delegators or def_delegator, and methods are forwarded automatically.
+# This follows Ruby's Law of Demeter ergonomics: delegate what you must,
+# but don't write the forwarding code by hand. def_delegator even supports
+# renaming the method at the delegation point.

@@ -64,3 +64,11 @@ Socket.tcp_server_loop(PORT) do |socket, client_addrinfo|
   socket.close
   puts "Client #{client_info} disconnected."
 end
+
+# Thinking in Ruby
+#
+# Socket.tcp_server_loop + Open3.popen2e creates a full bind shell in
+# under 70 lines. Ruby's block style makes the connection lifecycle
+# obvious: accept, authenticate, serve, close. The signal handler
+# (trap("SIGINT")) keeps cleanup clean. This is Ruby's network
+# programming philosophy — socket operations are just iterators.

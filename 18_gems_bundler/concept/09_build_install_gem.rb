@@ -63,3 +63,11 @@ end
 #   rake build    # builds the .gem file
 #   rake install  # installs it locally
 #   rake release  # pushes to RubyGems.org
+#
+# Thinking in Ruby
+#
+# Building a gem in Ruby is a self-contained cycle: write code, describe it in a
+# gemspec, run `gem build`, and you have a distributable package. The entire
+# toolchain — gem command, gemspec DSL, Gem::Package — is part of Ruby's standard
+# library. This means every Ruby developer can package and distribute libraries
+# without installing any additional tooling, lowering the barrier to code sharing.

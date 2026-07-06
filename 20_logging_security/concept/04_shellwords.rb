@@ -36,3 +36,12 @@ puts args.inspect  # => ["ls", "-la", "My Documents"]
 #
 # Shellwords is for when you MUST build a shell command string.
 # Open3 with array args is safer when you can avoid the shell entirely.
+#
+# Thinking in Ruby
+#
+# Shellwords reflects Ruby's pragmatic security mindset: when you must interact
+# with the shell, do it safely. Instead of demanding you avoid shell commands
+# entirely, Ruby provides the tools to escape arguments properly. This is
+# especially important in sysadmin scripts where shell commands are unavoidable.
+# The library handles edge cases (spaces, special characters, quotes) that
+# manual escaping almost always gets wrong.

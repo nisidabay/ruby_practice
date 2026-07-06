@@ -42,3 +42,10 @@ end
 # Use binread for: images, audio, video, encrypted data, protocol buffers,
 # or ANY file where you need the exact bytes on disk — not Ruby's
 # interpretation of them.
+
+# Thinking in Ruby
+#
+# File.binread demonstrates Ruby's respect for the programmer's intent.
+# File.read applies encoding rules (UTF-8 by default) because that's what
+# you usually want for text. binread skips ALL encoding — you get raw bytes.
+# Two methods, two clear purposes, no mode flags cluttering the call site.

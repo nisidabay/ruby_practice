@@ -33,3 +33,11 @@ end
 #
 # External iteration (next/peek/rewind) is for when you need
 # fine-grained control — parsers, state machines, lookahead.
+#
+# Thinking in Ruby
+#
+# External iteration (next/peek/rewind) reveals that every Ruby Enumerator is
+# also a manually-controlled cursor — not just a block-driven loop. This dual
+# nature means you can treat any collection as an iterator, pausing, peeking,
+# and rewinding as needed. Ruby's design lets you choose the iteration style
+# that fits your problem, without choosing a different data structure.

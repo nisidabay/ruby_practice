@@ -49,3 +49,10 @@ config.debug?
 #
 # Use prepend when you want the module to intercept. Use include when the
 # class should win and the module is a fallback.
+
+# Thinking in Ruby
+#
+# prepend flips the method lookup chain — your module runs before the class's
+# own methods. This is Ruby's answer to aspect-oriented programming: wrap,
+# log, or augment without touching the original class. The module intercepts,
+# super delegates, and the class stays clean.

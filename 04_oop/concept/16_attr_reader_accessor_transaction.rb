@@ -22,3 +22,11 @@ puts tx.completed
 
 # tx.to = "Someone"  # NoMethodError — attr_reader has no setter
 
+
+# Thinking in Ruby
+#
+# Mixing attr_reader (read-only) with attr_accessor (read-write) gives
+# fine-grained API control on a per-attribute basis. In Ruby, the
+# visibility of each attribute is declared independently — unlike
+# languages where visibility is class-wide. The read-only fields (to,
+# from, amount) become the immutable public surface of the transaction.

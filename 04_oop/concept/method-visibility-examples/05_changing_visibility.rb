@@ -62,3 +62,11 @@ puts account.balance        # => 120
 #
 #   public :private1  # Make private1 public again (yes, you can do this!)
 # end
+
+# Thinking in Ruby
+#
+# Ruby lets you change method visibility after definition using symbol
+# syntax (private :method_name). This is useful when you want to define
+# all methods naturally (without inline private/protected keywords) and
+# declare the visibility contract at the bottom. You can even make a
+# private method public again — visibility is dynamic.
